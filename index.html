@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Backgammon Determined Swiss Tournament Manager</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#24150c"><link rel="apple-touch-icon" href="icon-192.png"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%233b2416%27/%3E%3Ccircle cx=%2724%27 cy=%2732%27 r=%2713%27 fill=%27%23f3ead2%27 stroke=%27%23d9b44a%27 stroke-width=%273%27/%3E%3Ccircle cx=%2742%27 cy=%2732%27 r=%2713%27 fill=%27%231a1209%27 stroke=%27%23d9b44a%27 stroke-width=%273%27/%3E%3C/svg%3E"><style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;min-width:0;max-width:100%}
+img,svg,canvas,video{max-width:100%}
+:root{
+  --felt:#3b2416;--felt-d:#24150c;--felt-l:#5a3a22;--card:#4a2e1c;--card2:#3a2315;--oxblood:#8b2a22;--forest:#1f6b46;--pts:url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2740%27%20height=%2712%27%3E%3Cpolygon%20points=%270,0%2020,0%2010,12%27%20fill=%27%238b2a22%27/%3E%3Cpolygon%20points=%2720,0%2040,0%2030,12%27%20fill=%27%23e9dcb8%27/%3E%3C/svg%3E);
+  --gold:#d9b44a;--gold-l:#f0d98a;--gold-d:#a8842a;--cream:#f6f1de;--muted:#d3c1a3;
+  --line:rgba(217,180,74,.28);--red:#ef6b5e;--blue:#4da3ff;--ok:#4ade80;--amber:#f6c453;
+}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--cream);
+  background:radial-gradient(ellipse at 50% 0%,#6b4428 0%,var(--felt) 40%,var(--felt-d) 100%);background-color:var(--felt-d);line-height:1.5;font-size:15px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 40px}
+@media (min-width:1280px){.wrap{max-width:min(1840px,96vw)}}
+h1,h2,h3{font-family:"DM Serif Display",Georgia,serif;margin:0;font-weight:400;letter-spacing:.2px}
+h2{font-size:1.5rem;color:var(--gold-l)} h3{font-size:1.15rem;color:var(--gold-l)}
+.num{font-variant-numeric:tabular-nums}
+header.top{padding:18px 0 10px}
+header.top::after{content:'';display:block;height:12px;margin-top:10px;background:var(--pts) repeat-x;opacity:.9}
+.titlerow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand .logo{font-size:2rem;color:var(--gold);line-height:1}
+.brand h1{font-size:1.6rem;color:var(--gold-l);overflow-wrap:anywhere}
+.brand small{color:var(--muted);display:block}
+.hbtns{display:flex;flex-wrap:wrap;gap:8px}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-top:12px;padding-bottom:0}
+nav.tabs button{background:none;border:0;color:var(--muted);padding:12px 16px;min-height:44px;cursor:pointer;font:inherit;font-weight:600;white-space:nowrap;border-bottom:3px solid transparent}
+nav.tabs button:hover{color:var(--cream)}
+nav.tabs button.on{color:var(--gold-l);border-bottom-color:var(--gold)}
+.btn{background:rgba(255,255,255,.08);color:var(--cream);border:1px solid var(--line);border-radius:10px;padding:9px 14px;min-height:44px;font:inherit;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn:hover:not(:disabled){background:rgba(255,255,255,.16)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.gold{background:linear-gradient(180deg,var(--gold-l),var(--gold));color:#2a2005;border-color:var(--gold-d)}
+.btn.gold:hover:not(:disabled){background:linear-gradient(180deg,#fff0b0,var(--gold-l))}
+.btn.danger{border-color:var(--red);color:#ffc9c3}
+.btn.sm{min-height:34px;padding:4px 10px;font-size:.85rem}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--amber)}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-weight:700;font-size:.85rem;border:1px solid transparent}
+.st-notstarted{background:#2a2a2a;color:#e8e2d0;border-color:#6b6b6b}
+.st-checkroster,.st-checkwinnerentries{background:#5a1f1a;color:#ffd0ca;border-color:var(--red)}
+.st-inprogress{background:#4b3d0c;color:var(--gold-l);border-color:var(--gold)}
+.st-complete{background:var(--gold);color:#2a2005}
+.banner{background:rgba(217,180,74,.14);border:1px solid var(--gold-d);border-radius:12px;padding:10px 14px;margin:14px 0;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.flash{background:rgba(77,163,255,.15);border:1px solid var(--blue);border-radius:12px;padding:8px 14px;margin:10px 0}
+.confirm{position:sticky;top:8px;z-index:20;background:#3b1612;border:2px solid var(--red);border-radius:12px;padding:14px;margin:14px 0;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.confirm .row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+main{padding-top:16px}
+.grid{display:grid;gap:16px}
+.kpis{grid-template-columns:repeat(2,1fr)}
+.cols2{grid-template-columns:1fr}
+.card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.28),inset 0 0 0 3px var(--card2),inset 0 0 0 4px var(--line);min-width:0}
+.kpi .l{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}
+.kpi .v{font-size:1.5rem;font-weight:700;color:var(--gold-l);margin-top:2px;overflow-wrap:anywhere}
+.kpi .s{color:var(--muted);font-size:.8rem}
+.chip{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap}
+.chip.ready{background:#14532d;color:#86efac;border:1px solid #22c55e}
+.chip.waiting{background:#3a3f45;color:#d1d5db;border:1px solid #6b7280}
+.chip.done{background:#4b3d0c;color:var(--gold-l);border:1px solid var(--gold)}
+.chip.byeadv{background:#2a2a2a;color:#f6f1de;border:1px solid #8a8a8a}
+.chip.check{background:#5a1f1a;color:#ffd0ca;border:1px solid var(--red)}
+.tag{display:inline-block;padding:1px 7px;border-radius:6px;font-size:.7rem;font-weight:700;background:rgba(255,255,255,.1);color:var(--muted);margin-right:3px}
+.tag.blue{background:#10315c;color:#9ccbff}
+.sp20{display:inline-block;padding:1px 7px;border-radius:999px;font-size:.7rem;font-weight:800;background:linear-gradient(180deg,var(--gold-l),var(--gold));color:#2a2005;margin-left:6px;vertical-align:middle}
+.bar{height:12px;border-radius:99px;background:rgba(0,0,0,.35);overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold-l))}
+.tablewrap{overflow-x:auto;border-radius:12px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid rgba(217,180,74,.15);white-space:nowrap}
+th{color:var(--gold-l);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;background:rgba(0,0,0,.2)}
+td.r,th.r{text-align:right}
+tr.top td{background:rgba(217,180,74,.13)}
+tr.top td:first-child{box-shadow:inset 3px 0 var(--gold)}
+input[type=text],input[type=number],textarea,select{background:#f6efd8;color:#2b1a0d;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:16px;min-height:40px;max-width:100%}
+input[type=text],textarea{width:100%}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--gold);cursor:pointer}
+textarea{min-height:110px}
+label.f{display:block;color:var(--muted);font-size:.8rem;margin-bottom:3px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sub{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.sub button{background:rgba(255,255,255,.07);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 14px;min-height:38px;cursor:pointer;font:inherit;font-weight:600}
+.sub button.on{background:var(--gold);color:#2a2005}
+.mgrid{display:grid;gap:12px;grid-template-columns:1fr}
+.mcard{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
+.mcard.bye{border-color:var(--gold);background:linear-gradient(180deg,#2e2e2e,#1c1c1c)}
+.mcard .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mid{font-weight:800;color:var(--gold-l);font-size:1.05rem}
+.prow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:rgba(0,0,0,.22);margin-bottom:6px;min-height:44px;width:100%;border:1px solid transparent;color:var(--cream);font:inherit;text-align:left;min-width:0}
+button.prow{cursor:pointer}
+button.prow:hover{border-color:var(--gold)}
+.prow.win{background:rgba(217,180,74,.25);border-color:var(--gold)}
+.prow.wait{color:var(--muted);font-style:italic}
+.prow.bye{background:rgba(77,163,255,.18);color:#bcdcff;border-color:var(--blue)}
+.prow .rec{color:var(--muted);font-size:.8rem}
+.vs{text-align:center;color:var(--muted);font-size:.75rem;margin:-2px 0 2px}
+.note{color:var(--muted);font-size:.85rem}
+.warn{color:#ffd0ca}
+.okc{color:var(--ok)}
+.rules p,.rules li{max-width:75ch}
+.rules code{background:rgba(0,0,0,.3);padding:1px 5px;border-radius:5px}
+.printonly{display:none}
+.ck{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fffaf0,#d8c89a);color:#2b1a0d;border:2px solid var(--gold-d);font-style:normal;font-weight:800;font-size:.8rem;line-height:1;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
+.ck.av{width:22px;height:22px;font-size:.7rem;margin-right:4px;background:radial-gradient(circle at 35% 30%,#666,#1b1b1b);color:#f6f1de}
+.ck.av.by{background:radial-gradient(circle at 35% 30%,#fffaf0,#d8c89a);color:#2b1a0d}
+.sp20{display:inline-flex;align-items:center;gap:4px;background:rgba(0,0,0,.3);color:var(--gold-l);border:1px solid var(--gold-d)}
+.sp20::before{content:'';width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3b0,#c8961f);border:1px solid #7a5a10}
+.chip::before{content:'';display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle;background:currentColor}
+.chip.ready::before{background:#f6f1de}.chip.done::before{background:#1c1c1c;border:1px solid var(--gold)}.chip.waiting::before{background:#8a8f96}
+h2::after{content:'';display:block;height:10px;margin-top:6px;background:var(--pts) repeat-x}
+.mcard{box-shadow:inset 0 0 0 3px var(--card2),inset 0 0 0 4px var(--line)}
+.mgrid>.mcard{border-top:3px solid var(--gold-d,#a8821f)}
+.prow:has(+.vs){border-left:6px solid #efe4c4;border-radius:10px 4px 4px 10px}
+.vs+.prow{border-right:6px solid #8a6a3c;border-radius:4px 10px 10px 4px}
+.leader{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid rgba(217,180,74,.15)}
+.hbtns{align-items:center}
+.confirm.gold{background:#3a2315;border-color:var(--gold)}
+.confirm.gold label.f{color:var(--cream);font-size:.9rem}
+input[type=radio]{accent-color:var(--gold)}
+@media (min-width:768px){
+  .kpis{grid-template-columns:repeat(4,1fr)} .cols2{grid-template-columns:1fr 1fr}
+  .mgrid{grid-template-columns:repeat(2,1fr)} .brand h1{font-size:2rem}
+}
+@media (min-width:1024px){ .mgrid{grid-template-columns:repeat(3,1fr)} }
+@media (min-width:1280px){ .mgrid,.mlayout .mgrid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))!important} .kpis{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))} .cols2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))} .pl-scroll{max-height:78vh} }
+.mlayout{display:block}
+.sb{margin-top:18px}
+.sb .pn{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0;text-align:left;min-height:28px}
+.sb .pn:hover{color:var(--gold-l);text-decoration:underline}
+.sb tr.dim td{opacity:.5}
+.sb tr.me td{outline:1px solid var(--gold);outline-offset:-1px}
+.sb th,.sb td{padding:6px 7px;font-size:.85rem}
+.sbcard{border-top:1px solid var(--line);padding-top:8px;margin-top:10px}
+.mcard.hl{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.sb .tablewrap{max-height:55vh;overflow-y:auto}
+.pl-scroll{max-height:70vh;overflow:auto}
+@media print{.pl-scroll,.sb .tablewrap{max-height:none!important}}
+.sbtoggle,.sbpaytog{display:inline-flex}
+@media (min-width:1024px){.mlayout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}.sb{position:sticky;top:8px;margin-top:0;max-height:calc(100vh - 16px);overflow:auto}.sbtoggle,.sbpaytog{display:none}.mlayout .mgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:1023px){.sb.closed .sbbody{display:none}.sb.nopay .pc{display:none}}
+@media print{
+  body{background:#fff;color:#000}
+  .no-print{display:none!important}
+  .printonly{display:block}
+  .card{background:#fff;border:1px solid #999;box-shadow:none;color:#000}
+  th{background:#eee;color:#000} td,th{border-color:#bbb;color:#000}
+  .ck,.sp20,.chip{background:#fff!important;color:#000!important;border:1px solid #666!important}
+  h2::after,header.top::after{display:none}
+  .mcard,.mcard.bye{background:#fff;box-shadow:none;color:#000}
+  .kpi .v,h2,h3{color:#000}
+  .wrap{max-width:none;padding:0}
+}
+@media (prefers-reduced-motion:no-preference){.btn,.prow{transition:background .15s,border-color .15s}}
+fieldset.ntset{border:1px solid rgba(217,180,74,.45);border-radius:8px;margin:10px 0;padding:8px 12px}fieldset.ntset legend{padding:0 6px;font-weight:700;color:#f0d98a}div.feekpi{border-left:6px solid}div.feekpi.ok{background:rgba(74,222,128,.14);border-color:#4ade80}div.feekpi.warn{background:rgba(217,180,74,.18);border-color:#d9b44a}div.feekpi.bad{background:rgba(226,106,106,.2);border-color:#e26a6a}div.feebox{margin:10px 0;padding:10px 12px;border-radius:8px;border-left:6px solid;line-height:1.45}div.feebox.ok{background:rgba(74,222,128,.16);border-color:#4ade80}div.feebox.warn{background:rgba(217,180,74,.2);border-color:#d9b44a}div.feebox.bad{background:rgba(226,106,106,.22);border-color:#e26a6a}.fgrid{display:grid;grid-template-columns:1fr;gap:16px;align-items:stretch}.fmid{order:-1}.fcard{background:linear-gradient(180deg,var(--card,#4a2e1c),var(--card2,#3a2315));border:1px solid var(--gold-d,#a8842a);border-radius:14px;padding:14px;text-align:center;color:#f6f1de}.fcard .ftitle{font-weight:800;color:#f0d98a;margin-bottom:6px}.fcard p{margin:0 0 10px;font-size:.95rem;line-height:1.5}@media (min-width:1000px){footer.credits{max-width:1400px!important}.fgrid{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) minmax(0,1fr);align-items:center}.fmid{order:0}.fcard{align-self:stretch;display:flex;flex-direction:column;justify-content:center;align-items:center}}
+footer.credits{text-align:center}button.linkbtn{background:none;border:0;padding:0;font:inherit;color:#f0d98a;text-decoration:underline;cursor:pointer}footer.credits{margin:28px auto 8px;max-width:900px;text-align:center;padding:16px 14px;border-top:3px double #b8892b;color:#f6f1de;font-size:1rem;line-height:1.6}footer.credits .cred-title{font-weight:700;font-size:1.15rem;margin-bottom:6px;color:#f0d98a}footer.credits b{color:#fff}footer.credits .cred-note{margin:10px auto 12px;max-width:60ch;color:#efe6cc}.cred-venmo{text-decoration:none;display:inline-block}.printcred{margin-top:18px;font-size:11px;text-align:center;color:#555}</style></head><body><div class="wrap"><header id="hdr" class="top no-print"></header><div id="app"><noscript><div class="card">Backgammon Determined Swiss Tournament Manager needs JavaScript to run. It runs a 3- or 5-round Determined Swiss tournament for 4 or more players with live pairings, standings and payouts.</div></noscript></div></div><input id="openfile-7k2d" type="file" accept=".json,application/json" style="display:none"><script>
+(function(){
+"use strict";
+/* ---------- Rules data ---------- */
+
+/* ---------- Pure helpers ---------- */
+const ceil2=n=>Math.ceil(n/2);
+const P=pid=>({t:'p',pid}), BYE={t:'bye'}, TBD={t:'tbd'};
+const REF=(k,r,m)=>({t:'ref',k,r,m});
+function orderedPlayers(ps){return ps.slice().sort((a,b)=>(a.seed-b.seed)||(a.id-b.id));}
+function rosterCheck(ps){
+  const issues=[],n=ps.length,seen={};
+  if(n<4)issues.push('Roster has '+n+' player'+(n===1?'':'s')+'; 4 or more players are required.');
+  ps.forEach(p=>{
+    const nm=String(p.name||'').trim().toLowerCase();
+    if(!nm)issues.push('Player #'+p.id+' has no name.');
+    else if(nm==='bye')issues.push('"BYE" is a reserved name (player #'+p.id+').');
+    else if(seen[nm])issues.push('Duplicate name: "'+p.name.trim()+'".');
+    else seen[nm]=1;
+  });
+  return {ok:issues.length===0,issues};
+}
+function pairUp(list){const out=[];for(let i=0;i<list.length;i+=2)out.push([list[i],i+1<list.length?list[i+1]:BYE]);return out;}
+function parseTok(t){if(t==='BYE')return BYE;const m=/^([WL])(\d+)\.(\d+)$/.exec(t);return m?REF(m[1],+m[2],+m[3]):null;}
+function resolve(s,rounds){
+  if(s.t==='p')return {pid:s.pid};
+  if(s.t==='bye')return {bye:true};
+  if(s.t==='tbd')return {wait:true,label:'Waiting for Round 2 to finish'};
+  const label=(s.k==='W'?'Winner':'Loser')+' of R'+s.r+' M'+s.m;
+  const src=rounds[s.r-1]&&rounds[s.r-1][s.m-1];
+  if(!src)return {missing:true,label};
+  if(src.winner==null)return {wait:true,label,from:src.id};
+  if(s.k==='W')return {pid:src.winner};
+  const lo=src.winner===src.a.pid?src.b:src.a;
+  if(lo.pid==null)return {missing:true,label};
+  return {pid:lo.pid};
+}
+function makeMatch(r,m,sa,sb,rounds,winners){
+  const a=resolve(sa,rounds),b=resolve(sb,rounds);
+  const id=r+'-'+m,mt={id,r,m,a,b,winner:null,auto:false,status:'Waiting'};
+  const ent=winners[id];
+  if(a.bye||b.bye){
+    const o=a.bye?b:a;
+    if(o.pid!=null){mt.winner=o.pid;mt.auto=true;mt.status='BYE – Advanced';}
+  }else if(a.pid!=null&&b.pid!=null){
+    if(ent==null)mt.status='Ready';
+    else if(ent===a.pid||ent===b.pid){mt.winner=ent;mt.status='Complete';}
+    else mt.status='Check entry';
+  }else if(ent!=null)mt.status='Check entry';
+  return mt;
+}
+function r2Struct(n){
+  const k=ceil2(n),items=[];
+  for(let j=1;j<=k;j++)items.push({k:'W',j});
+  for(let j=1;j<=(n%2?k-1:k);j++)items.push({k:'L',j});
+  if(items.length%2)items.push({k:'BYE'});
+  const r2=[];
+  for(let x=0;x<items.length;x+=2){
+    const a=items[x],b=items[x+1],bye=a.k==='BYE'||b.k==='BYE';
+    r2.push({i:r2.length+1,a,b,bye,origin:[a,b].filter(s=>s.k!=='BYE').map(s=>s.j),type:bye?'BYE':(a.k===b.k?a.k+b.k:'WL')});
+  }
+  return r2;
+}
+function r3Plan(n){
+  const k=ceil2(n),odd=n%2===1,r2=r2Struct(n),problems=[];
+  const E={WW:[2,1],LL:[1,0],WL:[1.5,0.5],BYE:[1]};
+  const slots=[];
+  r2.forEach(m=>{
+    slots.push({tok:'W2.'+m.i,kind:'W',i:m.i,e:E[m.type][0],origin:m.origin});
+    if(!m.bye)slots.push({tok:'L2.'+m.i,kind:'L',i:m.i,e:E[m.type][1],origin:m.origin});
+  });
+  let pairs=[];
+  if(n===4)pairs=[['W2.1','L2.2'],['L2.1','W2.2']];
+  else if(n===5)pairs=[['L2.1','W2.2'],['L2.2','W2.3'],['W2.1','BYE']];
+  else if(n===6)pairs=[['W2.1','W2.2'],['L2.1','W2.3'],['L2.2','L2.3']];
+  else{
+    const list=slots.slice().sort((a,b)=>(b.e-a.e)||(a.i-b.i)||((a.kind==='W'?0:1)-(b.kind==='W'?0:1)));
+    let byeSlot=null;
+    if(odd){
+      const risky=s=>(s.kind==='W'&&r2[s.i-1].bye)||s.origin.indexOf(k)>=0;
+      let idx=list.length-1;
+      for(let x=list.length-1;x>=0;x--){if(!risky(list[x])){idx=x;break;}}
+      byeSlot=list.splice(idx,1)[0];
+    }
+    while(list.length){
+      const A=list.shift();
+      let j=list.findIndex(s=>s.i!==A.i&&!s.origin.some(o=>A.origin.indexOf(o)>=0));
+      if(j<0)j=list.findIndex(s=>s.i!==A.i);
+      if(j<0)j=0;
+      const B=list.splice(j,1)[0];
+      pairs.push([A.tok,B.tok]);
+    }
+    if(byeSlot)pairs.push([byeSlot.tok,'BYE']);
+  }
+  const used={},to={},r1={};
+  pairs.forEach((pr,x)=>pr.forEach(t=>{if(t!=='BYE'){used[t]=(used[t]||0)+1;to[t]=x+1;}}));
+  slots.forEach(s=>{if(used[s.tok]!==1)problems.push('Round 3 slot '+s.tok+' is used '+(used[s.tok]||0)+' times (expected once).');});
+  const nb=pairs.filter(p=>p.indexOf('BYE')>=0).length;
+  if(nb!==(odd?1:0))problems.push('Round 3 has '+nb+' BYE match(es); expected '+(odd?1:0)+'.');
+  if(pairs.length!==k)problems.push('Round 3 has '+pairs.length+' matches; expected '+k+'.');
+  r2.forEach(m=>[m.a,m.b].forEach(it=>{if(it.k!=='BYE'){(r1[it.j]=r1[it.j]||{})[it.k]=m.i;}}));
+  return {k,odd,r2,slots,pairs,to,r1,problems};
+}
+/* Rounds 4+ use the same slot method as Round 3: every match gives a winner slot and a loser slot with an expected-wins score. */
+function nextSlots(r,pairs,byTok){
+  const out=[];
+  pairs.forEach((pr,x)=>{
+    const a=pr[0]==='BYE'?null:byTok[pr[0]],b=pr[1]==='BYE'?null:byTok[pr[1]],i=x+1;
+    if(!a||!b){const A=a||b;if(!A)return;out.push({tok:'W'+r+'.'+i,kind:'W',i,e:A.e+1,origin:A.origin,risk:true,bye:true});return;}
+    const avg=(a.e+b.e)/2,origin=a.origin.concat(b.origin.filter(o=>a.origin.indexOf(o)<0)),risk=!!(a.risk||b.risk);
+    out.push({tok:'W'+r+'.'+i,kind:'W',i,e:avg+1,origin,risk,bye:false});
+    out.push({tok:'L'+r+'.'+i,kind:'L',i,e:avg,origin,risk,bye:false});
+  });
+  return out;
+}
+function planRound(slots,odd){
+  const list=slots.slice().sort((a,b)=>(b.e-a.e)||(a.i-b.i)||((a.kind==='W'?0:1)-(b.kind==='W'?0:1)));
+  let byeSlot=null;
+  if(odd){
+    let idx=list.length-1;for(let x=list.length-1;x>=0;x--){if(!list[x].risk){idx=x;break;}}byeSlot=list.splice(idx,1)[0];
+  }
+  const pairs=[];
+  const ov=(A,B)=>{let c=0;for(const o of B.origin)if(A.origin.indexOf(o)>=0)c++;return c;};
+  while(list.length){
+    const A=list.shift();
+    let j=-1;
+    j=list.findIndex(s=>s.i!==A.i&&ov(A,s)===0);
+    if(j<0){let best=Infinity;list.forEach((s,x)=>{if(s.i!==A.i){const c=ov(A,s);if(c<best){best=c;j=x;}}});}
+    if(j<0)j=0;
+    const B=list.splice(j,1)[0];
+    pairs.push([A.tok,B.tok]);
+  }
+  if(byeSlot)pairs.push([byeSlot.tok,'BYE']);
+  return pairs;
+}
+const PLAN_CACHE={};
+function planAll(n,R){
+  const ck=n+'|'+R;if(PLAN_CACHE[ck])return PLAN_CACHE[ck];
+  const pl=planAllRaw(n,R);PLAN_CACHE[ck]=pl;return pl;
+}
+function planAllRaw(n,R){
+  const pl=r3Plan(n),k=pl.k;
+  pl.byRound={3:pl.pairs};
+  if(R>3){
+    let byTok={};
+    pl.slots.forEach(s=>{byTok[s.tok]=Object.assign({risk:(s.kind==='W'&&pl.r2[s.i-1].bye)||(pl.odd&&s.origin.indexOf(k)>=0)},s);});
+    let prev=nextSlots(3,pl.pairs,byTok);
+    for(let r=4;r<=R;r++){
+      const pairs=planRound(prev,pl.odd);
+      pl.byRound[r]=pairs;
+      pairs.forEach((pr,x)=>pr.forEach(t=>{if(t!=='BYE')pl.to[t]=x+1;}));
+      const used={};pairs.forEach(pr=>pr.forEach(t=>{if(t!=='BYE')used[t]=(used[t]||0)+1;}));
+      prev.forEach(sl=>{if(used[sl.tok]!==1)pl.problems.push('Round '+r+' slot '+sl.tok+' is used '+(used[sl.tok]||0)+' times (expected once).');});
+      if(pairs.length!==pl.k)pl.problems.push('Round '+r+' has '+pairs.length+' matches; expected '+pl.k+'.');
+      const bt={};prev.forEach(sl=>bt[sl.tok]=sl);
+      prev=nextSlots(r,pairs,bt);
+    }
+  }
+  return pl;
+}
+function r3r(pl,tok){const x=pl.to[tok];if(!x)return '—';const rr=(+/^[WL](\d+)/.exec(tok)[1])+1;const pr=(pl.byRound&&pl.byRound[rr]||pl.pairs)[x-1];return 'R'+rr+' M'+x+(pr&&pr.indexOf('BYE')>=0?' (BYE)':'');}
+function nextTxt(pl,i){return i?'R2 M'+i+' / '+r3r(pl,'W2.'+i)+' if win, '+r3r(pl,'L2.'+i)+' if lose':'—';}
+function pathCard(D,pid){
+  const pl=D.t.plan,R=D.t.rounds,rc=D.rec[pid];
+  const line=(a,b)=>`<div class='leader'><span>${a}</span><span class='note'>${b}</span></div>`;
+  const rs=m=>m.winner==null?'pending':(m.winner===pid?'won':'lost');
+  const other=m=>esc(sideName(D,m.a.pid===pid?m.b:m.a));
+  let h=`<div class='card' style='margin-top:16px'><h3>${esc(nameOf(D,pid))} <span class='note num'>${rc.w}–${rc.l}</span></h3>`;
+  const m1=R[0].find(m=>m.a.pid===pid||m.b.pid===pid);
+  if(!m1)return h+`<p class='note'>Not in the bracket.</p></div>`;
+  const r=pl.r1[m1.m]||{};
+  h+=line(`<b>Round 1 · M${m1.m}</b> vs ${other(m1)}`,rs(m1));
+  h+=`<p class='note'>If they win → ${r.W?'R2 M'+r.W:'none'} · if they lose → ${r.L?'R2 M'+r.L:'none (BYE)'}</p>`;
+  if(m1.winner==null){
+    const ro=s=>r[s]?'R2 M'+r[s]+' (then '+r3r(pl,'W2.'+r[s])+' if win, '+r3r(pl,'L2.'+r[s])+' if lose)':'none';
+    return h+line('<b>Round 2</b>','after Round 1')+`<p class='note'>Win R1 → ${ro('W')} · lose R1 → ${ro('L')}</p></div>`;
+  }
+  const i=r[m1.winner===pid?'W':'L'],m2=R[1][i-1];
+  h+=line(`<b>Round 2 · M${i}</b> vs ${other(m2)}`,rs(m2));
+  h+=`<p class='note'>If they win → ${r3r(pl,'W2.'+i)} · if they lose → ${r3r(pl,'L2.'+i)}</p>`;
+  let cur=m2;
+  for(let rr=3;rr<=R.length;rr++){
+    if(cur.winner==null)return h+line('<b>Round '+rr+'</b>','after Round '+(rr-1))+'</div>';
+    const x=pl.to[(cur.winner===pid?'W':'L')+(rr-1)+'.'+cur.m],m=R[rr-1][x-1];
+    if(!m)return h+'</div>';
+    h+=line(`<b>Round ${rr} · M${x}</b> vs ${other(m)}`,rs(m));
+    if(rr<R.length)h+=`<p class='note'>If they win → ${r3r(pl,'W'+rr+'.'+x)} · if they lose → ${r3r(pl,'L'+rr+'.'+x)}</p>`;
+    cur=m;
+  }
+  return h+'</div>';
+}
+function pathsHtml(D){
+  const pl=D.t.plan;if(!pl)return '';
+  const R=D.t.rounds,nm=s=>esc(sideName(D,s));
+  if(!D.byId[ui.pathPid]&&S.players.length)ui.pathPid=S.players[0].id;
+  let h=`<div class='printonly'><h2>${esc(S.name)} — Paths</h2></div>`;
+  h+=`<div class='card' style='margin-top:16px'><div class='row' style='justify-content:space-between'><h3>Where winners and losers go</h3><button class='btn sm gold no-print' data-act='printpaths'>🖨 Print paths</button></div><div class='tablewrap'><table><thead><tr><th>Match</th><th>Players</th><th>Winner →</th><th>Loser →</th></tr></thead><tbody>`;
+  R[0].forEach(m=>{const r=pl.r1[m.m]||{};h+=`<tr><td><b>R1 M${m.m}</b></td><td>${nm(m.a)} v ${nm(m.b)}</td><td>${nextTxt(pl,r.W)}</td><td>${nextTxt(pl,r.L)}</td></tr>`;});
+  for(let rr=2;rr<R.length;rr++)R[rr-1].forEach(m=>{h+=`<tr><td><b>R${rr} M${m.m}</b></td><td>${nm(m.a)} v ${nm(m.b)}</td><td>${r3r(pl,'W'+rr+'.'+m.m)}</td><td>${r3r(pl,'L'+rr+'.'+m.m)}</td></tr>`;});
+  h+=`</tbody></table></div></div>`;
+  h+=`<div class='card no-print' style='margin-top:16px'><label class='f' for='path-pl-7q2m'>Player path card</label><select id='path-pl-7q2m'>${S.players.map(p=>`<option value='${p.id}'${p.id===ui.pathPid?' selected':''}>${esc(p.name)}</option>`).join('')}</select></div>`;
+  if(ui.pathPid!=null)h+=pathCard(D,ui.pathPid);
+  h+=`<div class='card' style='margin-top:16px'><h3>How Rounds 3${R.length>3?' to '+R.length:''} are built</h3><p class='note'>Each round pairs the strongest slots first (players on the best expected record), then the next group, and so on down to the weakest. A match between a winner and a loser is a bridge: its winner and loser slots float between the groups (for example expected 1.5 and 0.5 wins). Pairings are built from the bracket structure alone, with no spreadsheet templates, as soon as the roster is set, and work for any number of players (4 or more).</p></div>`;
+  return h;
+}
+function buildTournament(players,winners,R){
+  R=R===5?5:3;
+  const ord=orderedPlayers(players),n=ord.length,k=ceil2(n);
+  const rounds=[];for(let q=0;q<R;q++)rounds.push([]);const notes=[];
+  const add=(ri,specs)=>specs.forEach((sp,i)=>rounds[ri].push(makeMatch(ri+1,i+1,sp[0],sp[1],rounds,winners)));
+  const s1=[];for(let i=0;i<n;i+=2)s1.push([P(ord[i].id),i+1<n?P(ord[i+1].id):BYE]);
+  add(0,s1);
+  const wl=[],ll=[],m=n%2?k-1:k;
+  for(let i=1;i<=k;i++)wl.push(REF('W',1,i));
+  for(let i=1;i<=m;i++)ll.push(REF('L',1,i));
+  add(1,pairUp(wl.concat(ll)));
+  const plan=planAll(n,R);
+  for(let r=3;r<=R;r++)add(r-1,plan.byRound[r].map(pr=>pr.map(parseTok)));
+  const warnings=plan.problems.slice();
+  const hadBye=new Set(),met=new Set();
+  const seeRound=ri=>rounds[ri].forEach(x=>{if(x.a.bye&&x.b.pid!=null)hadBye.add(x.b.pid);if(x.b.bye&&x.a.pid!=null)hadBye.add(x.a.pid);if(x.a.pid!=null&&x.b.pid!=null){met.add(x.a.pid+'|'+x.b.pid);met.add(x.b.pid+'|'+x.a.pid);}});
+  seeRound(0);seeRound(1);
+  for(let ri=2;ri<R;ri++){
+    rounds[ri].forEach(x=>{
+      if((x.a.bye&&hadBye.has(x.b.pid))||(x.b.bye&&hadBye.has(x.a.pid)))warnings.push('Round '+(ri+1)+' BYE (match '+x.id+') went to a player who already had a BYE.');
+      if(x.a.pid!=null&&x.b.pid!=null&&met.has(x.a.pid+'|'+x.b.pid))x.rematch=true;
+    });
+    seeRound(ri);
+  }
+  if(R===5&&n<32)notes.push('5 rounds works best with 32 or more players. With '+n+' players some repeat opponents are likely in the later rounds; they are flagged “rematch”.');
+  const matches=[].concat(...rounds);
+  return {rounds,matches,notes,fallback:false,warnings,plan,R};
+}
+function computeRecords(players,t){
+  const rec={};players.forEach(p=>rec[p.id]={w:0,l:0});
+  t.matches.forEach(m=>{
+    if(m.winner==null)return;
+    if(rec[m.winner])rec[m.winner].w++;
+    const lo=m.winner===m.a.pid?m.b:m.a;
+    if(lo.pid!=null&&rec[lo.pid])rec[lo.pid].l++;
+  });
+  return rec;
+}
+function statusOf(check,t){
+  if(!check.ok)return 'Check roster';
+  if(t.matches.some(m=>m.status==='Check entry'))return 'Check winner entries';
+  if(!t.matches.some(m=>m.status==='Complete'))return 'Not Started';
+  if(t.matches.every(m=>m.winner!=null))return 'Complete';
+  return 'In Progress';
+}
+function leadersOf(list,rec){
+  if(!list.length)return [];
+  let mw=-1;list.forEach(p=>{mw=Math.max(mw,rec[p.id].w);});
+  const top=list.filter(p=>rec[p.id].w===mw);
+  let ml=Infinity;top.forEach(p=>{ml=Math.min(ml,rec[p.id].l);});
+  return top.filter(p=>rec[p.id].l===ml).map(p=>p.id);
+}
+function winFrac(R){return R===5?0.25:R===3?0.5:1.5/R;}
+function computePayouts(players,rec,status,entry,spEntry,anyResult,R){
+  R=R||3;const n=players.length,win=entry*winFrac(R),pool=n*entry,totalMatches=R*ceil2(n);
+  const bonusPool=Math.max(0,pool-totalMatches*win);
+  const complete=status==='Complete';
+  const lead=anyResult?leadersOf(players,rec):[];
+  const bonusShare=lead.length?Math.trunc(bonusPool/lead.length):0;
+  const spPlayers=players.filter(p=>p.sp20);
+  const spPool=spPlayers.length*spEntry;
+  const spLead=anyResult?leadersOf(spPlayers,rec):[];
+  const spShare=spLead.length?Math.trunc(spPool/spLead.length):0;
+  const per={};
+  let total=0,winsTotal=0;
+  players.forEach(p=>{
+    const mw=rec[p.id].w*win;
+    const bonus=complete&&lead.includes(p.id)?bonusShare:0;
+    const sp=complete&&spLead.includes(p.id)?spShare:0;
+    per[p.id]={win:mw,bonus,sp,total:mw+bonus+sp,projBonus:lead.includes(p.id)?bonusShare:0,projSp:spLead.includes(p.id)?spShare:0};
+    total+=per[p.id].total;winsTotal+=mw;
+  });
+  const bonusRem=lead.length?bonusPool-bonusShare*lead.length:0;
+  const spRem=spLead.length?spPool-spShare*spLead.length:0;
+  return {per,total,win,pool,totalMatches,bonusPool,spPool,lead,spLead,bonusShare,spShare,complete,remainder:bonusRem+spRem,winsTotal,
+    verified:complete&&Math.abs(total+bonusRem+spRem-(pool+spPool))<0.005};
+}
+function cleanWinners(players,winners,R){
+  const w=Object.assign({},winners),removed=[];
+  for(let i=0;i<R+4;i++){
+    const t=buildTournament(players,w,R);
+    const bad=t.matches.filter(m=>m.status==='Check entry'&&w[m.id]!=null).map(m=>m.id);
+    if(!bad.length)break;
+    bad.forEach(id=>{delete w[id];removed.push(id);});
+  }
+  return {winners:w,removed};
+}
+/* ---------- State ---------- */
+const nowIso=()=>new Date().toISOString();
+const newId=()=>'t'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+function dateLabel(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function mkT(o){const now=nowIso();return {id:o.id||newId(),name:o.name||'Tournament',created:o.created||now,updated:o.updated||o.created||now,entry:o.entry,sp20Entry:o.sp20Entry,clubFee:(Number.isFinite(+o.clubFee)&&+o.clubFee>=0)?+o.clubFee:0,feesSubmitted:!!o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt||null,feesSubmittedAmt:Number.isFinite(+o.feesSubmittedAmt)?+o.feesSubmittedAmt:0,players:o.players||[],winners:o.winners||{},paid:o.paid||{},nextId:o.nextId||1,seedsRandomized:!!o.seedsRandomized,numRounds:o.numRounds===5?5:3,dirty:!!o.dirty,savedAt:o.savedAt||null};}
+const LIB=[mkT({name:'New tournament',entry:40,sp20Entry:20,players:[],winners:{},paid:{},nextId:1})];
+LIB[0].placeholder=true;
+function dropPlaceholder(){const i=LIB.findIndex(x=>x.placeholder);if(i>=0)LIB.splice(i,1);ui.welcome=false;}
+let S=LIB[0];
+const ui={welcome:true,tab:'dashboard',mRound:'auto',mFilter:'all',confirm:null,paste:'',newName:'',banner:true,dirty:false,msg:'',D:null,modal:null,hl:null,sbPay:true,sbOpen:false};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=x=>{const v=Math.round(x*100)/100;return '$'+(Number.isInteger(v)?v.toLocaleString('en-US'):v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}));};
+const playBegun=()=>Object.keys(S.winners).length>0;
+function rnd(){try{const c=window.crypto||window.msCrypto;if(c&&c.getRandomValues){const a=new Uint32Array(2);c.getRandomValues(a);return (a[0]*2097152+(a[1]>>>11))/9007199254740992;}}catch(e){}return Math.random();}
+function doRandomize(keep){
+  const old=ui.seedToast;
+  const prev=keep&&old?old.prev:S.players.map(p=>({id:p.id,seed:p.seed}));
+  const prevFlag=keep&&old?old.prevFlag:!!S.seedsRandomized;
+  commit(()=>{S.players.forEach(p=>{p.seed=rnd();});S.players.sort((a,b)=>a.seed-b.seed||a.id-b.id);S.seedsRandomized=true;ui.seedToast={prev,prevFlag};});
+}
+function randomizeSeeds(){
+  if(playBegun()){flash('Clear all winners first to re-randomize');render();return;}
+  if(S.seedsRandomized)askConfirm('Seeds were already rolled. Roll again and replace the current seeds?','Roll seeds',()=>doRandomize(false));
+  else doRandomize(false);
+}
+function undoSeeds(){
+  const t=ui.seedToast;if(!t||playBegun())return;
+  commit(()=>{const m={};t.prev.forEach(x=>{m[x.id]=x.seed;});S.players.forEach(p=>{if(m[p.id]!==undefined)p.seed=m[p.id];});S.players.sort((a,b)=>a.seed-b.seed||a.id-b.id);S.seedsRandomized=t.prevFlag;ui.seedToast=null;});
+}
+function derive(){
+  const check=rosterCheck(S.players);
+  const ok=check.ok;
+  const R=S.numRounds===5?5:3;
+  const t=ok?buildTournament(S.players,S.winners,R):{rounds:Array.from({length:R},()=>[]),matches:[],notes:[],fallback:false,R};
+  const rec=computeRecords(S.players,t);
+  const status=statusOf(check,t);
+  const anyResult=t.matches.some(m=>m.status==='Complete');
+  const pay=computePayouts(S.players,rec,status,S.entry,S.sp20Entry,anyResult,R);
+  const byId={};S.players.forEach(p=>byId[p.id]=p);
+  const mById={};t.matches.forEach(m=>mById[m.id]=m);
+  const standings=S.players.slice().sort((a,b)=>(rec[b.id].w-rec[a.id].w)||(rec[a.id].l-rec[b.id].l)||String(a.name).localeCompare(String(b.name),undefined,{sensitivity:'base'}));
+  const rank={};
+  standings.forEach(p=>{rank[p.id]=1+standings.filter(q=>rec[q.id].w>rec[p.id].w||(rec[q.id].w===rec[p.id].w&&rec[q.id].l<rec[p.id].l)).length;});
+  const integrity=!(status==='Complete')||S.players.every(p=>rec[p.id].w+rec[p.id].l===R);
+  return {check,t,rec,status,pay,byId,mById,standings,rank,anyResult,integrity,n:S.players.length,R};
+}
+function nameOf(D,pid){return D.byId[pid]?D.byId[pid].name:'?';}
+function sideName(D,s){return s.bye?'BYE':s.pid!=null?nameOf(D,s.pid):s.label;}
+/* ---------- UI helpers ---------- */
+function flash(m){ui.msg=m;}
+function commit(fn){fn();S.dirty=true;S.updated=nowIso();render();}
+function askConfirm(msg,okLabel,fn){ui.confirm={msg,okLabel,fn};render();window.scrollTo(0,0);}
+function dlFallback(name,text,type){
+  try{const b=new Blob([text],{type});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000);return true;}
+  catch(e){flash('Download was blocked in this viewer.');render();return false;}
+}
+/* Asks where to save when the browser supports it (Chrome/Edge); otherwise falls back to a normal download. cb(ok,how) */
+async function dl(name,text,type,cb){
+  cb=cb||function(){};
+  const ext=(name.match(/\.[a-z0-9]+$/i)||['.txt'])[0].toLowerCase();
+  if(window.showSaveFilePicker&&window.top===window.self){
+    try{
+      const h=await window.showSaveFilePicker({id:'ds-tournaments',suggestedName:name,types:[{description:ext==='.csv'?'CSV file':'Tournament file',accept:{[type]:[ext]}}]});
+      const w=await h.createWritable();await w.write(text);await w.close();cb(true,'picked');return;
+    }catch(e){if(e&&e.name==='AbortError'){cb(false,'cancel');return;}}
+  }
+  cb(dlFallback(name,text,type),'download');
+}
+const slug=()=>(S.name||'tournament').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'tournament';
+function tData(T){return {app:'determined-swiss-manager',kind:'tournament',version:1,appVersion:APP_VERSION,savedAt:nowIso(),id:T.id,name:T.name,created:T.created,updated:T.updated,entry:T.entry,sp20Entry:T.sp20Entry,clubFee:T.clubFee||0,feesSubmitted:!!T.feesSubmitted,feesSubmittedAt:T.feesSubmittedAt||null,feesSubmittedAmt:T.feesSubmittedAmt||0,players:T.players,winners:T.winners,paid:T.paid,nextId:T.nextId,seedsRandomized:!!T.seedsRandomized,numRounds:T.numRounds===5?5:3};}
+function markSaved(list){const t=nowIso();list.forEach(x=>{x.dirty=false;x.savedAt=t;});}
+function saveT(T){
+  dl(slugOf(T.name)+'-'+ymd(T.created)+'.json',JSON.stringify(tData(T),null,2),'application/json',(ok,how)=>{if(ok){markSaved([T]);flash('“'+T.name+'” was saved'+(how==='picked'?'':' to your downloads')+'. Keep the file somewhere safe — it is the only long-term copy.');render();}});
+}
+function saveAll(){
+  const data={app:'determined-swiss-manager',kind:'library',version:1,appVersion:APP_VERSION,savedAt:nowIso(),tournaments:LIB.map(tData)};
+  dl('determined-swiss-library-'+ymd(nowIso())+'.json',JSON.stringify(data,null,2),'application/json',(ok)=>{if(ok){markSaved(LIB);flash('All '+LIB.length+' tournament'+(LIB.length===1?'':'s')+' saved in one library file.');render();}});
+}
+function loadData(d,S){
+  if(!d||typeof d!=='object'||!Array.isArray(d.players))throw new Error('Not a tournament file.');
+  const ps=d.players.map((p,i)=>({id:Number.isFinite(+p.id)?+p.id:i+1,name:String(p.name==null?'':p.name),sp20:!!p.sp20,director:!!p.director,seed:Number.isFinite(+p.seed)?+p.seed:Math.random()}));
+  S.players=ps;S.name=String(d.name||'Determined Swiss');
+  S.entry=Number.isFinite(+d.entry)&&+d.entry>=0?+d.entry:40;
+  S.sp20Entry=Number.isFinite(+d.sp20Entry)&&+d.sp20Entry>=0?+d.sp20Entry:20;
+  S.clubFee=Number.isFinite(+d.clubFee)&&+d.clubFee>=0?+d.clubFee:0;
+  S.feesSubmitted=!!d.feesSubmitted;S.feesSubmittedAt=typeof d.feesSubmittedAt==='string'?d.feesSubmittedAt:null;S.feesSubmittedAmt=Number.isFinite(+d.feesSubmittedAmt)?+d.feesSubmittedAmt:0;
+  S.winners={};if(d.winners&&typeof d.winners==='object')Object.keys(d.winners).forEach(k=>{if(/^[1-5]-\d+$/.test(k)&&Number.isFinite(+d.winners[k]))S.winners[k]=+d.winners[k];});
+  S.paid=(d.paid&&typeof d.paid==='object')?d.paid:{};
+  S.nextId=Math.max(+d.nextId||0,...ps.map(p=>p.id))+1;
+  S.seedsRandomized=!!d.seedsRandomized;S.numRounds=+d.numRounds===5?5:3;return S;
+}
+function csvStandings(D){
+  const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
+  const rows=[[S.name+' – Standings & payouts'],['Rank','Name','Side Pool','Wins','Losses','Record','Match Wins Payout','Main Prize Bonus','Side Pool','Total']];
+  D.standings.forEach(p=>{const r=D.rec[p.id],y=D.pay.per[p.id];rows.push([D.rank[p.id],p.name,p.sp20?'Yes':'',r.w,r.l,r.w+'-'+r.l,y.win,y.bonus,y.sp,y.total]);});
+  return rows.map(r=>r.map(q).join(',')).join('\r\n');
+}
+/* ---------- Views ---------- */
+function chip(st){const c={'Ready':'ready','Waiting':'waiting','Complete':'done','BYE – Advanced':'byeadv','Check entry':'check'}[st]||'waiting';return '<span class="chip '+c+'">'+esc(st)+'</span>';}
+function stBadge(st){return '<span class="badge st-'+st.toLowerCase().replace(/[^a-z]/g,'')+'">'+esc(st)+'</span>';}
+const moneyS=x=>x<-0.004?'−'+money(-x):money(x);
+const feeDirs=()=>S.players.filter(p=>p.director).length;
+const feeGross=()=>(S.clubFee||0)*S.players.length;
+const feeDeduct=()=>(S.entry||0)*feeDirs();
+const feeTotal=()=>feeGross()-feeDeduct();
+function feeStatus(D){
+  const cf=feeTotal(),sub=S.feesSubmitted,amt=S.feesSubmittedAmt||0;
+  if(!(cf>0))return {cf,cls:'ok',short:'— None due',label:'No Club Fees',sub:cf<0?'Net Club Fees are '+moneyS(cf):'Club Fee is $0',html:cf<0?'<b>Nothing to submit.</b> Net Club Fees are '+moneyS(cf)+' (the club fund is covering the director’s entry beyond the Club Fees collected).':'<b>No Club Fees to submit.</b> The Club Fee is $0.'};
+  if(sub&&Math.abs(amt-cf)>0.005)return {cf,cls:'warn',short:'⚠ Amount changed',label:'Amount changed',sub:money(amt)+' submitted · now '+money(cf),html:'<b>⚠ Amount changed since submitted.</b> '+money(amt)+' was marked as submitted, but the Club Fees are now '+money(cf)+'. Submit the difference of '+money(cf-amt)+' and re-tick the box.'};
+  if(sub)return {cf,cls:'ok',short:'✓ Submitted',label:'Submitted',sub:money(cf)+(S.feesSubmittedAt?' on '+dateLabel(new Date(S.feesSubmittedAt)):''),html:'<b>✓ Submitted to the Treasurer</b> — '+money(cf)+(S.feesSubmittedAt?' on '+esc(dateLabel(new Date(S.feesSubmittedAt))):'')+'.'};
+  if(D.status==='Complete')return {cf,cls:'bad',short:'✗ Not submitted',label:'Not submitted',sub:money(cf)+' owed — tournament complete',html:'<b>✗ Not yet submitted.</b> The tournament is complete — '+money(cf)+' in Club Fees is still owed to the Treasurer.'};
+  return {cf,cls:'warn',short:'⚠ Not submitted',label:'Not submitted',sub:money(cf)+' due to the Treasurer',html:'<b>Not yet submitted.</b> '+money(cf)+' in Club Fees is due to the Treasurer.'};
+}
+function feeKpi(D){const f=feeStatus(D);return '<div class="card kpi feekpi '+f.cls+'"><div class="l">Club Fees to Treasurer</div><div class="v num">'+esc(f.short)+'</div><div class="s">'+esc(f.sub)+'</div></div>';}
+function feeCard(D){const f=feeStatus(D);return '<div class="card feekpi '+f.cls+' no-print" style="margin-bottom:16px"><div class="row" style="justify-content:space-between;align-items:center"><div><div class="l">Club Fees → Treasurer</div><div style="font-size:1.25rem;font-weight:800">'+esc(f.short)+'</div><div class="note">'+esc(f.sub)+'</div></div><label class="f" style="margin:0"><input type="checkbox" data-ch="feesub"'+(S.feesSubmitted?' checked':'')+(f.cf>0?'':' disabled')+'> Submitted to the Treasurer</label></div></div>';}
+function kpi(l,v,s){return '<div class="card kpi"><div class="l">'+l+'</div><div class="v num">'+v+'</div>'+(s?'<div class="s">'+s+'</div>':'')+'</div>';}
+function chartSvg(D){
+  const rows=D.standings.slice(0,60),rh=30,w=640,h=rows.length*rh+34;
+  const maxPay=Math.max(1,...rows.map(p=>D.pay.per[p.id].total));
+  let s='<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Wins and payouts per player" style="width:100%;height:auto"><text x="120" y="14" fill="#d9b44a" font-size="11">Wins (gold, of '+D.R+')</text><text x="380" y="14" fill="#86efac" font-size="11">Payout (green)</text>';
+  rows.forEach((p,i)=>{
+    const y=i*rh+24,r=D.rec[p.id],pay=D.pay.per[p.id].total;
+    s+='<text x="112" y="'+(y+11)+'" text-anchor="end" fill="#f6f1de" font-size="12">'+esc(p.name.length>14?p.name.slice(0,13)+'…':p.name)+'</text>';
+    s+='<rect x="120" y="'+y+'" width="'+(r.w/D.R*240)+'" height="10" rx="3" fill="#d9b44a"/><text x="'+(126+r.w/D.R*240)+'" y="'+(y+9)+'" fill="#f0d98a" font-size="10">'+r.w+'W</text>';
+    s+='<rect x="120" y="'+(y+12)+'" width="'+(pay/maxPay*240)+'" height="8" rx="3" fill="#4ade80"/><text x="'+(126+pay/maxPay*240)+'" y="'+(y+20)+'" fill="#86efac" font-size="10">'+money(pay)+'</text>';
+  });
+  return s+'</svg>';
+}
+function viewDashboard(D){
+  const p=D.pay,t=D.t;
+  let h='<div class="grid kpis">'+
+   kpi('Players',D.n,'4 or more players')+
+   kpi('Side Pool entries',S.players.filter(x=>x.sp20).length,money(S.sp20Entry)+' each')+
+   kpi('Prize Pool',money(p.pool),D.n+' × '+money(S.entry))+
+   kpi('Side Pool',money(p.spPool),'Side Pool players only')+
+   kpi('Club Fees',moneyS(feeTotal()),D.n+' × '+money(S.clubFee||0)+(feeDirs()?' − '+feeDirs()+' × '+money(S.entry||0)+' (director entry paid by the club)':''))+
+   kpi('Active bracket size',D.check.ok?D.n:'—',D.check.ok?D.R+' rounds · '+ceil2(D.n)+' matches/round':'fix roster first')+
+   kpi('Roster check',D.check.ok?'<span class="okc">✓ OK</span>':'<span class="warn">⚠ Check</span>',D.check.ok?'unique names, valid size':esc(D.check.issues[0]))+
+   feeKpi(D)+
+   kpi('Status',stBadge(D.status),'')+
+   kpi('Total payout',money(p.total),p.complete?'final':'so far (match wins)')+'</div>';
+  const cf=feeTotal(),nd=feeDirs(),sp=S.players.filter(x=>x.sp20).length;
+  const fst=feeStatus(D),fs='<div class="feebox '+fst.cls+'">'+fst.html+'</div>';
+  h+='<div class="card" style="margin-top:16px"><h3>Club Fee report</h3><div class="tablewrap"><table><thead><tr><th>Item</th><th class="r">Per player</th><th class="r">Players</th><th class="r">Total</th></tr></thead><tbody>'+
+   '<tr><td>Prize Pool entries</td><td class="r">'+money(S.entry)+'</td><td class="r">'+D.n+'</td><td class="r">'+money(p.pool)+'</td></tr>'+
+   '<tr><td>Side Pool entries</td><td class="r">'+money(S.sp20Entry)+'</td><td class="r">'+sp+'</td><td class="r">'+money(p.spPool)+'</td></tr>'+
+   '<tr><td>Club Fees</td><td class="r">'+money(S.clubFee||0)+'</td><td class="r">'+D.n+'</td><td class="r">'+money(feeGross())+'</td></tr>'+
+   '<tr><td>Less: director’s entry paid by the club</td><td class="r">'+money(S.entry||0)+'</td><td class="r">'+nd+'</td><td class="r">'+(nd?'−':'')+money(feeDeduct())+'</td></tr>'+
+   '<tr><td><b>Net Club Fees</b></td><td class="r"></td><td class="r"></td><td class="r"><b>'+moneyS(cf)+'</b></td></tr>'+
+   '<tr><td><b>Total collected</b></td><td class="r"></td><td class="r"></td><td class="r"><b>'+moneyS(p.pool+p.spPool+cf)+'</b></td></tr></tbody></table></div>'+(nd?'':'<p class="warn" style="margin-top:8px">⚠ No Director is marked, so nothing is deducted yet. Tick the <b>Director</b> box next to the Director’s name on the <button class="linkbtn" data-act="tab" data-v="players">Players tab</button> to subtract their entry fee.</p>')+'<p class="note">Net Club Fees = Club Fee × number of players − (Entry fee × number of players marked as Director). The club covers the Director’s entry fee out of the Club Fees, so what is left is the net amount for the club. If it is negative, the club fund is covering the difference. They are kept separate from the prize money: they are not added to the Prize Pool or Side Pool and do not change any payouts. Change the fee in Settings below.</p>'+fs+'<label class="f" style="margin-top:8px"><input type="checkbox" id="feesub-4k2m" data-ch="feesub"'+(S.feesSubmitted?' checked':'')+(cf>0?'':' disabled')+'> Club Fees submitted to the Treasurer</label></div>';
+  h+='<div class="grid cols2" style="margin-top:16px">';
+  h+='<div class="card"><h3>Round progress</h3>';
+  t.rounds.forEach((ms,i)=>{const d=ms.filter(m=>m.winner!=null).length,tot=ms.length;
+    h+='<div style="margin:12px 0"><div class="row" style="justify-content:space-between"><b>Round '+(i+1)+'</b><span class="num note">'+d+' / '+tot+' decided</span></div><div class="bar"><i style="width:'+(tot?d/tot*100:0)+'%"></i></div></div>';});
+  if(!D.check.ok)h+='<p class="warn">'+D.check.issues.map(esc).join('<br>')+'</p>';
+  t.notes.forEach(n=>h+='<p class="note">ℹ '+esc(n)+'</p>');
+  (t.warnings||[]).forEach(w=>h+='<p class="warn">⚠ '+esc(w)+'</p>');
+  if(!D.integrity)h+='<p class="warn">⚠ Integrity check: some players do not have exactly '+D.R+' results.</p>';
+  h+='</div>';
+  const ready=t.matches.filter(m=>m.status==='Ready');
+  h+='<div class="card"><h3>Next up — Ready matches</h3>';
+  if(!ready.length)h+='<p class="note">'+(D.status==='Complete'?'All matches are decided. 🏆':'🎲 No matches are ready right now. Enter winners to unlock more.')+'</p>';
+  ready.slice(0,8).forEach(m=>{h+='<div class="leader"><span><b class="mid">'+m.id+'</b> &nbsp;'+esc(sideName(D,m.a))+' <span class="note">v</span> '+esc(sideName(D,m.b))+'</span><button class="btn sm" data-act="gomatch" data-r="'+m.r+'">Enter ›</button></div>';});
+  if(ready.length>8)h+='<p class="note">+ '+(ready.length-8)+' more…</p>';
+  h+='</div>';
+  h+='<div class="card"><h3>Top 5 leaderboard</h3>';
+  D.standings.slice(0,5).forEach(x=>{const r=D.rec[x.id];h+='<div class="leader"><span><b class="num ck">'+D.rank[x.id]+'</b> '+esc(x.name)+(x.sp20?'<span class="sp20">SP</span>':'')+'</span><span class="num">'+r.w+'–'+r.l+' · '+money(p.per[x.id].total)+'</span></div>';});
+  h+='</div>';
+  h+='<div class="card"><h3>Wins &amp; payouts</h3>'+(D.n?chartSvg(D):'<p class="note">No players.</p>')+'</div>';
+  h+='<div class="card"><h3>Settings</h3><div class="grid" style="gap:10px"><div><label class="f" for="set-name-4q1x">Tournament name</label><input type="text" id="set-name-4q1x" data-ch="set" data-k="name" value="'+esc(S.name)+'"></div>'+
+   '<div class="row"><div><label class="f" for="set-entry-8w3z">Prize Pool entry ($)</label><input type="number" min="0" step="1" id="set-entry-8w3z" data-ch="set" data-k="entry" value="'+S.entry+'" style="width:130px"></div>'+
+   '<div><label class="f" for="set-sp20-2m9c">Side Pool entry ($)</label><input type="number" min="0" step="1" id="set-sp20-2m9c" data-ch="set" data-k="sp20Entry" value="'+S.sp20Entry+'" style="width:130px"></div>'+
+   '<div><label class="f" for="set-club-6c1f">Club Fee per player ($)</label><input type="number" min="0" step="0.01" id="set-club-6c1f" data-ch="set" data-k="clubFee" value="'+(S.clubFee||0)+'" style="width:130px"></div>'+
+   '<div><label class="f" for="set-rounds-9r5t">Rounds</label><select id="set-rounds-9r5t" data-ch="set" data-k="numRounds"'+(playBegun()?' disabled':'')+'><option value="3"'+(S.numRounds!==5?' selected':'')+'>3 rounds</option><option value="5"'+(S.numRounds===5?' selected':'')+'>5 rounds</option></select></div></div>'+(playBegun()?'<p class="note">The number of rounds is locked once winners have been entered. Clear all winners to change it.</p>':'')+
+   '<p class="note">Win payout per match win = '+money(S.entry/2)+' (entry ÷ 2). A BYE counts as a win and is paid.</p></div></div>';
+  h+='<div class="card"><h3>Quick actions</h3><div class="row" style="margin-top:10px"><button class="btn gold" data-act="save">💾 Save this tournament</button><button class="btn" data-act="open">📂 Open file</button><button class="btn" data-act="randseeds"'+(playBegun()?' disabled':'')+'>🎲 Roll seeds</button><button class="btn" data-act="gopay">🖨 Payout sheet</button><button class="btn" data-act="csv">⬇ Export CSV</button></div><p class="note" style="margin-top:10px">This page remembers nothing between reloads. Save the file to keep your work.</p>'+(playBegun()?'<p class="note">Clear all winners first to re-randomize</p>':'')+'</div>';
+  return h+'</div>';
+}
+function viewPlayers(D){
+  const lock=playBegun();
+  let h='<div class="card"><h2>Players</h2>';
+  h+=D.check.ok?'<p class="okc">✓ Roster OK — '+D.n+' players.</p>':'<p class="warn">⚠ '+D.check.issues.map(esc).join('<br>⚠ ')+'</p>';
+  if(lock)h+='<p class="note">🔒 Winners have been entered, so adding/removing players, seeds and shuffling are locked. Names and tags can still be edited. Use <i>Rules › Start a new tournament</i> to reset.</p>';
+  h+='<div class="row" style="margin:10px 0"><button class="btn gold" data-act="randseeds"'+(lock?' disabled':'')+'>🎲 Roll seeds</button><button class="btn" data-act="sortseed">↕ Sort by seed</button></div>';
+  if(lock)h+='<p class="warn">Clear all winners first to re-randomize</p>';
+  h+='<div class="tablewrap pl-scroll"><table><thead><tr><th>ID</th><th>Name</th><th>Side Pool</th><th title="Director: the club pays this player’s entry fee out of the Club Fees">Director</th><th>Seed</th><th></th></tr></thead><tbody>';
+  S.players.forEach(p=>{
+    const f=(k)=>'<td><input type="checkbox" aria-label="'+k+' '+esc(p.name)+'" data-ch="pflag" data-p="'+p.id+'" data-f="'+k+'"'+(p[k]?' checked':'')+'></td>';
+    h+='<tr><td class="num">'+p.id+'</td><td><input type="text" style="min-width:150px" aria-label="Name for player '+p.id+'" data-ch="pname" data-p="'+p.id+'" value="'+esc(p.name)+'"></td>'+f('sp20')+f('director')+
+     '<td><input type="number" step="any" style="width:150px" aria-label="Seed for '+esc(p.name)+'" data-ch="pseed" data-p="'+p.id+'" value="'+p.seed+'"'+(lock?' disabled':'')+'></td><td><button class="btn sm danger" data-act="del" data-p="'+p.id+'"'+(lock?' disabled':'')+' aria-label="Delete '+esc(p.name)+'">✕</button></td></tr>';
+  });
+  h+='</tbody></table></div><p class="note">Players marked Director have their entry paid by the club: the Net Club Fees are reduced by one entry fee per Director (Net Club Fees = Club Fee × players − Entry fee × directors); the tag has no other effect (no payout effect). Pairing order = seed ascending, ties by ID.</p></div>';
+  h+='<div class="grid cols2" style="margin-top:16px"><div class="card"><h3>Add a player</h3><div class="row" style="margin-top:8px"><input type="text" id="add-name-5h8e" placeholder="Player name" value="'+esc(ui.newName)+'" style="flex:1;min-width:160px"'+(lock?' disabled':'')+'><button class="btn gold" data-act="add"'+(lock?' disabled':'')+'>＋ Add</button></div></div>';
+  h+='<div class="card"><h3>Paste names</h3><label class="f" for="paste-box-1r6t">One name per line (4 or more players needed)</label><textarea id="paste-box-1r6t" placeholder="Alice&#10;Bob&#10;Carol"'+(lock?' disabled':'')+'>'+esc(ui.paste)+'</textarea><div style="margin-top:8px"><button class="btn gold" data-act="paste"'+(lock?' disabled':'')+'>＋ Add all names</button></div></div></div>';
+  return h;
+}
+function sideHtml(D,m,side){
+  const s=m[side];
+  if(s.bye)return '<div class="prow bye"><span><i class="ck av by">B</i><b>BYE</b> <span class="note">– advances to the next point</span></span><span class="tag blue">auto-win</span></div>';
+  if(s.pid!=null){
+    const p=D.byId[s.pid],r=D.rec[s.pid],isW=m.winner===s.pid;
+    const click=!m.auto&&m.a.pid!=null&&m.b.pid!=null;
+    const inner='<span><i class="ck av">'+esc(String(p.name).trim().charAt(0).toUpperCase())+'</i>'+(isW?'🏆 ':'')+esc(p.name)+(p.sp20?'<span class="sp20">SP</span>':'')+'</span><span class="rec num">'+r.w+'–'+r.l+'</span>';
+    if(click)return '<button class="prow'+(isW?' win':'')+'" data-act="win" data-m="'+m.id+'" data-p="'+s.pid+'" title="'+(isW?'Click to clear winner':'Set as winner')+'">'+inner+'</button>';
+    return '<div class="prow'+(isW?' win':'')+'">'+inner+'</div>';
+  }
+  return '<div class="prow wait">'+esc(s.label)+'</div>';
+}
+function matchCard(D,m){
+  const isBye=m.auto||m.a.bye||m.b.bye;
+  let waits=[];
+  ['a','b'].forEach(k=>{const s=m[k];if(s.wait){const src=s.from&&D.mById[s.from];waits.push(src?'<b>'+src.id.replace('-',' M').replace(/^/,'R')+'</b> ('+esc(sideName(D,src.a))+' v '+esc(sideName(D,src.b))+')':esc(s.label));}});
+  let h='<div class="mcard'+(isBye?' bye':'')+(ui.hl!=null&&(m.a.pid===ui.hl||m.b.pid===ui.hl)?' hl':'')+'"><div class="hd"><span class="mid">Match '+m.id+'</span>'+'<span>'+(m.rematch?'<span class="chip check">rematch</span> ':'')+chip(m.status)+'</span></div>'+sideHtml(D,m,'a')+'<div class="vs">v</div>'+sideHtml(D,m,'b');
+  if(m.status==='Waiting'&&waits.length)h+='<div class="note">Waiting on: '+waits.join(' · ')+'</div>';
+  if(m.status==='Check entry')h+='<div class="warn" style="font-size:.85rem">A winner entry no longer matches this match. <button class="btn sm" data-act="clearw" data-m="'+m.id+'">Clear</button></div>';
+  if(m.status==='Complete')h+='<div style="text-align:right"><button class="btn sm" data-act="clearw" data-m="'+m.id+'">Clear</button></div>';
+  return h+'</div>';
+}
+function curRound(D){for(let i=0;i<D.R;i++){if(D.t.rounds[i].some(m=>m.winner==null))return String(i+1);}return String(D.R);}
+function sidebar(D){const p=D.pay,ms=D.t.matches,done=ms.filter(m=>m.winner!=null).length,tot=ms.length,top=D.anyResult?p.lead:[],bye={};ms.forEach(m=>{if(m.winner!=null&&(m.a.bye||m.b.bye))bye[m.winner]=true;});const nm=id=>`<button class='pn' data-act='hl' data-p='${id}'>${esc(nameOf(D,id))}</button>`;const names=ids=>ids.length?ids.map(nm).join(', '):`<span class='note'>—</span>`;const spN=S.players.filter(x=>x.sp20).length;const rows=D.standings.map(x=>{const r=D.rec[x.id];return `<tr class='${top.includes(x.id)?'top':''}${r.w+r.l===0?' dim':''}${ui.hl===x.id?' me':''}'><td class='num'><span class='ck'>${D.rank[x.id]}</span></td><td>${nm(x.id)}${x.sp20?`<span class='sp20'>SP</span>`:''}${bye[x.id]?`<span class='tag blue'>BYE</span>`:''}</td><td class='num'>${r.w}-${r.l}</td><td class='r pc num'>${money(p.per[x.id].total)}</td></tr>`;}).join('');return `<aside class='sb card no-print${ui.sbOpen?'':' closed'}${ui.sbPay?'':' nopay'}' aria-label='Live standings'><div class='row' style='justify-content:space-between'><h3>Live Standings</h3><button class='btn sm sbtoggle' data-act='sbopen' aria-expanded='${ui.sbOpen?'true':'false'}'>${ui.sbOpen?'Hide':'Show'}</button></div><div class='row' style='margin:6px 0'><span class='note'><i class='dot' style='background:var(--ok)'></i> Updated just now</span>${stBadge(D.status)}<span class='num note'>${done} of ${tot}</span></div><div class='sbbody'><div class='row' style='justify-content:space-between;margin-bottom:6px'><span class='note'>Tap a name to highlight their matches.</span><button class='btn sm sbpaytog' data-act='sbpay'>${ui.sbPay?'Hide':'Show'} payout</button></div><div class='tablewrap'><table><thead><tr><th>Rank</th><th>Name</th><th>W-L</th><th class='r pc'>Payout</th></tr></thead><tbody>${rows}</tbody></table></div><div class='sbcard'><b>Side Pool</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Entries: ${spN} · Pool: ${money(p.spPool)}</div><div>Leader(s): ${names(p.spLead)}</div><div class='note num'>Projected share each: ${money(p.spShare)}</div></div><div class='sbcard'><b>Main Prize</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Bonus pool: ${money(p.bonusPool)}</div><div>Top record: ${names(p.lead)}</div><div class='note num'>Predicted bonus/person: ${money(p.bonusShare)}</div></div><div class='sbcard'><div><b>Remaining matches:</b> <span class='num'>${tot-done}</span></div><div class='note num'>Total payout ${money(p.total)} vs pool ${money(p.pool+p.spPool)}${p.verified?` <span class='okc'><b>✓ Verified</b></span>`:''}</div></div></div></aside>`;}
+function viewMatches(D){
+  if(!D.check.ok)return '<div class="card"><h2>Matches</h2><p class="warn">Fix the roster first: '+D.check.issues.map(esc).join(' ')+'</p></div>';
+  const sel=ui.mRound||'auto',cur=+curRound(D),showR=r=>sel==='all'||(sel==='auto'?(r===cur||r===cur+1):sel===String(r));
+  let h='<div class="mlayout"><div class="mmain"><div class="card'+(sel==='paths'?' no-print':'')+'"><h2>Matches</h2><div class="sub" role="tablist">';
+  ['auto'].concat(Array.from({length:D.R},(_,i)=>String(i+1)),['all','paths']).forEach(r=>h+='<button class="'+(sel===r?'on':'')+'" data-act="mr" data-v="'+r+'">'+(r==='auto'?'Current + Next':r==='all'?'All':r==='paths'?'Paths':'Round '+r)+'</button>');
+  h+='</div><div class="sub">';
+  ['all','Ready','Waiting','Complete'].forEach(f=>h+='<button class="'+(ui.mFilter===f?'on':'')+'" data-act="mf" data-v="'+f+'">'+(f==='all'?'All statuses':f)+'</button>');
+  h+='</div><div class="row" style="margin:6px 0"><label class="f" for="msearch-3k9p" style="margin:0">Search player</label><input type="text" id="msearch-3k9p" placeholder="Filter by player name" value="'+esc(ui.mSearch||'')+'" style="max-width:280px"></div><p class="note">Click a player to set the winner; click again (or Clear) to undo. “Complete” includes BYE auto-advances.</p>';
+  D.t.notes.forEach(n=>h+='<p class="note">ℹ '+esc(n)+'</p>');
+  (D.t.warnings||[]).forEach(w=>h+='<p class="warn">⚠ '+esc(w)+'</p>');
+  h+='</div>';
+  Array.from({length:D.R},(_,i)=>i+1).forEach(r=>{
+    if(!showR(r))return;
+    const q=(ui.mSearch||'').trim().toLowerCase();let ms=D.t.rounds[r-1].filter(m=>ui.mFilter==='all'||(ui.mFilter==='Complete'?m.winner!=null:m.status===ui.mFilter)).filter(m=>!q||sideName(D,m.a).toLowerCase().includes(q)||sideName(D,m.b).toLowerCase().includes(q));
+    h+='<h3 style="margin:18px 0 8px">Round '+r+(sel==='auto'?(r===cur?' <span class="note">— in play</span>':' <span class="note">— up next</span>'):'')+'</h3>';
+    h+=ms.length?'<div class="mgrid">'+ms.map(m=>matchCard(D,m)).join('')+'</div>':'<p class="note">No matches match this filter.</p>';
+  });
+  if(sel==='paths')h+=pathsHtml(D);
+  return h+'</div>'+sidebar(D)+'</div>';
+}
+function viewStandings(D){
+  const p=D.pay;
+  let h='<div class="card"><div class="row" style="justify-content:space-between"><h2>Standings</h2><button class="btn gold" data-act="csv">⬇ Export CSV</button></div>';
+  h+='<p class="note">Sorted by wins (desc), losses (asc), then name. '+(p.complete?'Final.':'Bonus and Side Pool amounts are paid only when the tournament is Complete; projected values are shown in gold.')+'</p><div class="tablewrap"><table><thead><tr><th>Rank</th><th>Name</th><th class="r">W</th><th class="r">L</th><th>Record</th><th class="r">Match Wins</th><th class="r">Main Bonus</th><th class="r">Side Pool</th><th class="r">Total</th></tr></thead><tbody>';
+  D.standings.forEach(x=>{
+    const r=D.rec[x.id],y=p.per[x.id],top=D.anyResult&&p.lead.includes(x.id);
+    const proj=(v,real)=>real?money(real):(v?'<span class="note" style="color:var(--gold)">proj '+money(v)+'</span>':money(0));
+    h+='<tr'+(top?' class="top"':'')+'><td class="num"><span class="ck">'+D.rank[x.id]+'</span></td><td>'+esc(x.name)+(x.sp20?'<span class="sp20">SP</span>':'')+'</td><td class="r">'+r.w+'</td><td class="r">'+r.l+'</td><td>'+r.w+'-'+r.l+'</td><td class="r">'+money(y.win)+'</td><td class="r">'+proj(y.projBonus,y.bonus)+'</td><td class="r">'+(x.sp20?proj(y.projSp,y.sp):'—')+'</td><td class="r"><b>'+money(y.total)+'</b></td></tr>';
+  });
+  return h+'</tbody></table></div></div>';
+}
+function viewPayouts(D){
+  const p=D.pay,rows=D.standings.filter(x=>p.per[x.id].total>0).sort((a,b)=>p.per[b.id].total-p.per[a.id].total||a.name.localeCompare(b.name));
+  const paidSum=rows.filter(x=>S.paid[x.id]).reduce((s,x)=>s+p.per[x.id].total,0);
+  let h=feeCard(D)+'<div class="card"><div class="row no-print" style="justify-content:space-between"><h2>Payouts</h2><div class="row"><button class="btn gold" data-act="print">🖨 Print payout sheet</button><button class="btn" data-act="csv">⬇ Export CSV</button></div></div>';
+  h+='<div class="printonly"><h2>'+esc(S.name)+' — Cash-out sheet</h2><p>'+new Date().toLocaleDateString()+'</p></div>';
+  h+='<div class="printonly printcred">Determined Swiss Format Tournament Generator · Format by Steve Reichelt · Built by Michael Mesich</div>';
+  h+='<p class="note no-print">If printing is blocked in this viewer, use Export CSV and print from a spreadsheet.</p>';
+  if(!p.complete)h+='<p class="warn">⚠ Not complete: Main Prize Bonus and Side Pool are $0 until every match has a winner (they appear as projected on Standings). Amounts below are match-win payouts so far.</p>';
+  h+='<div class="tablewrap"><table><thead><tr><th>Player</th><th class="r">Match Wins</th><th class="r">Main Bonus</th><th class="r">Side Pool</th><th class="r">Owed</th><th>Paid ✓</th></tr></thead><tbody>';
+  if(!rows.length)h+='<tr><td colspan="6" class="note">⚪ Nobody is owed money yet.</td></tr>';
+  rows.forEach(x=>{const y=p.per[x.id];h+='<tr><td>'+esc(x.name)+(x.sp20?'<span class="sp20">SP</span>':'')+'</td><td class="r">'+money(y.win)+'</td><td class="r">'+money(y.bonus)+'</td><td class="r">'+money(y.sp)+'</td><td class="r"><b>'+money(y.total)+'</b></td><td><input type="checkbox" aria-label="Paid '+esc(x.name)+'" data-ch="paid" data-p="'+x.id+'"'+(S.paid[x.id]?' checked':'')+'></td></tr>';});
+  h+='</tbody></table></div></div>';
+  h+='<div class="grid kpis" style="margin-top:16px">'+kpi('Total owed',money(p.total),'')+kpi('Marked paid',money(paidSum),'')+kpi('Still to pay',money(p.total-paidSum),'')+kpi('Pool + Side Pool',money(p.pool+p.spPool),money(p.pool)+' + '+money(p.spPool))+'</div>';
+  h+='<div class="card" style="margin-top:16px"><h3>Cash check</h3><p class="num">Total payout '+money(p.total)+' + rounding remainder '+money(p.remainder)+' = '+money(p.total+p.remainder)+' vs pools '+money(p.pool+p.spPool)+'</p>';
+  h+=p.verified?'<p class="okc"><b>✓ Verified</b> — every dollar is accounted for.</p>':'<p class="note">Verification runs when the tournament is Complete. Currently '+money(p.pool+p.spPool-p.total)+' of the pools is not yet paid out.</p>';
+  h+='<p class="note">Bonus pool '+money(p.bonusPool)+' = pool '+money(p.pool)+' − '+p.totalMatches+' matches × '+money(p.win)+(p.lead.length?'; split '+p.lead.length+' way'+(p.lead.length>1?'s':'')+' at '+money(p.bonusShare)+' each (rounded down).':'.')+(p.spLead.length?' Side Pool split '+p.spLead.length+' way(s) at '+money(p.spShare)+' each.':'')+'</p></div>';
+  return h;
+}
+function viewRules(D){
+  return '<div class="card rules"><h2>Rules &amp; Help</h2>'+
+  '<h3 style="margin-top:14px">Format</h3><p>This is a backgammon match tournament played over '+D.R+' rounds (choose 3 or 5 when you create a tournament, or in Settings before play starts): every pairing is one backgammon match, and the winner advances along the bracket. 4 or more players, unique names (“BYE” is reserved). Everyone plays exactly '+D.R+' rounds, with half the players (rounded up) in each round’s matches — an odd player out gets a BYE. Players are ordered by Seed ascending, ties by ID. Seeds are randomized with the <b>🎲 Roll seeds</b> button on the Players tab (also in Dashboard quick actions). Randomized seeds are stored as fixed values, can still be edited by hand, and are included in the saved tournament file. Randomizing is only allowed before any winner is entered.</p>'+
+  '<h3 style="margin-top:14px">Pairings</h3><ul><li><b>Round 1:</b> bracket order, paired 1v2, 3v4… With an odd count the last player gets a BYE (auto-win, no loss).</li>'+
+  '<li><b>Round 2:</b> list the R1 winners W1…Wk (the BYE player is Wk) followed by the R1 losers L1…Lm, then pair that list consecutively; an odd list ends with a BYE. Names appear as soon as the feeder match has a winner, otherwise you see “Winner of R1 M4”.</li>'+
+  '<li><b>Round 3'+(D.R>3?' onward':'')+':</b> computed by one general slot-based method for any number of players (4 or more): every Round 2 match gives a winner slot and a loser slot, slots are ranked by expected wins (2-0, then 1-1 with bridge matches floating between them, then 0-2) and paired greedily so players who met in Round 1 are not paired again. Slots like W2.3 / L2.3 refer to the winner / loser of Round 2 match 3, so matches become Ready as soon as their feeders finish.'+(D.R>3?' Rounds 4 and 5 repeat the same method using the winner and loser slots of the round before. With 5 rounds, fields under about 32 players (and some odd-sized fields up to about 50) may see repeat opponents in the last rounds; these are flagged “rematch”, and the larger the field the less likely it is.':'')+'</li>'+
+  '<li>Tiny fields (4–6 players) use fixed pairings and a rematch may be unavoidable; such a match is flagged “rematch”. With 3 rounds, from 7 players up the method is rematch-free for every set of results. The Round 3 BYE never goes to a slot that could hold a player who already had a BYE. See the <b>Paths</b> sub-tab on Matches for every winner and loser route.</li></ul>'+
+  ''+
+  '<h3 style="margin-top:14px">Payouts</h3><ul><li>Wins = match wins including BYE wins; Losses = real losses only.</li><li>Match Wins Payout = Wins × ('+(D.R===5?'Entry ÷ 4':'Entry ÷ 2')+').</li><li>Bonus Pool = the total entry money, minus what every match pays out (each match pays '+(D.R===5?'Entry ÷ 4':'Entry ÷ 2')+' to its winner, and there are '+D.R+' rounds of matches — half the players, rounded up, in each round). Players with the best record (most wins, then fewest losses) split it, each getting an equal share, rounded down to the whole dollar. Paid only when Complete.</li><li>Side Pool = Side Pool players × Side Pool entry, contested only among Side Pool players the same way. Paid only when Complete.</li><li>Any leftover few dollars from rounding down is shown on the Payouts tab rather than hidden.</li></ul>'+
+  '<h3 style="margin-top:14px">Winner entry</h3><p>Click a player on a Ready match. Click again or press Clear to undo. If a change would invalidate later results, you are warned and those later winners are cleared.</p>'+
+  '<h3 style="margin-top:14px">Managing tournaments</h3><ul><li>You can keep several tournaments open at once. Use the dropdown at the top of the page, or the <b>Tournaments</b> tab, to jump between them. Each one keeps its own players, seeds, results and fees while the page stays open.</li>'+
+  '<li><b>Nothing is stored in your browser.</b> Tournaments live in this page’s memory only. If you close or reload the page, anything you have not saved to a file is gone.</li>'+
+  '<li><b>💾 Save this tournament</b> downloads one file for the open tournament. <b>💾 Save all tournaments</b> downloads one library file with everything.</li>'+
+  '<li><b>📂 Open file</b> accepts either kind of file. A single tournament is added and opened; if the same tournament is already here you choose Replace or Keep both. A library file adds all of its tournaments.</li>'+
+  '<li>An orange dot means a tournament has changes since it was last saved. The red-gold bar at the top reminds you while anything is unsaved.</li>'+
+  '<li><b>Make a copy</b> duplicates the roster, with or without results. <b>Remove</b> only takes a tournament off this page after you confirm; files you saved earlier are not touched.</li>'+
+  '<li>Randomize seeds, matches, standings, payouts, print and CSV always work on the tournament that is open.</li></ul></div>'+
+  '<div class="card" style="margin-top:16px"><h3>Start a new tournament</h3><p class="note">There is no auto-archive and nothing is auto-saved — <b>save the tournament file first</b>.</p><div class="row" style="margin-top:10px"><button class="btn gold" data-act="save">💾 Save this tournament</button><button class="btn danger" data-act="clrwin">Clear all winners</button><button class="btn danger" data-act="clrall">Clear players &amp; winners</button></div></div>'+
+  prizeCharts()+offlineCard()+changelogCard()+'<div class="card" style="margin-top:16px"><h3>About &amp; Credits</h3><p><b>Determined Swiss Format Tournament Generator</b> — '+D.R+' rounds where winners play winners and losers play losers, with floats connecting the pools, so everyone plays every round.</p><p>Digital Implementation by <b>Michael Mesich</b> - Based on a format idea from <b>Steve Reichelt</b></p><p class="note">If you’re a Tournament Director and this tool helped your event, feel free to kick a little something back to Venmo @mmesich — thank you!</p><p><a class="btn gold sm" href="https://venmo.com/u/mmesich" target="_blank" rel="noopener noreferrer">Venmo @mmesich</a></p></div>';
+}
+/* ---------- Render ---------- */
+/* ---------- Version & changelog (update APP_VERSION and add an entry at the TOP of CHANGELOG for every release) ---------- */
+const APP_VERSION='1.1.0';
+const CHANGELOG=[
+ {v:'1.1.0',date:'2026-11-15',notes:[
+  'New: choose a 3-round or 5-round format for each tournament (when you create it, or in Settings before play starts).',
+  '5-round tournaments pay $10 per win on a $40 entry (one quarter of the entry), leaving 37.5% of the money for the bonus pool. The 3-round format is unchanged.',
+  'Rounds 4 and 5 use the same automatic pairing method as Round 3, and the Paths view, standings and progress screens follow the chosen number of rounds.',
+  'The Rules tab now includes prize charts showing the match win and bonus pool amounts for $40, $60 and $100 entries.',
+  'New: a configurable Club Fee setting (per player) on the Dashboard, with a Club Fee report showing total Club Fees and total money collected. Club Fees are kept separate from the prizes.',
+  'The Club Fee report has a “submitted to the Treasurer” checkbox with green, amber and red shading, and warns if the fee total changes after it was marked submitted.',
+  'The New tournament dialog now shows the settings with the players: format, Prize Pool entry, Side Pool entry and Club Fee. Defaults are $40 / $20 / $5 for 3 rounds and $60 / $30 / $10 for 5 rounds.',
+  'Wider screens are used better: on large monitors the page grows (up to about 1840 pixels) and the Matches page shows three or more match cards per row next to the live results sidebar.',
+  'A “Club Fees to Treasurer” status card now appears on the Dashboard (next to Roster check) and at the top of the Payouts page, with the same green, amber and red shading and a checkbox to mark it submitted.',
+  'Match cards no longer use red and green markings (which looked like winner and loser). The two sides of a match are now marked with an ivory and a tan checker-style edge, and the card top is gold.',
+  'The Matches page now opens on “Current + Next”: it shows the round being played and the following round, so players can see who they play next and who they are waiting on. The other round tabs are still there.',
+  'Offline use: a “Download a copy for offline use” button (when opened from a website) and an “Install as an app” button, so directors can run it with no internet.',
+  'The footer now has a thank-you card for the Twin Cities Backgammon Club (left) and a card about the annual Viking Backgammon Classic (right) on either side of the credits.',
+  'Net Club Fees = Club Fee × number of players − (Entry fee × number of players marked as Director): the club covers the Director’s entry out of the Club Fees.',
+  'New tournaments are no longer named with today’s date: the suggested name is just “Backgammon Tournament” (numbered if you already have one), because saved files already carry the date in their file name.',
+  'Tip: 5 rounds works best with 32 or more players. Smaller fields may have repeat opponents in the later rounds, which are flagged.'
+ ]},
+ {v:'1.0.0',date:'2026-11-15',notes:[
+  'First tested release. The app opens on a Welcome screen where you can start a new tournament or open a saved one.',
+  'Works with any number of players (4 or more). Round 3 pairings are worked out automatically from the Round 1 and 2 results, with no repeat opponents from 7 players up.',
+  'Create new tournaments, save them under a recognizable name, and switch between them.',
+  'Roll seeds button to randomize the seeding.',
+  'Live standings and Side Pool status in the Matches page sidebar.',
+  'Save and Open use your browser’s file picker (Chrome or Edge) and remember your last folder.',
+  'Backgammon look and feel, plus credits and Venmo link.',
+  'Side Pool replaces the old SP20 label; the SP10 and Free columns were removed.',
+  'Friendlier wording in the Rules tab.',
+  'Reload protection: pressing F5 or Ctrl+R with unsaved changes asks for confirmation first, and the browser warns before closing or refreshing the page.'
+ ]}
+];
+const vtag=()=>'v'+APP_VERSION;
+function changelogCard(){
+  return '<div class="card" id="changelog-card" style="margin-top:16px"><h3>Version &amp; Changelog</h3><p class="note">You are using <b>version '+esc(APP_VERSION)+'</b>. Saved tournament files remember which version created them. Newer versions can open older files.</p>'+
+   CHANGELOG.map(c=>'<div style="margin-top:12px"><b>Version '+esc(c.v)+'</b> <span class="note">— '+esc(c.date)+'</span><ul>'+c.notes.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul></div>').join('')+'</div>';
+}
+function prizeCharts(){
+  const N=16,ents=[40,60,100],m=v=>'$'+(Math.round(v*100)/100).toLocaleString('en-US',{minimumFractionDigits:Number.isInteger(Math.round(v*100)/100)?0:2,maximumFractionDigits:2});
+  const one=R=>{
+    let h='<h4 style="margin:14px 0 6px">'+R+'-round format <span class="note">— each win pays '+(R===5?'Entry ÷ 4':'Entry ÷ 2')+'</span></h4><div class="tablewrap"><table><thead><tr><th>Entry</th><th class="r">Pay per win</th><th class="r">Perfect record ('+R+'-0) match wins</th><th class="r">Average player match wins</th><th class="r">Match wins, share of entry</th><th class="r">Bonus pool ('+N+' players)</th></tr></thead><tbody>';
+    ents.forEach(e=>{const w=e*winFrac(R),pool=N*e,bonus=pool-R*(N/2)*w;
+      h+='<tr><td><b>'+m(e)+'</b></td><td class="r">'+m(w)+'</td><td class="r">'+m(w*R)+'</td><td class="r">'+m(w*R/2)+'</td><td class="r">'+Math.round(winFrac(R)*R/2*100*10)/10+'%</td><td class="r">'+m(bonus)+'</td></tr>';});
+    return h+'</tbody></table></div>';
+  };
+  return '<div class="card" style="margin-top:16px"><h3>Prize charts</h3><p class="note">Examples for '+N+' players. The average player wins about half of their matches. The bonus pool is what is left of the entry money after every match win is paid, and it goes to the players with the best record (ties split it equally, rounded down to the whole dollar). The Side Pool is separate.</p>'+one(3)+one(5)+'<p class="note" style="margin-top:10px">Everything scales with the entry fee, so the split between match wins and the bonus pool stays the same at any entry: 75% / 25% for 3 rounds and 62.5% / 37.5% for 5 rounds. Entries that divide evenly by 4 (such as $40, $60 and $100) give whole-dollar amounts per win.</p></div>';
+}
+function footerHtml(){
+  return '<footer class="credits no-print"><div class="fgrid">'+
+   '<aside class="fcard fleft"><div class="ftitle">🎲 Thank you, Twin Cities Backgammon Club</div><p>This tournament helper was inspired by the Twin Cities Backgammon Club. Thank you for the games, the community and the ideas.</p><a class="btn sm" href="https://twincitiesbackgammon.com" target="_blank" rel="noopener noreferrer">twincitiesbackgammon.com</a></aside>'+
+   '<div class="fmid"><div class="cred-title">Determined Swiss Format Tournament Generator</div><div style="margin:0 0 6px;text-align:center"><button class="linkbtn" data-act="changelog">Version '+APP_VERSION+' · What’s new</button></div>'+offlineBtns()+'<div>Digital Implementation by <b>Michael Mesich</b> - Based on a format idea from <b>Steve Reichelt</b></div><div class="cred-note">If you’re a Tournament Director and this tool helped your event, feel free to kick a little something back to Venmo @mmesich — thank you!</div><a class="btn gold sm cred-venmo" href="https://venmo.com/u/mmesich" target="_blank" rel="noopener noreferrer">Venmo @mmesich</a></div>'+
+   '<aside class="fcard fright"><div class="ftitle">🏆 Viking Backgammon Classic</div><p>Mark your calendar: the Viking Backgammon Classic is held every Labor Day weekend. Check the website for dates, details and registration.</p><a class="btn sm" href="https://vikingbackgammonclassic.com" target="_blank" rel="noopener noreferrer">vikingbackgammonclassic.com</a></aside>'+
+   '</div></footer>';
+}
+/* ---------- Offline copy & install ---------- */
+let deferredInstall=null;
+const isWeb=()=>/^https?:$/.test(location.protocol);
+function offlineBtns(){
+  let b='';
+  if(isWeb())b+='<button class="btn sm gold" data-act="dlcopy">⬇ Download a copy for offline use</button> ';
+  if(deferredInstall)b+='<button class="btn sm" data-act="installapp">📲 Install as an app</button>';
+  return b?'<div style="margin:6px 0 10px">'+b+'</div>':'';
+}
+async function downloadCopy(){
+  try{
+    const r=await fetch(location.href.split('#')[0],{cache:'no-cache'});
+    if(!r.ok)throw new Error('http '+r.status);
+    const txt=await r.text();
+    if(!/Determined Swiss/.test(txt))throw new Error('unexpected content');
+    dl('Backgammon-Determined-Swiss-v'+APP_VERSION+'.html',txt,'text/html',function(ok,how){if(ok){flash('Saved an offline copy (version '+APP_VERSION+'). Double-click the file to open it in any browser — no internet needed.');render();}});
+  }catch(e){flash('Could not download a copy from here. In your browser, use File → Save page as (Ctrl+S) instead.');render();}
+}
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredInstall=e;render();});
+window.addEventListener('appinstalled',function(){deferredInstall=null;flash('Installed! You can now open it from your desktop, Start menu or home screen, even offline.');render();});
+if('serviceWorker' in navigator&&isWeb()){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+function offlineCard(){
+  return '<div class="card" style="margin-top:16px"><h3>Offline use &amp; installing</h3><ul>'+
+   '<li><b>Download a copy:</b> when you open this page from a website, use the <b>⬇ Download a copy for offline use</b> button at the bottom of the page. It saves one file you can double-click to open in any browser, with no internet.</li>'+
+   '<li><b>Install as an app:</b> in Chrome or Edge on a computer or Android phone, use the <b>📲 Install as an app</b> button (or the install icon in the address bar). On an iPhone or iPad, open the page in Safari, tap Share, then <b>Add to Home Screen</b>. Installed copies keep working with no internet and update themselves when you are online.</li>'+
+   '<li><b>Your tournaments:</b> they are saved as separate files, so they work the same online or offline. Nothing is stored on the website.</li></ul></div>';
+}
+const TABS=[['dashboard','Dashboard'],['players','Players'],['matches','Matches'],['standings','Standings'],['payouts','Payouts'],['tournaments','Tournaments'],['rules','Rules']];
+function renderWelcome(){
+  document.title='Backgammon Determined Swiss Tournament Manager';
+  $('hdr').innerHTML='<div class="titlerow"><div class="brand"><span class="logo">🎲⚪⚫</span><div><h1>Backgammon Determined Swiss</h1><small>Determined Swiss Format Tournament Generator · <button class="linkbtn" data-act="changelog" title="See what’s new">'+vtag()+'</button></small></div></div></div>';
+  let h=modalHtml();
+  if(ui.msg)h+='<div class="flash no-print">'+esc(ui.msg)+' <button class="btn sm" data-act="dismissmsg">OK</button></div>';
+  h+='<main><div class="card" style="max-width:640px;margin:40px auto;text-align:center;padding:32px 22px"><div style="font-size:2.4rem">🎲</div><h2 style="margin:8px 0">Welcome</h2><p class="note" style="margin-bottom:22px">Start a new tournament, or pick up where you left off by opening a tournament file you saved earlier.</p><div class="row" style="justify-content:center;gap:14px"><button class="btn gold" style="font-size:1.1rem;padding:14px 22px" data-act="tnew">➕ New tournament</button><button class="btn" style="font-size:1.1rem;padding:14px 22px" data-act="open">📂 Open saved tournament</button></div><p class="note" style="margin-top:20px">Nothing is saved automatically, so remember to save your tournament file.</p></div>'+(ui.showLog?'<div style="max-width:640px;margin:0 auto 24px">'+changelogCard()+'<div style="text-align:center;margin-top:10px"><button class="btn sm" data-act="changelog">Hide changelog</button></div></div>':'')+'</main>';
+  h+=footerHtml();
+  $('app').innerHTML=h;window.scrollTo(0,0);
+}
+function render(){
+  if(ui.welcome){renderWelcome();return;}
+  const y=window.scrollY;
+  let D;
+  try{D=derive();}catch(e){D=null;$('app').innerHTML='<div class="card warn">Internal error: '+esc(e.message)+'</div>';return;}
+  ui.D=D;document.title=S.name+' – Backgammon Determined Swiss Tournament Manager';
+  $('hdr').innerHTML='<div class="titlerow"><div class="brand"><span class="logo">🎲⚪⚫</span><div><h1>'+esc(S.name)+'</h1><small>Determined Swiss Format Tournament Generator · <button class="linkbtn" data-act="changelog" title="See what’s new">'+vtag()+'</button></small></div></div>'+
+   '<div class="hbtns">'+switcher(D)+'<button class="btn" data-act="tnew">➕ New tournament</button><button class="btn gold" data-act="save">💾 Save this tournament'+(S.dirty?' <span class="dot" title="Unsaved changes"></span>':'')+'</button><button class="btn" data-act="saveall">💾 Save all tournaments</button><button class="btn" data-act="open">📂 Open file</button></div></div>'+hdrNote()+
+   '<nav class="tabs" aria-label="Sections">'+TABS.map(t=>'<button data-act="tab" data-v="'+t[0]+'" class="'+(ui.tab===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</nav>';
+  let h='';
+  h+=modalHtml();if(ui.confirm)h+='<div class="confirm no-print" role="alertdialog"><b>Please confirm</b><p style="margin:6px 0">'+esc(ui.confirm.msg)+'</p><div class="row"><button class="btn danger" data-act="doconfirm">'+esc(ui.confirm.okLabel)+'</button><button class="btn" data-act="cancelconfirm">Cancel</button></div></div>';
+  if(ui.msg)h+='<div class="flash no-print">'+esc(ui.msg)+' <button class="btn sm" data-act="dismissmsg">OK</button></div>';
+  if(ui.seedToast&&!playBegun()&&S.players.length){const pr=pairUp(orderedPlayers(S.players)).map(x=>esc(x[0].name)+' v '+(x[1].t==='bye'?'BYE':esc(x[1].name)));h+='<div class="flash no-print" role="status"><b>🎲 Seeds rolled.</b> New Round 1 pairings:<div class="note" style="margin:6px 0">'+pr.slice(0,12).join(' · ')+(pr.length>12?' · … +'+(pr.length-12)+' more':'')+'</div><div class="row"><button class="btn sm" data-act="seedundo">Undo</button><button class="btn sm gold" data-act="seedagain">Roll again</button><button class="btn sm" data-act="seedclose" aria-label="Dismiss">✕</button></div></div>';}
+  if(ui.banner)h+='<div class="banner no-print"><span>💡 <b>Heads up:</b> nothing is saved automatically. '+(S.dirty?'This tournament has unsaved changes — ':'')+'Please save your tournaments before closing this page.</span><span class="row"><button class="btn sm gold" data-act="save">Save now</button><button class="btn sm" data-act="dismissbanner" aria-label="Dismiss reminder">✕</button></span></div>';
+  h+='<main>';
+  const v={dashboard:viewDashboard,players:viewPlayers,matches:viewMatches,standings:viewStandings,payouts:viewPayouts,rules:viewRules,tournaments:viewTournaments}[ui.tab];
+  h+=v(D)+'</main><p class="note no-print" style="margin-top:24px;text-align:center">Everything is computed live from the roster and winner entries. Not saved between reloads.</p>';
+  h+=footerHtml();
+  $('app').innerHTML=h;
+  window.scrollTo(0,y);
+}
+/* ---------- Tournament library ---------- */
+function ymd(iso){const d=new Date(iso),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
+function hhmm(iso){const d=new Date(iso),p=n=>String(n).padStart(2,'0');return p(d.getHours())+':'+p(d.getMinutes());}
+function defaultName(){const base='Backgammon Tournament';let n=base,i=2;while(LIB.some(x=>x.name===n))n=base+' '+(i++);return n;}
+function slugOf(s){return String(s||'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'tournament';}
+function summarize(T){
+  const keep=S;S=T;
+  try{const D=derive(),ms=D.t.matches;return {status:D.status,n:D.n,done:ms.filter(m=>m.winner!=null).length,total:ms.length,R:D.R,rounds:D.t.rounds.map((x,i)=>i).filter(i=>D.t.rounds[i].length&&D.t.rounds[i].every(m=>m.winner!=null)).length};}
+  catch(e){return {status:'Not Started',n:T.players.length,done:0,total:0,rounds:0};}
+  finally{S=keep;}
+}
+function switchTo(id){const T=LIB.find(x=>x.id===id);if(!T)return;S=T;ui.seedToast=null;ui.confirm=null;ui.modal=null;ui.msg='';ui.newName='';ui.paste='';ui.mRound='auto';ui.mFilter='all';ui.mSearch='';ui.hl=null;render();}
+function switcher(D){return '<select id="tsw-5n2j" aria-label="Switch tournament" style="max-width:280px">'+LIB.map(T=>'<option value="'+esc(T.id)+'"'+(T===S?' selected':'')+'>'+(T.dirty?'● ':'')+esc(T.name)+' — '+esc(summarize(T).status)+'</option>').join('')+'</select>'+stBadge(D.status);}
+function hdrNote(){
+  const un=LIB.filter(x=>x.dirty);let h='';
+  if(un.length)h+='<div class="banner" role="status"><span>⚠ <b>You have unsaved tournaments — save before closing</b> ('+un.map(x=>esc(x.name)).join(', ')+')</span><span class="row"><button class="btn sm gold" data-act="saveall">Save all</button></span></div>';
+  return h+'<div class="note" style="margin-top:6px">'+(S.savedAt?'Last saved '+hhmm(S.savedAt)+' · ':'')+'Tournaments are kept in this page’s memory only — save files to keep them.</div>';
+}
+function fromData(x){
+  let o;try{o=loadData(x,{});}catch(e){throw new Error(e.message==='Not a tournament file.'?'it is not a tournament file':'the player list or results look damaged');}
+  const ok=v=>typeof v==='string'&&!isNaN(new Date(v));
+  return mkT({id:typeof x.id==='string'&&x.id?x.id:undefined,name:o.name,created:ok(x.created)?x.created:undefined,updated:ok(x.updated)?x.updated:undefined,entry:o.entry,sp20Entry:o.sp20Entry,clubFee:o.clubFee,feesSubmitted:o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt,feesSubmittedAmt:o.feesSubmittedAmt,players:o.players,winners:o.winners,paid:o.paid,nextId:o.nextId,seedsRandomized:o.seedsRandomized,numRounds:o.numRounds,dirty:false,savedAt:null});
+}
+function importData(d,fn){
+  if(!d||typeof d!=='object'||Array.isArray(d))throw new Error('this does not look like a tournament file.');
+  if(d.app&&d.app!=='determined-swiss-manager')throw new Error('this file was made by a different app.');
+  if(Array.isArray(d.tournaments)){
+    if(!d.tournaments.length)throw new Error('the library file has no tournaments in it.');
+    const list=d.tournaments.map((x,i)=>{try{return fromData(x);}catch(e){throw new Error('tournament #'+(i+1)+' in the library is not valid ('+e.message+').');}});
+    let dup=0;
+    dropPlaceholder();
+    list.forEach(T=>{if(LIB.some(x=>x.id===T.id)){T.id=newId();T.name+=' (imported)';dup++;}LIB.push(T);});
+    S=LIB[LIB.length-list.length];ui.seedToast=null;ui.confirm=null;ui.modal=null;
+    flash('Merged '+list.length+' tournament'+(list.length===1?'':'s')+' from “'+fn+'”.'+(dup?' '+dup+' already existed here, so they were kept as separate copies.':''));
+    return;
+  }
+  let T;try{T=fromData(d);}catch(e){throw new Error(e.message+'.');}
+  if(LIB.some(x=>x.id===T.id)){ui.modal={type:'replace',T,fn};return;}
+  dropPlaceholder();LIB.push(T);switchTo(T.id);flash('Opened “'+T.name+'” from “'+fn+'”.');
+}
+function modalHtml(){
+  const m=ui.modal;if(!m)return '';
+  const wrap=(t,b)=>'<div class="confirm gold no-print" role="dialog"><b>'+t+'</b>'+b+'</div>';
+  const btns=(act,lab)=>'<div class="row"><button class="btn gold" data-act="'+act+'">'+lab+'</button><button class="btn" data-act="mclose">Cancel</button></div>';
+  if(m.type==='new'){
+    return wrap('➕ New tournament','<label class="f" for="nt-name-3c7v" style="margin-top:8px">Name</label><input type="text" id="nt-name-3c7v" value="'+esc(defaultName())+'">'+
+    '<fieldset class="ntset"><legend>Tournament settings</legend>'+
+    '<div style="margin:4px 0"><b>Format</b><label class="f"><input type="radio" name="nt-rounds" value="3" checked> 3 rounds</label><label class="f"><input type="radio" name="nt-rounds" value="5"> 5 rounds</label></div>'+
+    '<div class="row"><div><label class="f" for="nt-entry-1a7p">Prize Pool entry ($)</label><input type="number" min="0" step="1" id="nt-entry-1a7p" class="ntfee" value="40" style="width:110px"></div>'+
+    '<div><label class="f" for="nt-sp-2b8q">Side Pool entry ($)</label><input type="number" min="0" step="1" id="nt-sp-2b8q" class="ntfee" value="20" style="width:110px"></div>'+
+    '<div><label class="f" for="nt-club-3c9r">Club Fee per player ($)</label><input type="number" min="0" step="0.01" id="nt-club-3c9r" class="ntfee" value="5" style="width:110px"></div></div>'+
+    '<p class="note">Suggested amounts: 3 rounds = $40 / $20 / $5, 5 rounds = $60 / $30 / $10. They fill in automatically when you pick the format (unless you have typed your own) and can be changed later in Settings. 5 rounds works best with 32 or more players; smaller fields may have repeat opponents in the later rounds (flagged).</p></fieldset>'+
+    '<fieldset class="ntset"><legend>Players</legend>'+
+    '<div style="margin:4px 0"><label class="f"><input type="radio" name="nt-mode" value="blank" checked> Blank roster (add players afterwards)</label>'+
+    '<label class="f"><input type="radio" name="nt-mode" value="copy"> Copy the players (no results) from <select id="nt-src-9d2k">'+LIB.map(T=>'<option value="'+esc(T.id)+'"'+(T===S?' selected':'')+'>'+esc(T.name)+' ('+T.players.length+' players)</option>').join('')+'</select></label>'+
+    '<label class="f"><input type="radio" name="nt-mode" value="paste"> Paste names (one per line, 4 or more players)</label><textarea id="nt-paste-6p4w" placeholder="Alice&#10;Bob&#10;Carol"></textarea><div class="row" style="margin-top:6px"><label class="f" for="nt-n-4h8z" style="margin:0">N</label><input type="number" id="nt-n-4h8z" min="4" max="5000" value="16" style="width:100px"><button class="btn sm" type="button" data-act="ntsample">Fill with N sample players</button></div></div></fieldset>'+
+    btns('tcreate','Create tournament'));
+  }
+  if(m.type==='rename'){const T=LIB.find(x=>x.id===m.id);if(!T)return '';return wrap('Rename tournament','<label class="f" for="rn-name-8b1q" style="margin-top:8px">New name</label><input type="text" id="rn-name-8b1q" value="'+esc(T.name)+'"><div style="height:10px"></div>'+btns('trename','Save name'));}
+  if(m.type==='copy'){const T=LIB.find(x=>x.id===m.id);if(!T)return '';return wrap('Make a copy of “'+esc(T.name)+'”','<label class="f" for="cp-name-2x8r" style="margin-top:8px">Name for the copy</label><input type="text" id="cp-name-2x8r" value="'+esc(T.name+' (copy)')+'"><div style="margin:10px 0"><label class="f"><input type="radio" name="cp-mode" value="roster" checked> Roster only (no results)</label><label class="f"><input type="radio" name="cp-mode" value="results"> Roster with results</label></div>'+btns('tcopy','Make copy'));}
+  if(m.type==='replace'){const ex=LIB.find(x=>x.id===m.T.id);return wrap('Tournament already here','<p style="margin:6px 0">“'+esc(ex?ex.name:m.T.name)+'” is already in this page. Replace it with the version in “'+esc(m.fn)+'”, or keep both?</p><div class="row"><button class="btn danger" data-act="mreplace">Replace</button><button class="btn gold" data-act="mkeep">Keep both</button><button class="btn" data-act="mclose">Cancel</button></div>');}
+  return '';
+}
+function viewTournaments(){
+  let h='<div class="card"><div class="row" style="justify-content:space-between"><h2>Tournaments</h2><div class="row"><button class="btn gold" data-act="tnew">➕ New tournament</button><button class="btn" data-act="open">📂 Open file</button><button class="btn" data-act="saveall">💾 Save all tournaments</button></div></div><p class="note"><b>Important:</b> this app does not use browser storage. Your tournaments live in this page’s memory only while it stays open, and are kept long-term only by saving files. Closing or reloading the page loses anything you have not saved.</p></div>';
+  h+='<div class="mgrid" style="margin-top:16px">';
+  LIB.forEach(T=>{
+    const s=summarize(T),act=T===S,pct=s.total?Math.round(s.done/s.total*100):0,id=esc(T.id);
+    h+='<div class="mcard" style="'+(act?'border-color:var(--gold)':'')+'"><div class="hd"><span class="mid">'+esc(T.name)+(T.dirty?' <span class="dot" title="Unsaved changes"></span>':'')+'</span>'+(act?'<span class="tag">open now</span>':'')+'</div>'+
+    '<div style="margin-bottom:8px">'+stBadge(s.status)+'</div>'+
+    '<div class="note">Created '+esc(dateLabel(new Date(T.created)))+' · Updated '+esc(dateLabel(new Date(T.updated)))+' '+hhmm(T.updated)+'</div>'+
+    '<div class="note">'+s.n+' player'+(s.n===1?'':'s')+' · '+s.rounds+' of '+(s.R||3)+' rounds finished</div>'+
+    '<div class="bar" style="margin:8px 0" role="img" aria-label="'+pct+'% of matches decided"><i style="width:'+pct+'%"></i></div>'+
+    '<div class="note num">'+s.done+' / '+s.total+' matches decided</div>'+
+    '<div class="note'+(T.dirty?' warn':'')+'" style="margin:4px 0 8px">'+(T.dirty?'Unsaved changes':T.savedAt?'Saved at '+hhmm(T.savedAt):'Not saved to a file yet')+'</div>'+
+    '<div class="row"><button class="btn sm gold" data-act="topen" data-id="'+id+'">Open</button><button class="btn sm" data-act="trenameopen" data-id="'+id+'">Rename</button><button class="btn sm" data-act="tcopyopen" data-id="'+id+'">Make a copy</button><button class="btn sm" data-act="tsave" data-id="'+id+'">Save to file</button><button class="btn sm danger" data-act="tremove" data-id="'+id+'">Remove</button></div></div>';
+  });
+  return h+'</div>';
+}
+let allowUnload=false;
+window.addEventListener('beforeunload',function(e){if(!allowUnload&&LIB.some(t=>t.dirty)){e.preventDefault();e.returnValue='';return '';}});
+/* F5 / Ctrl+R / Cmd+R: show our own confirmation first (the browser's refresh button itself can only show the browser's generic warning above) */
+document.addEventListener('keydown',function(e){
+  const k=(e.key||'').toLowerCase();
+  if(!(k==='f5'||((e.ctrlKey||e.metaKey)&&k==='r')))return;
+  const n=LIB.filter(t=>t.dirty).length;if(!n||ui.welcome)return;
+  e.preventDefault();
+  askConfirm('Reloading will wipe out unsaved changes in '+n+' tournament'+(n===1?'':'s')+'. Choose Cancel, then use Save this tournament (or Save all tournaments) first.','Reload anyway',function(){allowUnload=true;location.reload();});
+});
+/* ---------- Actions ---------- */
+function setWinner(mid,pid){
+  const nw=Object.assign({},S.winners);
+  if(pid==null)delete nw[mid];else nw[mid]=pid;
+  const c=cleanWinners(S.players,nw,S.numRounds);
+  const apply=()=>commit(()=>{S.winners=c.winners;});
+  if(c.removed.length){
+    askConfirm('This change invalidates '+c.removed.length+' later winner entr'+(c.removed.length>1?'ies':'y')+' (match '+c.removed.join(', ')+'). They will be cleared. Continue?','Change & clear later winners',apply);
+  }else apply();
+}
+document.addEventListener('click',function(e){
+  const el=e.target.closest('[data-act]');if(!el||el.disabled)return;
+  const a=el.dataset.act,D=ui.D;
+  switch(a){
+    case 'dlcopy':downloadCopy();break;
+    case 'installapp':if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.then(function(){deferredInstall=null;render();});}break;
+    case 'changelog':if(ui.welcome){ui.showLog=!ui.showLog;render();setTimeout(()=>{const c=$('changelog-card');if(c)c.scrollIntoView({behavior:'smooth'});},50);break;}ui.tab='rules';render();setTimeout(()=>{const c=$('changelog-card');if(c)c.scrollIntoView({behavior:'smooth'});},50);break;
+    case 'tab':ui.tab=el.dataset.v;render();window.scrollTo(0,0);break;
+    case 'mr':ui.mRound=el.dataset.v;render();break;
+    case 'mf':ui.mFilter=el.dataset.v;render();break;
+    case 'hl':{const id=+el.dataset.p;ui.hl=ui.hl===id?null:id;render();break;}
+    case 'sbpay':ui.sbPay=!ui.sbPay;render();break;
+    case 'sbopen':ui.sbOpen=!ui.sbOpen;render();break;
+    case 'gomatch':ui.tab='matches';ui.mRound=el.dataset.r;render();window.scrollTo(0,0);break;
+    case 'gopay':ui.tab='payouts';render();window.scrollTo(0,0);break;
+    case 'win':{const m=el.dataset.m,pid=+el.dataset.p;setWinner(m,S.winners[m]===pid?null:pid);break;}
+    case 'clearw':setWinner(el.dataset.m,null);break;
+    case 'save':saveT(S);break;
+    case 'saveall':saveAll();break;
+    case 'tnew':ui.modal={type:'new'};render();window.scrollTo(0,0);break;
+    case 'topen':ui.tab='dashboard';switchTo(el.dataset.id);window.scrollTo(0,0);break;
+    case 'tsave':{const T=LIB.find(x=>x.id===el.dataset.id);if(T)saveT(T);break;}
+    case 'trenameopen':ui.modal={type:'rename',id:el.dataset.id};render();window.scrollTo(0,0);break;
+    case 'tcopyopen':ui.modal={type:'copy',id:el.dataset.id};render();window.scrollTo(0,0);break;
+    case 'mclose':ui.modal=null;render();break;
+    case 'tremove':{const T=LIB.find(x=>x.id===el.dataset.id);if(!T)break;askConfirm('Remove “'+T.name+'” from this page? '+(T.dirty?'It has unsaved changes that will be lost. ':'')+'Files you saved earlier are not deleted.','Remove tournament',()=>{const i=LIB.indexOf(T);LIB.splice(i,1);if(!LIB.length){const ph=mkT({name:'New tournament',entry:T.entry,sp20Entry:T.sp20Entry});ph.placeholder=true;LIB.push(ph);ui.welcome=true;ui.tab='dashboard';}if(S===T){S=LIB[Math.min(i,LIB.length-1)];ui.seedToast=null;}flash('Removed “'+T.name+'”.');render();});break;}
+    case 'tcreate':{
+      const nm=($('nt-name-3c7v').value||'').trim()||defaultName();
+      const mode=(document.querySelector('input[name="nt-mode"]:checked')||{}).value;
+      let ps=[],nid=1;
+      if(mode==='copy'){const src=LIB.find(x=>x.id===$('nt-src-9d2k').value);if(src){ps=JSON.parse(JSON.stringify(src.players));nid=src.nextId;}}
+      else if(mode==='paste'){const names=$('nt-paste-6p4w').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);ps=names.map((x,i)=>({id:i+1,name:x,sp20:false,director:false,seed:Math.random()}));nid=names.length+1;}
+      const nr=+((document.querySelector('input[name="nt-rounds"]:checked')||{}).value)===5?5:3;
+      const fv=(id,d)=>{const v=parseFloat(($(id)||{}).value);return Number.isFinite(v)&&v>=0?v:d;};
+      const T=mkT({name:nm,entry:fv('nt-entry-1a7p',nr===5?60:40),sp20Entry:fv('nt-sp-2b8q',nr===5?30:20),clubFee:fv('nt-club-3c9r',nr===5?10:5),players:ps,nextId:nid,numRounds:nr,dirty:true});
+      dropPlaceholder();LIB.push(T);ui.tab='players';switchTo(T.id);flash('Created “'+T.name+'” with '+ps.length+' player'+(ps.length===1?'':'s')+'. Remember to save it to a file.');render();window.scrollTo(0,0);break;
+    }
+    case 'trename':{const T=LIB.find(x=>x.id===ui.modal.id),nm=($('rn-name-8b1q').value||'').trim();if(!nm){flash('Enter a name first.');render();break;}if(T){T.name=nm;T.dirty=true;T.updated=nowIso();}ui.modal=null;render();break;}
+    case 'tcopy':{
+      const src=LIB.find(x=>x.id===ui.modal.id);if(!src){ui.modal=null;render();break;}
+      const nm=($('cp-name-2x8r').value||'').trim()||(src.name+' (copy)');
+      const res=(document.querySelector('input[name="cp-mode"]:checked')||{}).value==='results';
+      const c=JSON.parse(JSON.stringify(src));
+      const T=mkT({name:nm,entry:c.entry,sp20Entry:c.sp20Entry,clubFee:c.clubFee,players:c.players,winners:res?c.winners:{},paid:res?c.paid:{},nextId:c.nextId,seedsRandomized:c.seedsRandomized,numRounds:c.numRounds,dirty:true});
+      LIB.push(T);ui.modal=null;flash('Added “'+T.name+'” ('+(res?'roster with results':'roster only')+'). Remember to save it to a file.');render();break;
+    }
+    case 'mreplace':{const m=ui.modal,i=LIB.findIndex(x=>x.id===m.T.id);if(i>=0)LIB[i]=m.T;else LIB.push(m.T);switchTo(m.T.id);flash('Replaced the tournament with the version from “'+m.fn+'”.');render();break;}
+    case 'mkeep':{const m=ui.modal;m.T.id=newId();m.T.name+=' (imported)';LIB.push(m.T);switchTo(m.T.id);flash('Kept both: the file’s version was added as “'+m.T.name+'”.');render();break;}
+    case 'ntsample':{const n=Math.max(1,Math.min(5000,parseInt($('nt-n-4h8z').value,10)||0));const lines=[];for(let i=1;i<=n;i++)lines.push('Player '+i);$('nt-paste-6p4w').value=lines.join('\n');const rb=document.querySelector('input[name="nt-mode"][value="paste"]');if(rb)rb.checked=true;break;}
+    case 'open':openPicker();break;
+    case 'csv':dl(slug()+'-standings-payouts.csv',csvStandings(D),'text/csv');break;
+    case 'print':document.title=S.name+' – Cash-out sheet';try{window.print();document.title=S.name+' – Backgammon Determined Swiss Tournament Manager';}catch(err){flash('Printing is blocked in this viewer. Use Export CSV instead.');render();}break;
+    case 'printpaths':try{window.print();}catch(err){flash('Printing is blocked in this viewer.');render();}break;
+    case 'dismissbanner':ui.banner=false;render();break;
+    case 'dismissmsg':ui.msg='';render();break;
+    case 'cancelconfirm':ui.confirm=null;render();break;
+    case 'doconfirm':{const f=ui.confirm&&ui.confirm.fn;ui.confirm=null;if(f)f();else render();break;}
+    case 'shuffle':if(!playBegun())commit(()=>{S.players.forEach(p=>p.seed=Math.random());});break;
+    case 'randseeds':randomizeSeeds();break;
+    case 'seedagain':if(!playBegun())doRandomize(true);break;
+    case 'seedundo':undoSeeds();break;
+    case 'seedclose':ui.seedToast=null;render();break;
+    case 'sortseed':commit(()=>{S.players.sort((a,b)=>a.seed-b.seed||a.id-b.id);});break;
+    case 'add':{const inp=$('add-name-5h8e');const nm=(inp.value||'').trim();if(!nm){flash('Enter a name first.');render();break;}commit(()=>{S.players.push({id:S.nextId++,name:nm,sp20:false,director:false,seed:Math.random()});ui.newName='';});break;}
+    case 'paste':{const names=$('paste-box-1r6t').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);if(!names.length)break;commit(()=>{names.forEach(nm=>S.players.push({id:S.nextId++,name:nm,sp20:false,director:false,seed:Math.random()}));ui.paste='';});break;}
+    case 'del':{const id=+el.dataset.p;if(!playBegun())commit(()=>{S.players=S.players.filter(p=>p.id!==id);delete S.paid[id];});break;}
+    case 'clrwin':askConfirm('Clear ALL winner entries? Players stay. Save the file first if you need this tournament.','Clear all winners',()=>commit(()=>{S.winners={};S.paid={};}));break;
+    case 'clrall':askConfirm('Remove ALL players and winners? Save the tournament file first — nothing is archived automatically.','Clear players & winners',()=>commit(()=>{S.players=[];S.winners={};S.paid={};S.nextId=1;}));break;
+  }
+});
+document.addEventListener('change',function(e){
+  if(e.target.name==='nt-rounds'){const five=e.target.value==='5',d=[['nt-entry-1a7p',five?60:40],['nt-sp-2b8q',five?30:20],['nt-club-3c9r',five?10:5]];d.forEach(x=>{const f=$(x[0]);if(f&&f.dataset.edited!=='1')f.value=x[1];});return;}
+  if(e.target.id==='tsw-5n2j'){switchTo(e.target.value);return;}if(e.target.id==='path-pl-7q2m'){ui.pathPid=+e.target.value;render();return;}const el=e.target.closest('[data-ch]');if(!el)return;
+  const k=el.dataset.ch,pid=+el.dataset.p,pl=S.players.find(p=>p.id===pid);
+  if(k==='pname'&&pl)commit(()=>{pl.name=el.value.trim();});
+  else if(k==='pflag'&&pl)commit(()=>{pl[el.dataset.f]=el.checked;});
+  else if(k==='pseed'&&pl){const v=parseFloat(el.value);if(Number.isFinite(v)&&!playBegun())commit(()=>{pl.seed=v;});else render();}
+  else if(k==='feesub')commit(()=>{S.feesSubmitted=el.checked;S.feesSubmittedAt=el.checked?nowIso():null;S.feesSubmittedAmt=el.checked?feeTotal():0;});
+  else if(k==='paid')commit(()=>{if(el.checked)S.paid[pid]=true;else delete S.paid[pid];});
+  else if(k==='set'){
+    const f=el.dataset.k;
+    if(f==='name')commit(()=>{S.name=el.value.trim()||'Determined Swiss';});
+    else if(f==='numRounds'){if(!playBegun())commit(()=>{S.numRounds=+el.value===5?5:3;});else render();}
+    else{const v=parseFloat(el.value);if(Number.isFinite(v)&&v>=0)commit(()=>{S[f]=v;});else render();}
+  }
+});
+document.addEventListener('input',function(e){
+  if(e.target.classList&&e.target.classList.contains('ntfee'))e.target.dataset.edited='1';
+  if(e.target.id==='paste-box-1r6t')ui.paste=e.target.value;
+  if(e.target.id==='add-name-5h8e')ui.newName=e.target.value;
+  if(e.target.id==='msearch-3k9p'){ui.mSearch=e.target.value;const pos=e.target.selectionStart;render();const n=$('msearch-3k9p');if(n){n.focus();try{n.setSelectionRange(pos,pos);}catch(err){}}}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target.id==='add-name-5h8e'){e.preventDefault();const b=document.querySelector('[data-act="add"]');if(b)b.click();}
+});
+function readTextFile(f){
+  const rd=new FileReader();
+  rd.onload=function(){
+    try{importData(JSON.parse(String(rd.result)),f.name);}
+    catch(err){flash('Could not open “'+f.name+'”: '+(err instanceof SyntaxError?'it is not a valid tournament file (the contents could not be read).':err.message));}
+    render();
+  };
+  rd.onerror=function(){flash('Could not read that file.');render();};
+  rd.readAsText(f);
+}
+/* Uses the browser's file picker (remembers the last folder) where supported; otherwise the standard file chooser. */
+async function openPicker(){
+  if(window.showOpenFilePicker&&window.top===window.self){
+    try{
+      const hs=await window.showOpenFilePicker({id:'ds-tournaments',multiple:false,types:[{description:'Tournament file',accept:{'application/json':['.json']}}]});
+      if(hs&&hs[0])readTextFile(await hs[0].getFile());
+      return;
+    }catch(e){if(e&&e.name==='AbortError')return;}
+  }
+  $('openfile-7k2d').click();
+}
+$('openfile-7k2d').addEventListener('change',function(e){
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=function(){
+    try{importData(JSON.parse(String(rd.result)),f.name);}
+    catch(err){flash('Could not open “'+f.name+'”: '+(err instanceof SyntaxError?'it is not a valid tournament file (the contents could not be read).':err.message));}
+    e.target.value='';render();
+  };
+  rd.onerror=function(){flash('Could not read that file.');render();};
+  rd.readAsText(f);
+});
+render();
+})();
+</script></body></html>
