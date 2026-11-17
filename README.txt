@@ -1,4 +1,4 @@
-Backgammon Determined Swiss Tournament Manager - web hosting folder (version 1.1.0)
+Backgammon Determined Swiss Tournament Manager - web hosting folder (version 1.2.0)
 
 Upload ALL of these files together to one folder on a web server that uses https://
   index.html, manifest.webmanifest, sw.js, icon-192.png, icon-512.png, icon-512-maskable.png

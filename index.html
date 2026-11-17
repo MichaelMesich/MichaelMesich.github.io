@@ -102,6 +102,9 @@ button.prow:hover{border-color:var(--gold)}
 .ck.av{width:22px;height:22px;font-size:.7rem;margin-right:4px;background:radial-gradient(circle at 35% 30%,#666,#1b1b1b);color:#f6f1de}
 .ck.av.by{background:radial-gradient(circle at 35% 30%,#fffaf0,#d8c89a);color:#2b1a0d}
 .sp20{display:inline-flex;align-items:center;gap:4px;background:rgba(0,0,0,.3);color:var(--gold-l);border:1px solid var(--gold-d)}
+.sp2{display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:.7rem;font-weight:800;vertical-align:middle;background:rgba(0,0,0,.3);color:#a9d8ff;border:1px solid #3b86c4}
+.sp2::before{content:'';width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d6efff,#2f7fc0);border:1px solid #1d4f7a}
+input.cb-sp20{accent-color:#d9b44a}input.cb-sp2{accent-color:#3b9be0}th.spAh{color:#f0d98a}th.spBh{color:#a9d8ff}div.kpi.spAk{border-top:4px solid #d9b44a}div.kpi.spBk{border-top:4px solid #3b9be0}div.sbcard.spAc{border-left:4px solid #d9b44a;padding-left:8px}div.sbcard.spBc{border-left:4px solid #3b9be0;padding-left:8px}
 .sp20::before{content:'';width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3b0,#c8961f);border:1px solid #7a5a10}
 .chip::before{content:'';display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle;background:currentColor}
 .chip.ready::before{background:#f6f1de}.chip.done::before{background:#1c1c1c;border:1px solid var(--gold)}.chip.waiting::before{background:#8a8f96}
@@ -142,7 +145,7 @@ input[type=radio]{accent-color:var(--gold)}
   .printonly{display:block}
   .card{background:#fff;border:1px solid #999;box-shadow:none;color:#000}
   th{background:#eee;color:#000} td,th{border-color:#bbb;color:#000}
-  .ck,.sp20,.chip{background:#fff!important;color:#000!important;border:1px solid #666!important}
+  .ck,.sp20,.sp2,.chip{background:#fff!important;color:#000!important;border:1px solid #666!important}
   h2::after,header.top::after{display:none}
   .mcard,.mcard.bye{background:#fff;box-shadow:none;color:#000}
   .kpi .v,h2,h3{color:#000}
@@ -408,28 +411,29 @@ function leadersOf(list,rec){
   return top.filter(p=>rec[p.id].l===ml).map(p=>p.id);
 }
 function winFrac(R){return R===5?0.25:R===3?0.5:1.5/R;}
-function computePayouts(players,rec,status,entry,spEntry,anyResult,R){
+const spTags=p=>(p.sp20?'<span class="sp20">SP A</span>':'')+(p.sp2?'<span class="sp2">SP B</span>':'');
+function computePayouts(players,rec,status,entry,spEntry,anyResult,R,spEntryB){
   R=R||3;const n=players.length,win=entry*winFrac(R),pool=n*entry,totalMatches=R*ceil2(n);
   const bonusPool=Math.max(0,pool-totalMatches*win);
   const complete=status==='Complete';
   const lead=anyResult?leadersOf(players,rec):[];
   const bonusShare=lead.length?Math.trunc(bonusPool/lead.length):0;
-  const spPlayers=players.filter(p=>p.sp20);
-  const spPool=spPlayers.length*spEntry;
-  const spLead=anyResult?leadersOf(spPlayers,rec):[];
-  const spShare=spLead.length?Math.trunc(spPool/spLead.length):0;
+  const spPlayers=players.filter(p=>p.sp20),spPlayersB=players.filter(p=>p.sp2);
+  const spPoolA=spPlayers.length*spEntry,spPoolB=spPlayersB.length*(spEntryB||0),spPool=spPoolA+spPoolB;
+  const spLead=anyResult?leadersOf(spPlayers,rec):[],spLeadB=anyResult?leadersOf(spPlayersB,rec):[];
+  const spShare=spLead.length?Math.trunc(spPoolA/spLead.length):0,spShareB=spLeadB.length?Math.trunc(spPoolB/spLeadB.length):0;
   const per={};
   let total=0,winsTotal=0;
   players.forEach(p=>{
     const mw=rec[p.id].w*win;
     const bonus=complete&&lead.includes(p.id)?bonusShare:0;
-    const sp=complete&&spLead.includes(p.id)?spShare:0;
-    per[p.id]={win:mw,bonus,sp,total:mw+bonus+sp,projBonus:lead.includes(p.id)?bonusShare:0,projSp:spLead.includes(p.id)?spShare:0};
+    const sp=complete&&spLead.includes(p.id)?spShare:0,spB=complete&&spLeadB.includes(p.id)?spShareB:0;
+    per[p.id]={win:mw,bonus,sp,spB,total:mw+bonus+sp+spB,projBonus:lead.includes(p.id)?bonusShare:0,projSp:spLead.includes(p.id)?spShare:0,projSpB:spLeadB.includes(p.id)?spShareB:0};
     total+=per[p.id].total;winsTotal+=mw;
   });
   const bonusRem=lead.length?bonusPool-bonusShare*lead.length:0;
-  const spRem=spLead.length?spPool-spShare*spLead.length:0;
-  return {per,total,win,pool,totalMatches,bonusPool,spPool,lead,spLead,bonusShare,spShare,complete,remainder:bonusRem+spRem,winsTotal,
+  const spRem=(spLead.length?spPoolA-spShare*spLead.length:0)+(spLeadB.length?spPoolB-spShareB*spLeadB.length:0);
+  return {per,total,win,pool,totalMatches,bonusPool,spPool,spPoolA,spPoolB,lead,spLead,spLeadB,bonusShare,spShare,spShareB,complete,remainder:bonusRem+spRem,winsTotal,
     verified:complete&&Math.abs(total+bonusRem+spRem-(pool+spPool))<0.005};
 }
 function cleanWinners(players,winners,R){
@@ -446,7 +450,7 @@ function cleanWinners(players,winners,R){
 const nowIso=()=>new Date().toISOString();
 const newId=()=>'t'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 function dateLabel(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-function mkT(o){const now=nowIso();return {id:o.id||newId(),name:o.name||'Tournament',created:o.created||now,updated:o.updated||o.created||now,entry:o.entry,sp20Entry:o.sp20Entry,clubFee:(Number.isFinite(+o.clubFee)&&+o.clubFee>=0)?+o.clubFee:0,feesSubmitted:!!o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt||null,feesSubmittedAmt:Number.isFinite(+o.feesSubmittedAmt)?+o.feesSubmittedAmt:0,players:o.players||[],winners:o.winners||{},paid:o.paid||{},nextId:o.nextId||1,seedsRandomized:!!o.seedsRandomized,numRounds:o.numRounds===5?5:3,dirty:!!o.dirty,savedAt:o.savedAt||null};}
+function mkT(o){const now=nowIso();return {id:o.id||newId(),name:o.name||'Tournament',created:o.created||now,updated:o.updated||o.created||now,entry:o.entry,sp20Entry:o.sp20Entry,sp2Entry:(Number.isFinite(+o.sp2Entry)&&+o.sp2Entry>=0)?+o.sp2Entry:10,clubFee:(Number.isFinite(+o.clubFee)&&+o.clubFee>=0)?+o.clubFee:0,feesSubmitted:!!o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt||null,feesSubmittedAmt:Number.isFinite(+o.feesSubmittedAmt)?+o.feesSubmittedAmt:0,players:o.players||[],winners:o.winners||{},paid:o.paid||{},nextId:o.nextId||1,seedsRandomized:!!o.seedsRandomized,numRounds:o.numRounds===5?5:3,dirty:!!o.dirty,savedAt:o.savedAt||null};}
 const LIB=[mkT({name:'New tournament',entry:40,sp20Entry:20,players:[],winners:{},paid:{},nextId:1})];
 LIB[0].placeholder=true;
 function dropPlaceholder(){const i=LIB.findIndex(x=>x.placeholder);if(i>=0)LIB.splice(i,1);ui.welcome=false;}
@@ -480,7 +484,7 @@ function derive(){
   const rec=computeRecords(S.players,t);
   const status=statusOf(check,t);
   const anyResult=t.matches.some(m=>m.status==='Complete');
-  const pay=computePayouts(S.players,rec,status,S.entry,S.sp20Entry,anyResult,R);
+  const pay=computePayouts(S.players,rec,status,S.entry,S.sp20Entry,anyResult,R,S.sp2Entry);
   const byId={};S.players.forEach(p=>byId[p.id]=p);
   const mById={};t.matches.forEach(m=>mById[m.id]=m);
   const standings=S.players.slice().sort((a,b)=>(rec[b.id].w-rec[a.id].w)||(rec[a.id].l-rec[b.id].l)||String(a.name).localeCompare(String(b.name),undefined,{sensitivity:'base'}));
@@ -512,7 +516,7 @@ async function dl(name,text,type,cb){
   cb(dlFallback(name,text,type),'download');
 }
 const slug=()=>(S.name||'tournament').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'tournament';
-function tData(T){return {app:'determined-swiss-manager',kind:'tournament',version:1,appVersion:APP_VERSION,savedAt:nowIso(),id:T.id,name:T.name,created:T.created,updated:T.updated,entry:T.entry,sp20Entry:T.sp20Entry,clubFee:T.clubFee||0,feesSubmitted:!!T.feesSubmitted,feesSubmittedAt:T.feesSubmittedAt||null,feesSubmittedAmt:T.feesSubmittedAmt||0,players:T.players,winners:T.winners,paid:T.paid,nextId:T.nextId,seedsRandomized:!!T.seedsRandomized,numRounds:T.numRounds===5?5:3};}
+function tData(T){return {app:'determined-swiss-manager',kind:'tournament',version:1,appVersion:APP_VERSION,savedAt:nowIso(),id:T.id,name:T.name,created:T.created,updated:T.updated,entry:T.entry,sp20Entry:T.sp20Entry,sp2Entry:T.sp2Entry,clubFee:T.clubFee||0,feesSubmitted:!!T.feesSubmitted,feesSubmittedAt:T.feesSubmittedAt||null,feesSubmittedAmt:T.feesSubmittedAmt||0,players:T.players,winners:T.winners,paid:T.paid,nextId:T.nextId,seedsRandomized:!!T.seedsRandomized,numRounds:T.numRounds===5?5:3};}
 function markSaved(list){const t=nowIso();list.forEach(x=>{x.dirty=false;x.savedAt=t;});}
 function saveT(T){
   dl(slugOf(T.name)+'-'+ymd(T.created)+'.json',JSON.stringify(tData(T),null,2),'application/json',(ok,how)=>{if(ok){markSaved([T]);flash('“'+T.name+'” was saved'+(how==='picked'?'':' to your downloads')+'. Keep the file somewhere safe — it is the only long-term copy.');render();}});
@@ -523,10 +527,11 @@ function saveAll(){
 }
 function loadData(d,S){
   if(!d||typeof d!=='object'||!Array.isArray(d.players))throw new Error('Not a tournament file.');
-  const ps=d.players.map((p,i)=>({id:Number.isFinite(+p.id)?+p.id:i+1,name:String(p.name==null?'':p.name),sp20:!!p.sp20,director:!!p.director,seed:Number.isFinite(+p.seed)?+p.seed:Math.random()}));
+  const ps=d.players.map((p,i)=>({id:Number.isFinite(+p.id)?+p.id:i+1,name:String(p.name==null?'':p.name),sp20:!!p.sp20,sp2:!!p.sp2,director:!!p.director,seed:Number.isFinite(+p.seed)?+p.seed:Math.random()}));
   S.players=ps;S.name=String(d.name||'Determined Swiss');
   S.entry=Number.isFinite(+d.entry)&&+d.entry>=0?+d.entry:40;
   S.sp20Entry=Number.isFinite(+d.sp20Entry)&&+d.sp20Entry>=0?+d.sp20Entry:20;
+  S.sp2Entry=Number.isFinite(+d.sp2Entry)&&+d.sp2Entry>=0?+d.sp2Entry:10;
   S.clubFee=Number.isFinite(+d.clubFee)&&+d.clubFee>=0?+d.clubFee:0;
   S.feesSubmitted=!!d.feesSubmitted;S.feesSubmittedAt=typeof d.feesSubmittedAt==='string'?d.feesSubmittedAt:null;S.feesSubmittedAmt=Number.isFinite(+d.feesSubmittedAmt)?+d.feesSubmittedAmt:0;
   S.winners={};if(d.winners&&typeof d.winners==='object')Object.keys(d.winners).forEach(k=>{if(/^[1-5]-\d+$/.test(k)&&Number.isFinite(+d.winners[k]))S.winners[k]=+d.winners[k];});
@@ -536,8 +541,8 @@ function loadData(d,S){
 }
 function csvStandings(D){
   const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
-  const rows=[[S.name+' – Standings & payouts'],['Rank','Name','Side Pool','Wins','Losses','Record','Match Wins Payout','Main Prize Bonus','Side Pool','Total']];
-  D.standings.forEach(p=>{const r=D.rec[p.id],y=D.pay.per[p.id];rows.push([D.rank[p.id],p.name,p.sp20?'Yes':'',r.w,r.l,r.w+'-'+r.l,y.win,y.bonus,y.sp,y.total]);});
+  const rows=[[S.name+' – Standings & payouts'],['Rank','Name','Side Pool A','Side Pool B','Wins','Losses','Record','Match Wins Payout','Main Prize Bonus','Side Pool A payout','Side Pool B payout','Total']];
+  D.standings.forEach(p=>{const r=D.rec[p.id],y=D.pay.per[p.id];rows.push([D.rank[p.id],p.name,p.sp20?'Yes':'',p.sp2?'Yes':'',r.w,r.l,r.w+'-'+r.l,y.win,y.bonus,y.sp,y.spB,y.total]);});
   return rows.map(r=>r.map(q).join(',')).join('\r\n');
 }
 /* ---------- Views ---------- */
@@ -558,6 +563,7 @@ function feeStatus(D){
 }
 function feeKpi(D){const f=feeStatus(D);return '<div class="card kpi feekpi '+f.cls+'"><div class="l">Club Fees to Treasurer</div><div class="v num">'+esc(f.short)+'</div><div class="s">'+esc(f.sub)+'</div></div>';}
 function feeCard(D){const f=feeStatus(D);return '<div class="card feekpi '+f.cls+' no-print" style="margin-bottom:16px"><div class="row" style="justify-content:space-between;align-items:center"><div><div class="l">Club Fees → Treasurer</div><div style="font-size:1.25rem;font-weight:800">'+esc(f.short)+'</div><div class="note">'+esc(f.sub)+'</div></div><label class="f" style="margin:0"><input type="checkbox" data-ch="feesub"'+(S.feesSubmitted?' checked':'')+(f.cf>0?'':' disabled')+'> Submitted to the Treasurer</label></div></div>';}
+function kpiC(l,v,s,c){return '<div class="card kpi '+c+'"><div class="l">'+l+'</div><div class="v num">'+v+'</div>'+(s?'<div class="s">'+s+'</div>':'')+'</div>';}
 function kpi(l,v,s){return '<div class="card kpi"><div class="l">'+l+'</div><div class="v num">'+v+'</div>'+(s?'<div class="s">'+s+'</div>':'')+'</div>';}
 function chartSvg(D){
   const rows=D.standings.slice(0,60),rh=30,w=640,h=rows.length*rh+34;
@@ -575,24 +581,25 @@ function viewDashboard(D){
   const p=D.pay,t=D.t;
   let h='<div class="grid kpis">'+
    kpi('Players',D.n,'4 or more players')+
-   kpi('Side Pool entries',S.players.filter(x=>x.sp20).length,money(S.sp20Entry)+' each')+
    kpi('Prize Pool',money(p.pool),D.n+' × '+money(S.entry))+
-   kpi('Side Pool',money(p.spPool),'Side Pool players only')+
+   kpiC('Side Pool A',money(p.spPoolA),S.players.filter(x=>x.sp20).length+' × '+money(S.sp20Entry),'spAk')+
+   kpiC('Side Pool B',money(p.spPoolB),S.players.filter(x=>x.sp2).length+' × '+money(S.sp2Entry),'spBk')+
    kpi('Club Fees',moneyS(feeTotal()),D.n+' × '+money(S.clubFee||0)+(feeDirs()?' − '+feeDirs()+' × '+money(S.entry||0)+' (director entry paid by the club)':''))+
    kpi('Active bracket size',D.check.ok?D.n:'—',D.check.ok?D.R+' rounds · '+ceil2(D.n)+' matches/round':'fix roster first')+
    kpi('Roster check',D.check.ok?'<span class="okc">✓ OK</span>':'<span class="warn">⚠ Check</span>',D.check.ok?'unique names, valid size':esc(D.check.issues[0]))+
    feeKpi(D)+
    kpi('Status',stBadge(D.status),'')+
    kpi('Total payout',money(p.total),p.complete?'final':'so far (match wins)')+'</div>';
-  const cf=feeTotal(),nd=feeDirs(),sp=S.players.filter(x=>x.sp20).length;
+  const cf=feeTotal(),nd=feeDirs(),sp=S.players.filter(x=>x.sp20).length,spb=S.players.filter(x=>x.sp2).length;
   const fst=feeStatus(D),fs='<div class="feebox '+fst.cls+'">'+fst.html+'</div>';
   h+='<div class="card" style="margin-top:16px"><h3>Club Fee report</h3><div class="tablewrap"><table><thead><tr><th>Item</th><th class="r">Per player</th><th class="r">Players</th><th class="r">Total</th></tr></thead><tbody>'+
    '<tr><td>Prize Pool entries</td><td class="r">'+money(S.entry)+'</td><td class="r">'+D.n+'</td><td class="r">'+money(p.pool)+'</td></tr>'+
-   '<tr><td>Side Pool entries</td><td class="r">'+money(S.sp20Entry)+'</td><td class="r">'+sp+'</td><td class="r">'+money(p.spPool)+'</td></tr>'+
+   '<tr><td><span class="sp20">A</span> Side Pool A entries</td><td class="r">'+money(S.sp20Entry)+'</td><td class="r">'+sp+'</td><td class="r">'+money(p.spPoolA)+'</td></tr>'+
+   '<tr><td><span class="sp2">B</span> Side Pool B entries</td><td class="r">'+money(S.sp2Entry)+'</td><td class="r">'+spb+'</td><td class="r">'+money(p.spPoolB)+'</td></tr>'+
    '<tr><td>Club Fees</td><td class="r">'+money(S.clubFee||0)+'</td><td class="r">'+D.n+'</td><td class="r">'+money(feeGross())+'</td></tr>'+
    '<tr><td>Less: director’s entry paid by the club</td><td class="r">'+money(S.entry||0)+'</td><td class="r">'+nd+'</td><td class="r">'+(nd?'−':'')+money(feeDeduct())+'</td></tr>'+
    '<tr><td><b>Net Club Fees</b></td><td class="r"></td><td class="r"></td><td class="r"><b>'+moneyS(cf)+'</b></td></tr>'+
-   '<tr><td><b>Total collected</b></td><td class="r"></td><td class="r"></td><td class="r"><b>'+moneyS(p.pool+p.spPool+cf)+'</b></td></tr></tbody></table></div>'+(nd?'':'<p class="warn" style="margin-top:8px">⚠ No Director is marked, so nothing is deducted yet. Tick the <b>Director</b> box next to the Director’s name on the <button class="linkbtn" data-act="tab" data-v="players">Players tab</button> to subtract their entry fee.</p>')+'<p class="note">Net Club Fees = Club Fee × number of players − (Entry fee × number of players marked as Director). The club covers the Director’s entry fee out of the Club Fees, so what is left is the net amount for the club. If it is negative, the club fund is covering the difference. They are kept separate from the prize money: they are not added to the Prize Pool or Side Pool and do not change any payouts. Change the fee in Settings below.</p>'+fs+'<label class="f" style="margin-top:8px"><input type="checkbox" id="feesub-4k2m" data-ch="feesub"'+(S.feesSubmitted?' checked':'')+(cf>0?'':' disabled')+'> Club Fees submitted to the Treasurer</label></div>';
+   '<tr><td><b>Total collected</b></td><td class="r"></td><td class="r"></td><td class="r"><b>'+moneyS(p.pool+p.spPool+cf)+'</b></td></tr></tbody></table></div>'+(nd?'':'<p class="warn" style="margin-top:8px">⚠ No Director is marked, so nothing is deducted yet. Tick the <b>Director</b> box next to the Director’s name on the <button class="linkbtn" data-act="tab" data-v="players">Players tab</button> to subtract their entry fee.</p>')+'<p class="note">Net Club Fees = Club Fee × number of players − (Entry fee × number of players marked as Director). The club covers the Director’s entry fee out of the Club Fees, so what is left is the net amount for the club. If it is negative, the club fund is covering the difference. They are kept separate from the prize money: they are not added to the Prize Pool or the Side Pools and do not change any payouts. Change the fee in Settings below.</p>'+fs+'<label class="f" style="margin-top:8px"><input type="checkbox" id="feesub-4k2m" data-ch="feesub"'+(S.feesSubmitted?' checked':'')+(cf>0?'':' disabled')+'> Club Fees submitted to the Treasurer</label></div>';
   h+='<div class="grid cols2" style="margin-top:16px">';
   h+='<div class="card"><h3>Round progress</h3>';
   t.rounds.forEach((ms,i)=>{const d=ms.filter(m=>m.winner!=null).length,tot=ms.length;
@@ -609,12 +616,13 @@ function viewDashboard(D){
   if(ready.length>8)h+='<p class="note">+ '+(ready.length-8)+' more…</p>';
   h+='</div>';
   h+='<div class="card"><h3>Top 5 leaderboard</h3>';
-  D.standings.slice(0,5).forEach(x=>{const r=D.rec[x.id];h+='<div class="leader"><span><b class="num ck">'+D.rank[x.id]+'</b> '+esc(x.name)+(x.sp20?'<span class="sp20">SP</span>':'')+'</span><span class="num">'+r.w+'–'+r.l+' · '+money(p.per[x.id].total)+'</span></div>';});
+  D.standings.slice(0,5).forEach(x=>{const r=D.rec[x.id];h+='<div class="leader"><span><b class="num ck">'+D.rank[x.id]+'</b> '+esc(x.name)+spTags(x)+'</span><span class="num">'+r.w+'–'+r.l+' · '+money(p.per[x.id].total)+'</span></div>';});
   h+='</div>';
   h+='<div class="card"><h3>Wins &amp; payouts</h3>'+(D.n?chartSvg(D):'<p class="note">No players.</p>')+'</div>';
   h+='<div class="card"><h3>Settings</h3><div class="grid" style="gap:10px"><div><label class="f" for="set-name-4q1x">Tournament name</label><input type="text" id="set-name-4q1x" data-ch="set" data-k="name" value="'+esc(S.name)+'"></div>'+
    '<div class="row"><div><label class="f" for="set-entry-8w3z">Prize Pool entry ($)</label><input type="number" min="0" step="1" id="set-entry-8w3z" data-ch="set" data-k="entry" value="'+S.entry+'" style="width:130px"></div>'+
-   '<div><label class="f" for="set-sp20-2m9c">Side Pool entry ($)</label><input type="number" min="0" step="1" id="set-sp20-2m9c" data-ch="set" data-k="sp20Entry" value="'+S.sp20Entry+'" style="width:130px"></div>'+
+   '<div><label class="f" for="set-sp20-2m9c"><span class="sp20">A</span> Side Pool A entry ($)</label><input type="number" min="0" step="1" id="set-sp20-2m9c" data-ch="set" data-k="sp20Entry" value="'+S.sp20Entry+'" style="width:130px"></div>'+
+   '<div><label class="f" for="set-sp2-5e2t"><span class="sp2">B</span> Side Pool B entry ($)</label><input type="number" min="0" step="1" id="set-sp2-5e2t" data-ch="set" data-k="sp2Entry" value="'+S.sp2Entry+'" style="width:130px"></div>'+
    '<div><label class="f" for="set-club-6c1f">Club Fee per player ($)</label><input type="number" min="0" step="0.01" id="set-club-6c1f" data-ch="set" data-k="clubFee" value="'+(S.clubFee||0)+'" style="width:130px"></div>'+
    '<div><label class="f" for="set-rounds-9r5t">Rounds</label><select id="set-rounds-9r5t" data-ch="set" data-k="numRounds"'+(playBegun()?' disabled':'')+'><option value="3"'+(S.numRounds!==5?' selected':'')+'>3 rounds</option><option value="5"'+(S.numRounds===5?' selected':'')+'>5 rounds</option></select></div></div>'+(playBegun()?'<p class="note">The number of rounds is locked once winners have been entered. Clear all winners to change it.</p>':'')+
    '<p class="note">Win payout per match win = '+money(S.entry/2)+' (entry ÷ 2). A BYE counts as a win and is paid.</p></div></div>';
@@ -628,10 +636,10 @@ function viewPlayers(D){
   if(lock)h+='<p class="note">🔒 Winners have been entered, so adding/removing players, seeds and shuffling are locked. Names and tags can still be edited. Use <i>Rules › Start a new tournament</i> to reset.</p>';
   h+='<div class="row" style="margin:10px 0"><button class="btn gold" data-act="randseeds"'+(lock?' disabled':'')+'>🎲 Roll seeds</button><button class="btn" data-act="sortseed">↕ Sort by seed</button></div>';
   if(lock)h+='<p class="warn">Clear all winners first to re-randomize</p>';
-  h+='<div class="tablewrap pl-scroll"><table><thead><tr><th>ID</th><th>Name</th><th>Side Pool</th><th title="Director: the club pays this player’s entry fee out of the Club Fees">Director</th><th>Seed</th><th></th></tr></thead><tbody>';
+  h+='<div class="tablewrap pl-scroll"><table><thead><tr><th>ID</th><th>Name</th><th class="spAh">Side Pool A</th><th class="spBh">Side Pool B</th><th title="Director: the club pays this player’s entry fee out of the Club Fees">Director</th><th>Seed</th><th></th></tr></thead><tbody>';
   S.players.forEach(p=>{
-    const f=(k)=>'<td><input type="checkbox" aria-label="'+k+' '+esc(p.name)+'" data-ch="pflag" data-p="'+p.id+'" data-f="'+k+'"'+(p[k]?' checked':'')+'></td>';
-    h+='<tr><td class="num">'+p.id+'</td><td><input type="text" style="min-width:150px" aria-label="Name for player '+p.id+'" data-ch="pname" data-p="'+p.id+'" value="'+esc(p.name)+'"></td>'+f('sp20')+f('director')+
+    const f=(k)=>'<td><input type="checkbox" aria-label="'+k+' '+esc(p.name)+'" data-ch="pflag" class="cb-'+k+'" data-p="'+p.id+'" data-f="'+k+'"'+(p[k]?' checked':'')+'></td>';
+    h+='<tr><td class="num">'+p.id+'</td><td><input type="text" style="min-width:150px" aria-label="Name for player '+p.id+'" data-ch="pname" data-p="'+p.id+'" value="'+esc(p.name)+'"></td>'+f('sp20')+f('sp2')+f('director')+
      '<td><input type="number" step="any" style="width:150px" aria-label="Seed for '+esc(p.name)+'" data-ch="pseed" data-p="'+p.id+'" value="'+p.seed+'"'+(lock?' disabled':'')+'></td><td><button class="btn sm danger" data-act="del" data-p="'+p.id+'"'+(lock?' disabled':'')+' aria-label="Delete '+esc(p.name)+'">✕</button></td></tr>';
   });
   h+='</tbody></table></div><p class="note">Players marked Director have their entry paid by the club: the Net Club Fees are reduced by one entry fee per Director (Net Club Fees = Club Fee × players − Entry fee × directors); the tag has no other effect (no payout effect). Pairing order = seed ascending, ties by ID.</p></div>';
@@ -645,7 +653,7 @@ function sideHtml(D,m,side){
   if(s.pid!=null){
     const p=D.byId[s.pid],r=D.rec[s.pid],isW=m.winner===s.pid;
     const click=!m.auto&&m.a.pid!=null&&m.b.pid!=null;
-    const inner='<span><i class="ck av">'+esc(String(p.name).trim().charAt(0).toUpperCase())+'</i>'+(isW?'🏆 ':'')+esc(p.name)+(p.sp20?'<span class="sp20">SP</span>':'')+'</span><span class="rec num">'+r.w+'–'+r.l+'</span>';
+    const inner='<span><i class="ck av">'+esc(String(p.name).trim().charAt(0).toUpperCase())+'</i>'+(isW?'🏆 ':'')+esc(p.name)+spTags(p)+'</span><span class="rec num">'+r.w+'–'+r.l+'</span>';
     if(click)return '<button class="prow'+(isW?' win':'')+'" data-act="win" data-m="'+m.id+'" data-p="'+s.pid+'" title="'+(isW?'Click to clear winner':'Set as winner')+'">'+inner+'</button>';
     return '<div class="prow'+(isW?' win':'')+'">'+inner+'</div>';
   }
@@ -662,7 +670,7 @@ function matchCard(D,m){
   return h+'</div>';
 }
 function curRound(D){for(let i=0;i<D.R;i++){if(D.t.rounds[i].some(m=>m.winner==null))return String(i+1);}return String(D.R);}
-function sidebar(D){const p=D.pay,ms=D.t.matches,done=ms.filter(m=>m.winner!=null).length,tot=ms.length,top=D.anyResult?p.lead:[],bye={};ms.forEach(m=>{if(m.winner!=null&&(m.a.bye||m.b.bye))bye[m.winner]=true;});const nm=id=>`<button class='pn' data-act='hl' data-p='${id}'>${esc(nameOf(D,id))}</button>`;const names=ids=>ids.length?ids.map(nm).join(', '):`<span class='note'>—</span>`;const spN=S.players.filter(x=>x.sp20).length;const rows=D.standings.map(x=>{const r=D.rec[x.id];return `<tr class='${top.includes(x.id)?'top':''}${r.w+r.l===0?' dim':''}${ui.hl===x.id?' me':''}'><td class='num'><span class='ck'>${D.rank[x.id]}</span></td><td>${nm(x.id)}${x.sp20?`<span class='sp20'>SP</span>`:''}${bye[x.id]?`<span class='tag blue'>BYE</span>`:''}</td><td class='num'>${r.w}-${r.l}</td><td class='r pc num'>${money(p.per[x.id].total)}</td></tr>`;}).join('');return `<aside class='sb card no-print${ui.sbOpen?'':' closed'}${ui.sbPay?'':' nopay'}' aria-label='Live standings'><div class='row' style='justify-content:space-between'><h3>Live Standings</h3><button class='btn sm sbtoggle' data-act='sbopen' aria-expanded='${ui.sbOpen?'true':'false'}'>${ui.sbOpen?'Hide':'Show'}</button></div><div class='row' style='margin:6px 0'><span class='note'><i class='dot' style='background:var(--ok)'></i> Updated just now</span>${stBadge(D.status)}<span class='num note'>${done} of ${tot}</span></div><div class='sbbody'><div class='row' style='justify-content:space-between;margin-bottom:6px'><span class='note'>Tap a name to highlight their matches.</span><button class='btn sm sbpaytog' data-act='sbpay'>${ui.sbPay?'Hide':'Show'} payout</button></div><div class='tablewrap'><table><thead><tr><th>Rank</th><th>Name</th><th>W-L</th><th class='r pc'>Payout</th></tr></thead><tbody>${rows}</tbody></table></div><div class='sbcard'><b>Side Pool</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Entries: ${spN} · Pool: ${money(p.spPool)}</div><div>Leader(s): ${names(p.spLead)}</div><div class='note num'>Projected share each: ${money(p.spShare)}</div></div><div class='sbcard'><b>Main Prize</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Bonus pool: ${money(p.bonusPool)}</div><div>Top record: ${names(p.lead)}</div><div class='note num'>Predicted bonus/person: ${money(p.bonusShare)}</div></div><div class='sbcard'><div><b>Remaining matches:</b> <span class='num'>${tot-done}</span></div><div class='note num'>Total payout ${money(p.total)} vs pool ${money(p.pool+p.spPool)}${p.verified?` <span class='okc'><b>✓ Verified</b></span>`:''}</div></div></div></aside>`;}
+function sidebar(D){const p=D.pay,ms=D.t.matches,done=ms.filter(m=>m.winner!=null).length,tot=ms.length,top=D.anyResult?p.lead:[],bye={};ms.forEach(m=>{if(m.winner!=null&&(m.a.bye||m.b.bye))bye[m.winner]=true;});const nm=id=>`<button class='pn' data-act='hl' data-p='${id}'>${esc(nameOf(D,id))}</button>`;const names=ids=>ids.length?ids.map(nm).join(', '):`<span class='note'>—</span>`;const spN=S.players.filter(x=>x.sp20).length,spNB=S.players.filter(x=>x.sp2).length;const rows=D.standings.map(x=>{const r=D.rec[x.id];return `<tr class='${top.includes(x.id)?'top':''}${r.w+r.l===0?' dim':''}${ui.hl===x.id?' me':''}'><td class='num'><span class='ck'>${D.rank[x.id]}</span></td><td>${nm(x.id)}${spTags(x)}${bye[x.id]?`<span class='tag blue'>BYE</span>`:''}</td><td class='num'>${r.w}-${r.l}</td><td class='r pc num'>${money(p.per[x.id].total)}</td></tr>`;}).join('');return `<aside class='sb card no-print${ui.sbOpen?'':' closed'}${ui.sbPay?'':' nopay'}' aria-label='Live standings'><div class='row' style='justify-content:space-between'><h3>Live Standings</h3><button class='btn sm sbtoggle' data-act='sbopen' aria-expanded='${ui.sbOpen?'true':'false'}'>${ui.sbOpen?'Hide':'Show'}</button></div><div class='row' style='margin:6px 0'><span class='note'><i class='dot' style='background:var(--ok)'></i> Updated just now</span>${stBadge(D.status)}<span class='num note'>${done} of ${tot}</span></div><div class='sbbody'><div class='row' style='justify-content:space-between;margin-bottom:6px'><span class='note'>Tap a name to highlight their matches.</span><button class='btn sm sbpaytog' data-act='sbpay'>${ui.sbPay?'Hide':'Show'} payout</button></div><div class='tablewrap'><table><thead><tr><th>Rank</th><th>Name</th><th>W-L</th><th class='r pc'>Payout</th></tr></thead><tbody>${rows}</tbody></table></div><div class='sbcard spAc'><b>Side Pool A</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Entries: ${spN} · Pool: ${money(p.spPoolA)}</div><div>Leader(s): ${names(p.spLead)}</div><div class='note num'>Projected share each: ${money(p.spShare)}</div></div>${spNB?`<div class='sbcard spBc'><b>Side Pool B</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Entries: ${spNB} · Pool: ${money(p.spPoolB)}</div><div>Leader(s): ${names(p.spLeadB)}</div><div class='note num'>Projected share each: ${money(p.spShareB)}</div></div>`:''}<div class='sbcard'><b>Main Prize</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Bonus pool: ${money(p.bonusPool)}</div><div>Top record: ${names(p.lead)}</div><div class='note num'>Predicted bonus/person: ${money(p.bonusShare)}</div></div><div class='sbcard'><div><b>Remaining matches:</b> <span class='num'>${tot-done}</span></div><div class='note num'>Total payout ${money(p.total)} vs pool ${money(p.pool+p.spPool)}${p.verified?` <span class='okc'><b>✓ Verified</b></span>`:''}</div></div></div></aside>`;}
 function viewMatches(D){
   if(!D.check.ok)return '<div class="card"><h2>Matches</h2><p class="warn">Fix the roster first: '+D.check.issues.map(esc).join(' ')+'</p></div>';
   const sel=ui.mRound||'auto',cur=+curRound(D),showR=r=>sel==='all'||(sel==='auto'?(r===cur||r===cur+1):sel===String(r));
@@ -686,11 +694,11 @@ function viewMatches(D){
 function viewStandings(D){
   const p=D.pay;
   let h='<div class="card"><div class="row" style="justify-content:space-between"><h2>Standings</h2><button class="btn gold" data-act="csv">⬇ Export CSV</button></div>';
-  h+='<p class="note">Sorted by wins (desc), losses (asc), then name. '+(p.complete?'Final.':'Bonus and Side Pool amounts are paid only when the tournament is Complete; projected values are shown in gold.')+'</p><div class="tablewrap"><table><thead><tr><th>Rank</th><th>Name</th><th class="r">W</th><th class="r">L</th><th>Record</th><th class="r">Match Wins</th><th class="r">Main Bonus</th><th class="r">Side Pool</th><th class="r">Total</th></tr></thead><tbody>';
+  h+='<p class="note">Sorted by wins (desc), losses (asc), then name. '+(p.complete?'Final.':'Bonus and Side Pool amounts are paid only when the tournament is Complete; projected values are shown in gold.')+'</p><div class="tablewrap"><table><thead><tr><th>Rank</th><th>Name</th><th class="r">W</th><th class="r">L</th><th>Record</th><th class="r">Match Wins</th><th class="r">Main Bonus</th><th class="r spAh">Side Pool A</th><th class="r spBh">Side Pool B</th><th class="r">Total</th></tr></thead><tbody>';
   D.standings.forEach(x=>{
     const r=D.rec[x.id],y=p.per[x.id],top=D.anyResult&&p.lead.includes(x.id);
     const proj=(v,real)=>real?money(real):(v?'<span class="note" style="color:var(--gold)">proj '+money(v)+'</span>':money(0));
-    h+='<tr'+(top?' class="top"':'')+'><td class="num"><span class="ck">'+D.rank[x.id]+'</span></td><td>'+esc(x.name)+(x.sp20?'<span class="sp20">SP</span>':'')+'</td><td class="r">'+r.w+'</td><td class="r">'+r.l+'</td><td>'+r.w+'-'+r.l+'</td><td class="r">'+money(y.win)+'</td><td class="r">'+proj(y.projBonus,y.bonus)+'</td><td class="r">'+(x.sp20?proj(y.projSp,y.sp):'—')+'</td><td class="r"><b>'+money(y.total)+'</b></td></tr>';
+    h+='<tr'+(top?' class="top"':'')+'><td class="num"><span class="ck">'+D.rank[x.id]+'</span></td><td>'+esc(x.name)+spTags(x)+'</td><td class="r">'+r.w+'</td><td class="r">'+r.l+'</td><td>'+r.w+'-'+r.l+'</td><td class="r">'+money(y.win)+'</td><td class="r">'+proj(y.projBonus,y.bonus)+'</td><td class="r">'+(x.sp20?proj(y.projSp,y.sp):'—')+'</td><td class="r">'+(x.sp2?proj(y.projSpB,y.spB):'—')+'</td><td class="r"><b>'+money(y.total)+'</b></td></tr>';
   });
   return h+'</tbody></table></div></div>';
 }
@@ -701,15 +709,15 @@ function viewPayouts(D){
   h+='<div class="printonly"><h2>'+esc(S.name)+' — Cash-out sheet</h2><p>'+new Date().toLocaleDateString()+'</p></div>';
   h+='<div class="printonly printcred">Determined Swiss Format Tournament Generator · Format by Steve Reichelt · Built by Michael Mesich</div>';
   h+='<p class="note no-print">If printing is blocked in this viewer, use Export CSV and print from a spreadsheet.</p>';
-  if(!p.complete)h+='<p class="warn">⚠ Not complete: Main Prize Bonus and Side Pool are $0 until every match has a winner (they appear as projected on Standings). Amounts below are match-win payouts so far.</p>';
-  h+='<div class="tablewrap"><table><thead><tr><th>Player</th><th class="r">Match Wins</th><th class="r">Main Bonus</th><th class="r">Side Pool</th><th class="r">Owed</th><th>Paid ✓</th></tr></thead><tbody>';
-  if(!rows.length)h+='<tr><td colspan="6" class="note">⚪ Nobody is owed money yet.</td></tr>';
-  rows.forEach(x=>{const y=p.per[x.id];h+='<tr><td>'+esc(x.name)+(x.sp20?'<span class="sp20">SP</span>':'')+'</td><td class="r">'+money(y.win)+'</td><td class="r">'+money(y.bonus)+'</td><td class="r">'+money(y.sp)+'</td><td class="r"><b>'+money(y.total)+'</b></td><td><input type="checkbox" aria-label="Paid '+esc(x.name)+'" data-ch="paid" data-p="'+x.id+'"'+(S.paid[x.id]?' checked':'')+'></td></tr>';});
+  if(!p.complete)h+='<p class="warn">⚠ Not complete: Main Prize Bonus and the Side Pools are $0 until every match has a winner (they appear as projected on Standings). Amounts below are match-win payouts so far.</p>';
+  h+='<div class="tablewrap"><table><thead><tr><th>Player</th><th class="r">Match Wins</th><th class="r">Main Bonus</th><th class="r spAh">Side Pool A</th><th class="r spBh">Side Pool B</th><th class="r">Owed</th><th>Paid ✓</th></tr></thead><tbody>';
+  if(!rows.length)h+='<tr><td colspan="7" class="note">⚪ Nobody is owed money yet.</td></tr>';
+  rows.forEach(x=>{const y=p.per[x.id];h+='<tr><td>'+esc(x.name)+spTags(x)+'</td><td class="r">'+money(y.win)+'</td><td class="r">'+money(y.bonus)+'</td><td class="r">'+money(y.sp)+'</td><td class="r">'+money(y.spB)+'</td><td class="r"><b>'+money(y.total)+'</b></td><td><input type="checkbox" aria-label="Paid '+esc(x.name)+'" data-ch="paid" data-p="'+x.id+'"'+(S.paid[x.id]?' checked':'')+'></td></tr>';});
   h+='</tbody></table></div></div>';
-  h+='<div class="grid kpis" style="margin-top:16px">'+kpi('Total owed',money(p.total),'')+kpi('Marked paid',money(paidSum),'')+kpi('Still to pay',money(p.total-paidSum),'')+kpi('Pool + Side Pool',money(p.pool+p.spPool),money(p.pool)+' + '+money(p.spPool))+'</div>';
+  h+='<div class="grid kpis" style="margin-top:16px">'+kpi('Total owed',money(p.total),'')+kpi('Marked paid',money(paidSum),'')+kpi('Still to pay',money(p.total-paidSum),'')+kpi('Pool + Side Pools',money(p.pool+p.spPool),money(p.pool)+' + '+money(p.spPoolA)+' + '+money(p.spPoolB))+'</div>';
   h+='<div class="card" style="margin-top:16px"><h3>Cash check</h3><p class="num">Total payout '+money(p.total)+' + rounding remainder '+money(p.remainder)+' = '+money(p.total+p.remainder)+' vs pools '+money(p.pool+p.spPool)+'</p>';
   h+=p.verified?'<p class="okc"><b>✓ Verified</b> — every dollar is accounted for.</p>':'<p class="note">Verification runs when the tournament is Complete. Currently '+money(p.pool+p.spPool-p.total)+' of the pools is not yet paid out.</p>';
-  h+='<p class="note">Bonus pool '+money(p.bonusPool)+' = pool '+money(p.pool)+' − '+p.totalMatches+' matches × '+money(p.win)+(p.lead.length?'; split '+p.lead.length+' way'+(p.lead.length>1?'s':'')+' at '+money(p.bonusShare)+' each (rounded down).':'.')+(p.spLead.length?' Side Pool split '+p.spLead.length+' way(s) at '+money(p.spShare)+' each.':'')+'</p></div>';
+  h+='<p class="note">Bonus pool '+money(p.bonusPool)+' = pool '+money(p.pool)+' − '+p.totalMatches+' matches × '+money(p.win)+(p.lead.length?'; split '+p.lead.length+' way'+(p.lead.length>1?'s':'')+' at '+money(p.bonusShare)+' each (rounded down).':'.')+(p.spLead.length?' Side Pool A split '+p.spLead.length+' way(s) at '+money(p.spShare)+' each.':'')+(p.spLeadB.length?' Side Pool B split '+p.spLeadB.length+' way(s) at '+money(p.spShareB)+' each.':'')+'</p></div>';
   return h;
 }
 function viewRules(D){
@@ -720,7 +728,7 @@ function viewRules(D){
   '<li><b>Round 3'+(D.R>3?' onward':'')+':</b> computed by one general slot-based method for any number of players (4 or more): every Round 2 match gives a winner slot and a loser slot, slots are ranked by expected wins (2-0, then 1-1 with bridge matches floating between them, then 0-2) and paired greedily so players who met in Round 1 are not paired again. Slots like W2.3 / L2.3 refer to the winner / loser of Round 2 match 3, so matches become Ready as soon as their feeders finish.'+(D.R>3?' Rounds 4 and 5 repeat the same method using the winner and loser slots of the round before. With 5 rounds, fields under about 32 players (and some odd-sized fields up to about 50) may see repeat opponents in the last rounds; these are flagged “rematch”, and the larger the field the less likely it is.':'')+'</li>'+
   '<li>Tiny fields (4–6 players) use fixed pairings and a rematch may be unavoidable; such a match is flagged “rematch”. With 3 rounds, from 7 players up the method is rematch-free for every set of results. The Round 3 BYE never goes to a slot that could hold a player who already had a BYE. See the <b>Paths</b> sub-tab on Matches for every winner and loser route.</li></ul>'+
   ''+
-  '<h3 style="margin-top:14px">Payouts</h3><ul><li>Wins = match wins including BYE wins; Losses = real losses only.</li><li>Match Wins Payout = Wins × ('+(D.R===5?'Entry ÷ 4':'Entry ÷ 2')+').</li><li>Bonus Pool = the total entry money, minus what every match pays out (each match pays '+(D.R===5?'Entry ÷ 4':'Entry ÷ 2')+' to its winner, and there are '+D.R+' rounds of matches — half the players, rounded up, in each round). Players with the best record (most wins, then fewest losses) split it, each getting an equal share, rounded down to the whole dollar. Paid only when Complete.</li><li>Side Pool = Side Pool players × Side Pool entry, contested only among Side Pool players the same way. Paid only when Complete.</li><li>Any leftover few dollars from rounding down is shown on the Payouts tab rather than hidden.</li></ul>'+
+  '<h3 style="margin-top:14px">Payouts</h3><ul><li>Wins = match wins including BYE wins; Losses = real losses only.</li><li>Match Wins Payout = Wins × ('+(D.R===5?'Entry ÷ 4':'Entry ÷ 2')+').</li><li>Bonus Pool = the total entry money, minus what every match pays out (each match pays '+(D.R===5?'Entry ÷ 4':'Entry ÷ 2')+' to its winner, and there are '+D.R+' rounds of matches — half the players, rounded up, in each round). Players with the best record (most wins, then fewest losses) split it, each getting an equal share, rounded down to the whole dollar. Paid only when Complete.</li><li>There are two optional side pools, <b style="color:#f0d98a">Side Pool A</b> (gold) and <b style="color:#a9d8ff">Side Pool B</b> (blue). Each has its own entry fee. A player can be in neither, one or both, ticked on the Players tab. Each pool = its players × its entry, contested only among its own players the same way as the main bonus (best record, ties split equally, rounded down). Paid only when Complete.</li><li>Any leftover few dollars from rounding down is shown on the Payouts tab rather than hidden.</li></ul>'+
   '<h3 style="margin-top:14px">Winner entry</h3><p>Click a player on a Ready match. Click again or press Clear to undo. If a change would invalidate later results, you are warned and those later winners are cleared.</p>'+
   '<h3 style="margin-top:14px">Managing tournaments</h3><ul><li>You can keep several tournaments open at once. Use the dropdown at the top of the page, or the <b>Tournaments</b> tab, to jump between them. Each one keeps its own players, seeds, results and fees while the page stays open.</li>'+
   '<li><b>Nothing is stored in your browser.</b> Tournaments live in this page’s memory only. If you close or reload the page, anything you have not saved to a file is gone.</li>'+
@@ -734,8 +742,13 @@ function viewRules(D){
 }
 /* ---------- Render ---------- */
 /* ---------- Version & changelog (update APP_VERSION and add an entry at the TOP of CHANGELOG for every release) ---------- */
-const APP_VERSION='1.1.0';
+const APP_VERSION='1.2.0';
 const CHANGELOG=[
+ {v:'1.2.0',date:'2026-11-16',notes:[
+  'Two separate side pools: Side Pool A (gold) and Side Pool B (blue), each with its own entry fee. A player can be in neither, either or both.',
+  'Each side pool has its own pool, leaders and payout. Player tags, tick boxes and cards are colour-coded gold (A) and blue (B) on the Players, Matches, Standings, Payouts and Dashboard pages.',
+  'The New tournament dialog and Settings have an entry fee for each side pool. Older saved files open with everyone in Side Pool A as before.'
+ ]},
  {v:'1.1.0',date:'2026-11-15',notes:[
   'New: choose a 3-round or 5-round format for each tournament (when you create it, or in Settings before play starts).',
   '5-round tournaments pay $10 per win on a $40 entry (one quarter of the entry), leaving 37.5% of the money for the bonus pool. The 3-round format is unchanged.',
@@ -752,6 +765,7 @@ const CHANGELOG=[
   'The footer now has a thank-you card for the Twin Cities Backgammon Club (left) and a card about the annual Viking Backgammon Classic (right) on either side of the credits.',
   'Net Club Fees = Club Fee × number of players − (Entry fee × number of players marked as Director): the club covers the Director’s entry out of the Club Fees.',
   'New tournaments are no longer named with today’s date: the suggested name is just “Backgammon Tournament” (numbered if you already have one), because saved files already carry the date in their file name.',
+  'In the New tournament dialog, “Fill with N sample players” is now “🎲 Add random players” (How many players?), and it uses 40 fun backgammon-themed names instead of Player 1, Player 2…',
   'Tip: 5 rounds works best with 32 or more players. Smaller fields may have repeat opponents in the later rounds, which are flagged.'
  ]},
  {v:'1.0.0',date:'2026-11-15',notes:[
@@ -780,7 +794,7 @@ function prizeCharts(){
       h+='<tr><td><b>'+m(e)+'</b></td><td class="r">'+m(w)+'</td><td class="r">'+m(w*R)+'</td><td class="r">'+m(w*R/2)+'</td><td class="r">'+Math.round(winFrac(R)*R/2*100*10)/10+'%</td><td class="r">'+m(bonus)+'</td></tr>';});
     return h+'</tbody></table></div>';
   };
-  return '<div class="card" style="margin-top:16px"><h3>Prize charts</h3><p class="note">Examples for '+N+' players. The average player wins about half of their matches. The bonus pool is what is left of the entry money after every match win is paid, and it goes to the players with the best record (ties split it equally, rounded down to the whole dollar). The Side Pool is separate.</p>'+one(3)+one(5)+'<p class="note" style="margin-top:10px">Everything scales with the entry fee, so the split between match wins and the bonus pool stays the same at any entry: 75% / 25% for 3 rounds and 62.5% / 37.5% for 5 rounds. Entries that divide evenly by 4 (such as $40, $60 and $100) give whole-dollar amounts per win.</p></div>';
+  return '<div class="card" style="margin-top:16px"><h3>Prize charts</h3><p class="note">Examples for '+N+' players. The average player wins about half of their matches. The bonus pool is what is left of the entry money after every match win is paid, and it goes to the players with the best record (ties split it equally, rounded down to the whole dollar). The Side Pools are separate.</p>'+one(3)+one(5)+'<p class="note" style="margin-top:10px">Everything scales with the entry fee, so the split between match wins and the bonus pool stays the same at any entry: 75% / 25% for 3 rounds and 62.5% / 37.5% for 5 rounds. Entries that divide evenly by 4 (such as $40, $60 and $100) give whole-dollar amounts per win.</p></div>';
 }
 function footerHtml(){
   return '<footer class="credits no-print"><div class="fgrid">'+
@@ -851,6 +865,12 @@ function render(){
 function ymd(iso){const d=new Date(iso),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
 function hhmm(iso){const d=new Date(iso),p=n=>String(n).padStart(2,'0');return p(d.getHours())+':'+p(d.getMinutes());}
 function defaultName(){const base='Backgammon Tournament';let n=base,i=2;while(LIB.some(x=>x.name===n))n=base+' '+(i++);return n;}
+const NOVELTY_NAMES=['Lucky Lucy','Double Trouble','Snake Eyes Sam','Boxcars Betty','Pip Count Percy','Gammon Gary','Backgammon Barb','Dice Dynamo','Cube Master Cathy','Doubling Dave','Midnight Roller','Blot Boss Bobby','Prime Time Pete','Anchor Annie','Bear-Off Bruce','Checker Chad','Hit and Run Hannah','Captain Cube','Dicey Dana','Roll Model Rhonda','Tavli Tom','The Gammon Goblin','Bar Point Barry','Holding Game Holly','Sir Rolls-a-Lot','Mighty Mouse Mike','Race Car Rita','Triple Six Trixie','Lady Luck Linda','Dr. Doubles','Backgammon Bandit','Contact Connie','Blitz Billy','Crawford Carl','Pointing Penny','Slot Machine Stan','Opening Roll Ollie','Blockade Bonnie','Cube Turner Terry','The Late Roller'];
+function randomNames(n){
+  const pool=NOVELTY_NAMES.slice();for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=pool[i];pool[i]=pool[j];pool[j]=t;}
+  const out=[];for(let i=0;i<n;i++){const base=pool[i%pool.length],round=Math.floor(i/pool.length);out.push(round?base+' '+(round+1):base);}
+  return out;
+}
 function slugOf(s){return String(s||'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'tournament';}
 function summarize(T){
   const keep=S;S=T;
@@ -868,7 +888,7 @@ function hdrNote(){
 function fromData(x){
   let o;try{o=loadData(x,{});}catch(e){throw new Error(e.message==='Not a tournament file.'?'it is not a tournament file':'the player list or results look damaged');}
   const ok=v=>typeof v==='string'&&!isNaN(new Date(v));
-  return mkT({id:typeof x.id==='string'&&x.id?x.id:undefined,name:o.name,created:ok(x.created)?x.created:undefined,updated:ok(x.updated)?x.updated:undefined,entry:o.entry,sp20Entry:o.sp20Entry,clubFee:o.clubFee,feesSubmitted:o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt,feesSubmittedAmt:o.feesSubmittedAmt,players:o.players,winners:o.winners,paid:o.paid,nextId:o.nextId,seedsRandomized:o.seedsRandomized,numRounds:o.numRounds,dirty:false,savedAt:null});
+  return mkT({id:typeof x.id==='string'&&x.id?x.id:undefined,name:o.name,created:ok(x.created)?x.created:undefined,updated:ok(x.updated)?x.updated:undefined,entry:o.entry,sp20Entry:o.sp20Entry,sp2Entry:o.sp2Entry,clubFee:o.clubFee,feesSubmitted:o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt,feesSubmittedAmt:o.feesSubmittedAmt,players:o.players,winners:o.winners,paid:o.paid,nextId:o.nextId,seedsRandomized:o.seedsRandomized,numRounds:o.numRounds,dirty:false,savedAt:null});
 }
 function importData(d,fn){
   if(!d||typeof d!=='object'||Array.isArray(d))throw new Error('this does not look like a tournament file.');
@@ -896,13 +916,14 @@ function modalHtml(){
     '<fieldset class="ntset"><legend>Tournament settings</legend>'+
     '<div style="margin:4px 0"><b>Format</b><label class="f"><input type="radio" name="nt-rounds" value="3" checked> 3 rounds</label><label class="f"><input type="radio" name="nt-rounds" value="5"> 5 rounds</label></div>'+
     '<div class="row"><div><label class="f" for="nt-entry-1a7p">Prize Pool entry ($)</label><input type="number" min="0" step="1" id="nt-entry-1a7p" class="ntfee" value="40" style="width:110px"></div>'+
-    '<div><label class="f" for="nt-sp-2b8q">Side Pool entry ($)</label><input type="number" min="0" step="1" id="nt-sp-2b8q" class="ntfee" value="20" style="width:110px"></div>'+
+    '<div><label class="f" for="nt-sp-2b8q"><span class="sp20">A</span> Side Pool A entry ($)</label><input type="number" min="0" step="1" id="nt-sp-2b8q" class="ntfee" value="20" style="width:110px"></div>'+
+    '<div><label class="f" for="nt-sp2-4d1s"><span class="sp2">B</span> Side Pool B entry ($)</label><input type="number" min="0" step="1" id="nt-sp2-4d1s" class="ntfee" value="10" style="width:110px"></div>'+
     '<div><label class="f" for="nt-club-3c9r">Club Fee per player ($)</label><input type="number" min="0" step="0.01" id="nt-club-3c9r" class="ntfee" value="5" style="width:110px"></div></div>'+
-    '<p class="note">Suggested amounts: 3 rounds = $40 / $20 / $5, 5 rounds = $60 / $30 / $10. They fill in automatically when you pick the format (unless you have typed your own) and can be changed later in Settings. 5 rounds works best with 32 or more players; smaller fields may have repeat opponents in the later rounds (flagged).</p></fieldset>'+
+    '<p class="note">Suggested amounts: 3 rounds = $40 entry, $20 / $10 side pools A / B and $5 club fee; 5 rounds = $60 entry, $30 / $15 side pools and $10 club fee. They fill in automatically when you pick the format (unless you have typed your own) and can be changed later in Settings. 5 rounds works best with 32 or more players; smaller fields may have repeat opponents in the later rounds (flagged).</p></fieldset>'+
     '<fieldset class="ntset"><legend>Players</legend>'+
     '<div style="margin:4px 0"><label class="f"><input type="radio" name="nt-mode" value="blank" checked> Blank roster (add players afterwards)</label>'+
     '<label class="f"><input type="radio" name="nt-mode" value="copy"> Copy the players (no results) from <select id="nt-src-9d2k">'+LIB.map(T=>'<option value="'+esc(T.id)+'"'+(T===S?' selected':'')+'>'+esc(T.name)+' ('+T.players.length+' players)</option>').join('')+'</select></label>'+
-    '<label class="f"><input type="radio" name="nt-mode" value="paste"> Paste names (one per line, 4 or more players)</label><textarea id="nt-paste-6p4w" placeholder="Alice&#10;Bob&#10;Carol"></textarea><div class="row" style="margin-top:6px"><label class="f" for="nt-n-4h8z" style="margin:0">N</label><input type="number" id="nt-n-4h8z" min="4" max="5000" value="16" style="width:100px"><button class="btn sm" type="button" data-act="ntsample">Fill with N sample players</button></div></div></fieldset>'+
+    '<label class="f"><input type="radio" name="nt-mode" value="paste"> Paste names (one per line, 4 or more players)</label><textarea id="nt-paste-6p4w" placeholder="Alice&#10;Bob&#10;Carol"></textarea><div class="row" style="margin-top:6px"><label class="f" for="nt-n-4h8z" style="margin:0">How many players?</label><input type="number" id="nt-n-4h8z" min="4" max="5000" value="16" style="width:100px"><button class="btn sm" type="button" data-act="ntsample">🎲 Add random players</button></div><p class="note" style="margin:6px 0 0">Fills the list above with fun made-up names. Handy for a practice run. You can edit the names afterwards.</p></div></fieldset>'+
     btns('tcreate','Create tournament'));
   }
   if(m.type==='rename'){const T=LIB.find(x=>x.id===m.id);if(!T)return '';return wrap('Rename tournament','<label class="f" for="rn-name-8b1q" style="margin-top:8px">New name</label><input type="text" id="rn-name-8b1q" value="'+esc(T.name)+'"><div style="height:10px"></div>'+btns('trename','Save name'));}
@@ -980,7 +1001,7 @@ document.addEventListener('click',function(e){
       else if(mode==='paste'){const names=$('nt-paste-6p4w').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);ps=names.map((x,i)=>({id:i+1,name:x,sp20:false,director:false,seed:Math.random()}));nid=names.length+1;}
       const nr=+((document.querySelector('input[name="nt-rounds"]:checked')||{}).value)===5?5:3;
       const fv=(id,d)=>{const v=parseFloat(($(id)||{}).value);return Number.isFinite(v)&&v>=0?v:d;};
-      const T=mkT({name:nm,entry:fv('nt-entry-1a7p',nr===5?60:40),sp20Entry:fv('nt-sp-2b8q',nr===5?30:20),clubFee:fv('nt-club-3c9r',nr===5?10:5),players:ps,nextId:nid,numRounds:nr,dirty:true});
+      const T=mkT({name:nm,entry:fv('nt-entry-1a7p',nr===5?60:40),sp20Entry:fv('nt-sp-2b8q',nr===5?30:20),sp2Entry:fv('nt-sp2-4d1s',nr===5?15:10),clubFee:fv('nt-club-3c9r',nr===5?10:5),players:ps,nextId:nid,numRounds:nr,dirty:true});
       dropPlaceholder();LIB.push(T);ui.tab='players';switchTo(T.id);flash('Created “'+T.name+'” with '+ps.length+' player'+(ps.length===1?'':'s')+'. Remember to save it to a file.');render();window.scrollTo(0,0);break;
     }
     case 'trename':{const T=LIB.find(x=>x.id===ui.modal.id),nm=($('rn-name-8b1q').value||'').trim();if(!nm){flash('Enter a name first.');render();break;}if(T){T.name=nm;T.dirty=true;T.updated=nowIso();}ui.modal=null;render();break;}
@@ -989,12 +1010,12 @@ document.addEventListener('click',function(e){
       const nm=($('cp-name-2x8r').value||'').trim()||(src.name+' (copy)');
       const res=(document.querySelector('input[name="cp-mode"]:checked')||{}).value==='results';
       const c=JSON.parse(JSON.stringify(src));
-      const T=mkT({name:nm,entry:c.entry,sp20Entry:c.sp20Entry,clubFee:c.clubFee,players:c.players,winners:res?c.winners:{},paid:res?c.paid:{},nextId:c.nextId,seedsRandomized:c.seedsRandomized,numRounds:c.numRounds,dirty:true});
+      const T=mkT({name:nm,entry:c.entry,sp20Entry:c.sp20Entry,sp2Entry:c.sp2Entry,clubFee:c.clubFee,players:c.players,winners:res?c.winners:{},paid:res?c.paid:{},nextId:c.nextId,seedsRandomized:c.seedsRandomized,numRounds:c.numRounds,dirty:true});
       LIB.push(T);ui.modal=null;flash('Added “'+T.name+'” ('+(res?'roster with results':'roster only')+'). Remember to save it to a file.');render();break;
     }
     case 'mreplace':{const m=ui.modal,i=LIB.findIndex(x=>x.id===m.T.id);if(i>=0)LIB[i]=m.T;else LIB.push(m.T);switchTo(m.T.id);flash('Replaced the tournament with the version from “'+m.fn+'”.');render();break;}
     case 'mkeep':{const m=ui.modal;m.T.id=newId();m.T.name+=' (imported)';LIB.push(m.T);switchTo(m.T.id);flash('Kept both: the file’s version was added as “'+m.T.name+'”.');render();break;}
-    case 'ntsample':{const n=Math.max(1,Math.min(5000,parseInt($('nt-n-4h8z').value,10)||0));const lines=[];for(let i=1;i<=n;i++)lines.push('Player '+i);$('nt-paste-6p4w').value=lines.join('\n');const rb=document.querySelector('input[name="nt-mode"][value="paste"]');if(rb)rb.checked=true;break;}
+    case 'ntsample':{const n=Math.max(1,Math.min(5000,parseInt($('nt-n-4h8z').value,10)||0));$('nt-paste-6p4w').value=randomNames(n).join('\n');const rb=document.querySelector('input[name="nt-mode"][value="paste"]');if(rb)rb.checked=true;break;}
     case 'open':openPicker();break;
     case 'csv':dl(slug()+'-standings-payouts.csv',csvStandings(D),'text/csv');break;
     case 'print':document.title=S.name+' – Cash-out sheet';try{window.print();document.title=S.name+' – Backgammon Determined Swiss Tournament Manager';}catch(err){flash('Printing is blocked in this viewer. Use Export CSV instead.');render();}break;
@@ -1017,7 +1038,7 @@ document.addEventListener('click',function(e){
   }
 });
 document.addEventListener('change',function(e){
-  if(e.target.name==='nt-rounds'){const five=e.target.value==='5',d=[['nt-entry-1a7p',five?60:40],['nt-sp-2b8q',five?30:20],['nt-club-3c9r',five?10:5]];d.forEach(x=>{const f=$(x[0]);if(f&&f.dataset.edited!=='1')f.value=x[1];});return;}
+  if(e.target.name==='nt-rounds'){const five=e.target.value==='5',d=[['nt-entry-1a7p',five?60:40],['nt-sp-2b8q',five?30:20],['nt-sp2-4d1s',five?15:10],['nt-club-3c9r',five?10:5]];d.forEach(x=>{const f=$(x[0]);if(f&&f.dataset.edited!=='1')f.value=x[1];});return;}
   if(e.target.id==='tsw-5n2j'){switchTo(e.target.value);return;}if(e.target.id==='path-pl-7q2m'){ui.pathPid=+e.target.value;render();return;}const el=e.target.closest('[data-ch]');if(!el)return;
   const k=el.dataset.ch,pid=+el.dataset.p,pl=S.players.find(p=>p.id===pid);
   if(k==='pname'&&pl)commit(()=>{pl.name=el.value.trim();});
