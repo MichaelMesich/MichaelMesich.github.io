@@ -417,7 +417,11 @@ function computePayouts(players,rec,status,entry,spEntry,anyResult,R,spEntryB){
   const bonusPool=Math.max(0,pool-totalMatches*win);
   const complete=status==='Complete';
   const lead=anyResult?leadersOf(players,rec):[];
-  const bonusShare=lead.length?Math.trunc(bonusPool/lead.length):0;
+  const sole=lead.length===1;
+  const lead2=sole?leadersOf(players.filter(p=>p.id!==lead[0]),rec):[];
+  const bonusShare=lead.length?(sole&&lead2.length?Math.trunc(bonusPool*0.6):Math.trunc(bonusPool/lead.length)):0;
+  const bonusShare2=lead2.length?Math.trunc(bonusPool*0.4/lead2.length):0;
+  const bonusOf=id=>lead.includes(id)?bonusShare:(lead2.includes(id)?bonusShare2:0);
   const spPlayers=players.filter(p=>p.sp20),spPlayersB=players.filter(p=>p.sp2);
   const spPoolA=spPlayers.length*spEntry,spPoolB=spPlayersB.length*(spEntryB||0),spPool=spPoolA+spPoolB;
   const spLead=anyResult?leadersOf(spPlayers,rec):[],spLeadB=anyResult?leadersOf(spPlayersB,rec):[];
@@ -426,14 +430,14 @@ function computePayouts(players,rec,status,entry,spEntry,anyResult,R,spEntryB){
   let total=0,winsTotal=0;
   players.forEach(p=>{
     const mw=rec[p.id].w*win;
-    const bonus=complete&&lead.includes(p.id)?bonusShare:0;
+    const bonus=complete?bonusOf(p.id):0;
     const sp=complete&&spLead.includes(p.id)?spShare:0,spB=complete&&spLeadB.includes(p.id)?spShareB:0;
-    per[p.id]={win:mw,bonus,sp,spB,total:mw+bonus+sp+spB,projBonus:lead.includes(p.id)?bonusShare:0,projSp:spLead.includes(p.id)?spShare:0,projSpB:spLeadB.includes(p.id)?spShareB:0};
+    per[p.id]={win:mw,bonus,sp,spB,total:mw+bonus+sp+spB,projBonus:bonusOf(p.id),projSp:spLead.includes(p.id)?spShare:0,projSpB:spLeadB.includes(p.id)?spShareB:0};
     total+=per[p.id].total;winsTotal+=mw;
   });
-  const bonusRem=lead.length?bonusPool-bonusShare*lead.length:0;
+  const bonusRem=lead.length?bonusPool-bonusShare*lead.length-bonusShare2*lead2.length:0;
   const spRem=(spLead.length?spPoolA-spShare*spLead.length:0)+(spLeadB.length?spPoolB-spShareB*spLeadB.length:0);
-  return {per,total,win,pool,totalMatches,bonusPool,spPool,spPoolA,spPoolB,lead,spLead,spLeadB,bonusShare,spShare,spShareB,complete,remainder:bonusRem+spRem,winsTotal,
+  return {per,total,win,pool,totalMatches,bonusPool,spPool,spPoolA,spPoolB,lead,lead2,spLead,spLeadB,bonusShare,bonusShare2,spShare,spShareB,complete,remainder:bonusRem+spRem,winsTotal,
     verified:complete&&Math.abs(total+bonusRem+spRem-(pool+spPool))<0.005};
 }
 function cleanWinners(players,winners,R){
@@ -717,7 +721,7 @@ function viewPayouts(D){
   h+='<div class="grid kpis" style="margin-top:16px">'+kpi('Total owed',money(p.total),'')+kpi('Marked paid',money(paidSum),'')+kpi('Still to pay',money(p.total-paidSum),'')+kpi('Pool + Side Pools',money(p.pool+p.spPool),money(p.pool)+' + '+money(p.spPoolA)+' + '+money(p.spPoolB))+'</div>';
   h+='<div class="card" style="margin-top:16px"><h3>Cash check</h3><p class="num">Total payout '+money(p.total)+' + rounding remainder '+money(p.remainder)+' = '+money(p.total+p.remainder)+' vs pools '+money(p.pool+p.spPool)+'</p>';
   h+=p.verified?'<p class="okc"><b>✓ Verified</b> — every dollar is accounted for.</p>':'<p class="note">Verification runs when the tournament is Complete. Currently '+money(p.pool+p.spPool-p.total)+' of the pools is not yet paid out.</p>';
-  h+='<p class="note">Bonus pool '+money(p.bonusPool)+' = pool '+money(p.pool)+' − '+p.totalMatches+' matches × '+money(p.win)+(p.lead.length?'; split '+p.lead.length+' way'+(p.lead.length>1?'s':'')+' at '+money(p.bonusShare)+' each (rounded down).':'.')+(p.spLead.length?' Side Pool A split '+p.spLead.length+' way(s) at '+money(p.spShare)+' each.':'')+(p.spLeadB.length?' Side Pool B split '+p.spLeadB.length+' way(s) at '+money(p.spShareB)+' each.':'')+'</p></div>';
+  h+='<p class="note">Bonus pool '+money(p.bonusPool)+' = pool '+money(p.pool)+' − '+p.totalMatches+' matches × '+money(p.win)+(p.lead.length?(p.lead2.length?'; one player has the best record, so 60% ('+money(p.bonusShare)+') goes to them and 40% is split '+p.lead2.length+' way'+(p.lead2.length>1?'s':'')+' at '+money(p.bonusShare2)+' each among the next-best record (rounded down).':'; split '+p.lead.length+' way'+(p.lead.length>1?'s':'')+' at '+money(p.bonusShare)+' each (rounded down).'):'.')+(p.spLead.length?' Side Pool A split '+p.spLead.length+' way(s) at '+money(p.spShare)+' each.':'')+(p.spLeadB.length?' Side Pool B split '+p.spLeadB.length+' way(s) at '+money(p.spShareB)+' each.':'')+'</p></div>';
   return h;
 }
 function viewRules(D){
@@ -728,7 +732,7 @@ function viewRules(D){
   '<li><b>Round 3'+(D.R>3?' onward':'')+':</b> computed by one general slot-based method for any number of players (4 or more): every Round 2 match gives a winner slot and a loser slot, slots are ranked by expected wins (2-0, then 1-1 with bridge matches floating between them, then 0-2) and paired greedily so players who met in Round 1 are not paired again. Slots like W2.3 / L2.3 refer to the winner / loser of Round 2 match 3, so matches become Ready as soon as their feeders finish.'+(D.R>3?' Rounds 4 and 5 repeat the same method using the winner and loser slots of the round before. With 5 rounds, fields under about 32 players (and some odd-sized fields up to about 50) may see repeat opponents in the last rounds; these are flagged “rematch”, and the larger the field the less likely it is.':'')+'</li>'+
   '<li>Tiny fields (4–6 players) use fixed pairings and a rematch may be unavoidable; such a match is flagged “rematch”. With 3 rounds, from 7 players up the method is rematch-free for every set of results. The Round 3 BYE never goes to a slot that could hold a player who already had a BYE. See the <b>Paths</b> sub-tab on Matches for every winner and loser route.</li></ul>'+
   ''+
-  '<h3 style="margin-top:14px">Payouts</h3><ul><li>Wins = match wins including BYE wins; Losses = real losses only.</li><li>Match Wins Payout = Wins × ('+(D.R===5?'Entry ÷ 4':'Entry ÷ 2')+').</li><li>Bonus Pool = the total entry money, minus what every match pays out (each match pays '+(D.R===5?'Entry ÷ 4':'Entry ÷ 2')+' to its winner, and there are '+D.R+' rounds of matches — half the players, rounded up, in each round). Players with the best record (most wins, then fewest losses) split it, each getting an equal share, rounded down to the whole dollar. Paid only when Complete.</li><li>There are two optional side pools, <b style="color:#f0d98a">Side Pool A</b> (gold) and <b style="color:#a9d8ff">Side Pool B</b> (blue). Each has its own entry fee. A player can be in neither, one or both, ticked on the Players tab. Each pool = its players × its entry, contested only among its own players the same way as the main bonus (best record, ties split equally, rounded down). Paid only when Complete.</li><li>Any leftover few dollars from rounding down is shown on the Payouts tab rather than hidden.</li></ul>'+
+  '<h3 style="margin-top:14px">Payouts</h3><ul><li>Wins = match wins including BYE wins; Losses = real losses only.</li><li>Match Wins Payout = Wins × ('+(D.R===5?'Entry ÷ 4':'Entry ÷ 2')+').</li><li>Bonus Pool = the total entry money, minus what every match pays out (each match pays '+(D.R===5?'Entry ÷ 4':'Entry ÷ 2')+' to its winner, and there are '+D.R+' rounds of matches — half the players, rounded up, in each round). Players with the best record (most wins, then fewest losses) split it, each getting an equal share, rounded down to the whole dollar. <b>If only one player has the best record</b>, they receive 60% of the Bonus Pool and the other 40% is shared equally among the players with the next-best record (applies to 3 and 5 rounds). Paid only when Complete.</li><li>There are two optional side pools, <b style="color:#f0d98a">Side Pool A</b> (gold) and <b style="color:#a9d8ff">Side Pool B</b> (blue). Each has its own entry fee. A player can be in neither, one or both, ticked on the Players tab. Each pool = its players × its entry, contested only among its own players the same way as the main bonus (best record, ties split equally, rounded down). Paid only when Complete.</li><li>Any leftover few dollars from rounding down is shown on the Payouts tab rather than hidden.</li></ul>'+
   '<h3 style="margin-top:14px">Winner entry</h3><p>Click a player on a Ready match. Click again or press Clear to undo. If a change would invalidate later results, you are warned and those later winners are cleared.</p>'+
   '<h3 style="margin-top:14px">Managing tournaments</h3><ul><li>You can keep several tournaments open at once. Use the dropdown at the top of the page, or the <b>Tournaments</b> tab, to jump between them. Each one keeps its own players, seeds, results and fees while the page stays open.</li>'+
   '<li><b>Nothing is stored in your browser.</b> Tournaments live in this page’s memory only. If you close or reload the page, anything you have not saved to a file is gone.</li>'+
@@ -742,8 +746,11 @@ function viewRules(D){
 }
 /* ---------- Render ---------- */
 /* ---------- Version & changelog (update APP_VERSION and add an entry at the TOP of CHANGELOG for every release) ---------- */
-const APP_VERSION='1.2.0';
+const APP_VERSION='1.3.0';
 const CHANGELOG=[
+ {v:'1.3.0',date:'2026-11-17',notes:[
+  'Sole-leader bonus split: when only one player has the best record, they receive 60% of the Bonus Pool and the other 40% is shared by the players with the next-best record. If the best record is tied, nothing changes. Applies to 3 and 5 rounds.'
+ ]},
  {v:'1.2.0',date:'2026-11-16',notes:[
   'Two separate side pools: Side Pool A (gold) and Side Pool B (blue), each with its own entry fee. A player can be in neither, either or both.',
   'Each side pool has its own pool, leaders and payout. Player tags, tick boxes and cards are colour-coded gold (A) and blue (B) on the Players, Matches, Standings, Payouts and Dashboard pages.',

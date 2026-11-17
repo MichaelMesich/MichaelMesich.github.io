@@ -1,6 +1,6 @@
 /* Service worker for the Backgammon Determined Swiss Tournament Manager.
    Lets the page work offline once it has been opened online. Bump VERSION when you publish a new version. */
-const VERSION = 'ds-swiss-v1.2.0';
+const VERSION = 'ds-swiss-v1.3.0';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-512-maskable.png'];
 
 self.addEventListener('install', function (e) {
