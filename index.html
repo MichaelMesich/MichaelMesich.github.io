@@ -5,7 +5,7 @@ html,body{margin:0;min-width:0;max-width:100%}
 img,svg,canvas,video{max-width:100%}
 :root{
   --felt:#3b2416;--felt-d:#24150c;--felt-l:#5a3a22;--card:#4a2e1c;--card2:#3a2315;--oxblood:#8b2a22;--forest:#1f6b46;--pts:url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2740%27%20height=%2712%27%3E%3Cpolygon%20points=%270,0%2020,0%2010,12%27%20fill=%27%238b2a22%27/%3E%3Cpolygon%20points=%2720,0%2040,0%2030,12%27%20fill=%27%23e9dcb8%27/%3E%3C/svg%3E);
-  --gold:#d9b44a;--gold-l:#f0d98a;--gold-d:#a8842a;--cream:#f6f1de;--muted:#d3c1a3;
+  --gold:#d9b44a;--gold-l:#f0d98a;--gold-d:#c39a35;--cream:#f6f1de;--muted:#d3c1a3;
   --line:rgba(217,180,74,.28);--red:#ef6b5e;--blue:#4da3ff;--ok:#4ade80;--amber:#f6c453;
 }
 body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--cream);
@@ -153,7 +153,47 @@ input[type=radio]{accent-color:var(--gold)}
 }
 @media (prefers-reduced-motion:no-preference){.btn,.prow{transition:background .15s,border-color .15s}}
 fieldset.ntset{border:1px solid rgba(217,180,74,.45);border-radius:8px;margin:10px 0;padding:8px 12px}fieldset.ntset legend{padding:0 6px;font-weight:700;color:#f0d98a}div.feekpi{border-left:6px solid}div.feekpi.ok{background:rgba(74,222,128,.14);border-color:#4ade80}div.feekpi.warn{background:rgba(217,180,74,.18);border-color:#d9b44a}div.feekpi.bad{background:rgba(226,106,106,.2);border-color:#e26a6a}div.feebox{margin:10px 0;padding:10px 12px;border-radius:8px;border-left:6px solid;line-height:1.45}div.feebox.ok{background:rgba(74,222,128,.16);border-color:#4ade80}div.feebox.warn{background:rgba(217,180,74,.2);border-color:#d9b44a}div.feebox.bad{background:rgba(226,106,106,.22);border-color:#e26a6a}.fgrid{display:grid;grid-template-columns:1fr;gap:16px;align-items:stretch}.fmid{order:-1}.fcard{background:linear-gradient(180deg,var(--card,#4a2e1c),var(--card2,#3a2315));border:1px solid var(--gold-d,#a8842a);border-radius:14px;padding:14px;text-align:center;color:#f6f1de}.fcard .ftitle{font-weight:800;color:#f0d98a;margin-bottom:6px}.fcard p{margin:0 0 10px;font-size:.95rem;line-height:1.5}@media (min-width:1000px){footer.credits{max-width:1400px!important}.fgrid{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) minmax(0,1fr);align-items:center}.fmid{order:0}.fcard{align-self:stretch;display:flex;flex-direction:column;justify-content:center;align-items:center}}
-footer.credits{text-align:center}button.linkbtn{background:none;border:0;padding:0;font:inherit;color:#f0d98a;text-decoration:underline;cursor:pointer}footer.credits{margin:28px auto 8px;max-width:900px;text-align:center;padding:16px 14px;border-top:3px double #b8892b;color:#f6f1de;font-size:1rem;line-height:1.6}footer.credits .cred-title{font-weight:700;font-size:1.15rem;margin-bottom:6px;color:#f0d98a}footer.credits b{color:#fff}footer.credits .cred-note{margin:10px auto 12px;max-width:60ch;color:#efe6cc}.cred-venmo{text-decoration:none;display:inline-block}.printcred{margin-top:18px;font-size:11px;text-align:center;color:#555}</style></head><body><div class="wrap"><header id="hdr" class="top no-print"></header><div id="app"><noscript><div class="card">Backgammon Determined Swiss Tournament Manager needs JavaScript to run. It runs a 3- or 5-round Determined Swiss tournament for 4 or more players with live pairings, standings and payouts.</div></noscript></div></div><input id="openfile-7k2d" type="file" accept=".json,application/json" style="display:none"><script>
+footer.credits{text-align:center}button.linkbtn{background:none;border:0;padding:0;font:inherit;color:#f0d98a;text-decoration:underline;cursor:pointer}footer.credits{margin:28px auto 8px;max-width:900px;text-align:center;padding:16px 14px;border-top:3px double #b8892b;color:#f6f1de;font-size:1rem;line-height:1.6}footer.credits .cred-title{font-weight:700;font-size:1.15rem;margin-bottom:6px;color:#f0d98a}footer.credits b{color:#fff}footer.credits .cred-note{margin:10px auto 12px;max-width:60ch;color:#efe6cc}.cred-venmo{text-decoration:none;display:inline-block}.printcred{margin-top:18px;font-size:11px;text-align:center;color:#555}
+/* Colour-blind-safe refinements: never rely on hue alone */
+.chip.ready{background:#3fb868;color:#04210f;border:1px solid #7ee7a0}
+.chip.ready::before{background:#04210f;border-radius:2px;border:0}
+.chip.done{background:#3a2e08;color:#f0d98a;border:1px solid var(--gold)}
+.chip.check{background:#7a1f18;color:#ffe3df;border:1px solid #ff9d93}
+.chip.check::before{content:'\26A0';width:auto;height:auto;background:none;border:0;border-radius:0;margin-right:4px;font-size:.85em}
+.prow.win{background:rgba(217,180,74,.42);border:2px solid var(--gold-l);font-weight:800;box-shadow:inset 6px 0 0 var(--gold)}
+div.feekpi.ok,div.feebox.ok{border-left-style:solid}
+div.feekpi.warn,div.feebox.warn{border-left-style:dashed}
+div.feekpi.bad,div.feebox.bad{border-left-style:double;border-left-width:10px}
+
+/* Guide, glossary, explanations */
+ol.steps{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;padding:0}
+ol.steps li{flex:1 1 150px;padding:8px 10px;border-radius:10px;border:2px dashed var(--line);background:rgba(0,0,0,.18);font-weight:700}
+ol.steps li.done{border-style:solid;border-color:var(--gold-d);opacity:.85}
+ol.steps li.now{border-style:solid;border-color:var(--gold-l);background:rgba(217,180,74,.22)}
+ol.steps li .sn{display:inline-block;min-width:1.6em;text-align:center;border-radius:999px;background:var(--gold);color:#2a2005;margin-right:6px;font-weight:800}
+.nowline{margin:6px 0 0;font-size:1.02rem}
+details.gloss{margin:10px 0;border:1px solid var(--line);border-radius:10px;padding:6px 12px;background:rgba(0,0,0,.18)}
+details.gloss summary{cursor:pointer;font-weight:700}
+details.gloss ul,ul.gloss{margin:8px 0;padding-left:20px}
+.why{font-size:.8rem;color:var(--muted);font-weight:400;margin-top:2px;line-height:1.35}
+.explain{font-size:.82rem;color:var(--muted);margin-top:6px;line-height:1.4}
+.welcomesteps{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px;padding:0;list-style:none;text-align:left}
+.welcomesteps li{flex:1 1 170px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.2)}
+
+.howtag{display:inline-block;margin-left:8px;padding:0 8px;border:1px solid rgba(211,193,163,.4);border-radius:999px;font-size:.72rem;font-weight:600;color:var(--muted);cursor:help;white-space:nowrap;vertical-align:middle;background:transparent}
+.howtag:hover,.howtag:focus{background:rgba(217,180,74,.25);outline:2px solid var(--gold-l);outline-offset:1px}
+#tipbox-4v8n{position:fixed;z-index:60;max-width:min(340px,90vw);background:#1c1109;color:var(--cream);border:2px solid var(--gold-l);border-radius:10px;padding:10px 12px;font-size:.88rem;line-height:1.45;box-shadow:0 8px 24px rgba(0,0,0,.55);pointer-events:none}
+
+.wdtag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:.7rem;font-weight:700;color:#e8dcc0;background:#4a4a4a;border:1px dashed #b5a98a;vertical-align:middle;white-space:nowrap}
+.shareov{position:fixed;inset:0;z-index:60;background:rgba(10,5,2,.9);overflow:auto;padding:14px}
+.sharebox{max-width:1100px;margin:0 auto;background:var(--card2);border:2px solid var(--gold);border-radius:14px;padding:16px}
+.sharegrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.sharegrid{grid-template-columns:1fr}}
+.sharepv{text-align:center}.sharepic{display:inline-block;max-width:100%;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5);line-height:0}
+.sharepic svg{width:100%;height:100%;display:block}
+.shareopts label.f{display:block;margin:4px 0}.shareopts select,.shareopts input[type=text]{max-width:100%}
+.shareopts textarea{font-size:.85rem}
+</style></head><body><div class="wrap"><header id="hdr" class="top no-print"></header><div id="app"><noscript><div class="card">Backgammon Determined Swiss Tournament Manager needs JavaScript to run. It runs a 3- or 5-round Determined Swiss tournament for 4 or more players with live pairings, standings and payouts.</div></noscript></div></div><input id="openfile-7k2d" type="file" accept=".json,application/json" style="display:none"><script>
 (function(){
 "use strict";
 /* ---------- Rules data ---------- */
@@ -190,7 +230,7 @@ function resolve(s,rounds){
   if(lo.pid==null)return {missing:true,label};
   return {pid:lo.pid};
 }
-function makeMatch(r,m,sa,sb,rounds,winners){
+function makeMatch(r,m,sa,sb,rounds,winners,ctx){
   const a=resolve(sa,rounds),b=resolve(sb,rounds);
   const id=r+'-'+m,mt={id,r,m,a,b,winner:null,auto:false,status:'Waiting'};
   const ent=winners[id];
@@ -202,6 +242,15 @@ function makeMatch(r,m,sa,sb,rounds,winners){
     else if(ent===a.pid||ent===b.pid){mt.winner=ent;mt.status='Complete';}
     else mt.status='Check entry';
   }else if(ent!=null)mt.status='Check entry';
+  const wd=ctx&&ctx.wd;
+  if(wd&&wd.size){
+    const aw=a.pid!=null&&wd.has(a.pid),bw=b.pid!=null&&wd.has(b.pid);
+    if(a.bye||b.bye){const o=a.bye?b:a;if(o.pid!=null&&wd.has(o.pid))mt.void=true;}
+    else if(a.pid!=null&&b.pid!=null&&ent==null){
+      if(aw&&bw){mt.winner=(ctx.rank[a.pid]<=ctx.rank[b.pid])?a.pid:b.pid;mt.auto=true;mt.void=true;mt.status='Voided';}
+      else if(aw||bw){mt.winner=aw?b.pid:a.pid;mt.auto=true;mt.forfeit=aw?a.pid:b.pid;mt.status='Forfeit – Advanced';}
+    }
+  }
   return mt;
 }
 function r2Struct(n){
@@ -362,7 +411,8 @@ function buildTournament(players,winners,R){
   R=R===5?5:3;
   const ord=orderedPlayers(players),n=ord.length,k=ceil2(n);
   const rounds=[];for(let q=0;q<R;q++)rounds.push([]);const notes=[];
-  const add=(ri,specs)=>specs.forEach((sp,i)=>rounds[ri].push(makeMatch(ri+1,i+1,sp[0],sp[1],rounds,winners)));
+  const ctx={wd:new Set(players.filter(p=>p.withdrawn).map(p=>p.id)),rank:{}};ord.forEach((p,i)=>{ctx.rank[p.id]=i;});
+  const add=(ri,specs)=>specs.forEach((sp,i)=>rounds[ri].push(makeMatch(ri+1,i+1,sp[0],sp[1],rounds,winners,ctx)));
   const s1=[];for(let i=0;i<n;i+=2)s1.push([P(ord[i].id),i+1<n?P(ord[i+1].id):BYE]);
   add(0,s1);
   const wl=[],ll=[],m=n%2?k-1:k;
@@ -377,7 +427,7 @@ function buildTournament(players,winners,R){
   seeRound(0);seeRound(1);
   for(let ri=2;ri<R;ri++){
     rounds[ri].forEach(x=>{
-      if((x.a.bye&&hadBye.has(x.b.pid))||(x.b.bye&&hadBye.has(x.a.pid)))warnings.push('Round '+(ri+1)+' BYE (match '+x.id+') went to a player who already had a BYE.');
+      if((x.a.bye&&hadBye.has(x.b.pid))||(x.b.bye&&hadBye.has(x.a.pid)))warnings.push('Round '+(ri+1)+' BYE (match '+x.id+') went to a player who already had a BYE. This can happen with an odd number of players. It is allowed (a BYE counts as a win); to avoid it, add or remove one player before play starts.');
       if(x.a.pid!=null&&x.b.pid!=null&&met.has(x.a.pid+'|'+x.b.pid))x.rematch=true;
     });
     seeRound(ri);
@@ -389,7 +439,7 @@ function buildTournament(players,winners,R){
 function computeRecords(players,t){
   const rec={};players.forEach(p=>rec[p.id]={w:0,l:0});
   t.matches.forEach(m=>{
-    if(m.winner==null)return;
+    if(m.winner==null||m.void)return;
     if(rec[m.winner])rec[m.winner].w++;
     const lo=m.winner===m.a.pid?m.b:m.a;
     if(lo.pid!=null&&rec[lo.pid])rec[lo.pid].l++;
@@ -411,9 +461,9 @@ function leadersOf(list,rec){
   return top.filter(p=>rec[p.id].l===ml).map(p=>p.id);
 }
 function winFrac(R){return R===5?0.25:R===3?0.5:1.5/R;}
-const spTags=p=>(p.sp20?'<span class="sp20">SP A</span>':'')+(p.sp2?'<span class="sp2">SP B</span>':'');
-function computePayouts(players,rec,status,entry,spEntry,anyResult,R,spEntryB){
-  R=R||3;const n=players.length,win=entry*winFrac(R),pool=n*entry,totalMatches=R*ceil2(n);
+const spTags=p=>(p.sp20?'<span class="sp20">SP A</span>':'')+(p.sp2?'<span class="sp2">SP B</span>':'')+(p.withdrawn?'<span class="wdtag" title="Withdrew: this player’s remaining matches are forfeits">⏏ Withdrew</span>':'');
+function computePayouts(players,rec,status,entry,spEntry,anyResult,R,spEntryB,voidN){
+  R=R||3;const n=players.length,win=entry*winFrac(R),pool=n*entry,totalMatches=R*ceil2(n)-(voidN||0);
   const bonusPool=Math.max(0,pool-totalMatches*win);
   const complete=status==='Complete';
   const lead=anyResult?leadersOf(players,rec):[];
@@ -454,12 +504,12 @@ function cleanWinners(players,winners,R){
 const nowIso=()=>new Date().toISOString();
 const newId=()=>'t'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 function dateLabel(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-function mkT(o){const now=nowIso();return {id:o.id||newId(),name:o.name||'Tournament',created:o.created||now,updated:o.updated||o.created||now,entry:o.entry,sp20Entry:o.sp20Entry,sp2Entry:(Number.isFinite(+o.sp2Entry)&&+o.sp2Entry>=0)?+o.sp2Entry:10,clubFee:(Number.isFinite(+o.clubFee)&&+o.clubFee>=0)?+o.clubFee:0,feesSubmitted:!!o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt||null,feesSubmittedAmt:Number.isFinite(+o.feesSubmittedAmt)?+o.feesSubmittedAmt:0,players:o.players||[],winners:o.winners||{},paid:o.paid||{},nextId:o.nextId||1,seedsRandomized:!!o.seedsRandomized,numRounds:o.numRounds===5?5:3,dirty:!!o.dirty,savedAt:o.savedAt||null};}
+function mkT(o){const now=nowIso();return {id:o.id||newId(),name:o.name||'Tournament',created:o.created||now,updated:o.updated||o.created||now,entry:o.entry,sp20Entry:o.sp20Entry,sp2Entry:(Number.isFinite(+o.sp2Entry)&&+o.sp2Entry>=0)?+o.sp2Entry:10,clubFee:(Number.isFinite(+o.clubFee)&&+o.clubFee>=0)?+o.clubFee:0,feesSubmitted:!!o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt||null,feesSubmittedAmt:Number.isFinite(+o.feesSubmittedAmt)?+o.feesSubmittedAmt:0,players:o.players||[],winners:o.winners||{},paid:o.paid||{},nextId:o.nextId||1,seedsRandomized:!!o.seedsRandomized,numRounds:o.numRounds===5?5:3,clubName:String(o.clubName||''),dirty:!!o.dirty,savedAt:o.savedAt||null};}
 const LIB=[mkT({name:'New tournament',entry:40,sp20Entry:20,players:[],winners:{},paid:{},nextId:1})];
 LIB[0].placeholder=true;
 function dropPlaceholder(){const i=LIB.findIndex(x=>x.placeholder);if(i>=0)LIB.splice(i,1);ui.welcome=false;}
 let S=LIB[0];
-const ui={welcome:true,tab:'dashboard',mRound:'auto',mFilter:'all',confirm:null,paste:'',newName:'',banner:true,dirty:false,msg:'',D:null,modal:null,hl:null,sbPay:true,sbOpen:false};
+const ui={welcome:true,tab:'dashboard',mRound:'auto',mFilter:'all',confirm:null,paste:'',newName:'',banner:true,dirty:false,msg:'',D:null,modal:null,hl:null,sbPay:true,sbOpen:false,remindEvery:10};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=x=>{const v=Math.round(x*100)/100;return '$'+(Number.isInteger(v)?v.toLocaleString('en-US'):v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}));};
@@ -488,13 +538,13 @@ function derive(){
   const rec=computeRecords(S.players,t);
   const status=statusOf(check,t);
   const anyResult=t.matches.some(m=>m.status==='Complete');
-  const pay=computePayouts(S.players,rec,status,S.entry,S.sp20Entry,anyResult,R,S.sp2Entry);
+  const pay=computePayouts(S.players,rec,status,S.entry,S.sp20Entry,anyResult,R,S.sp2Entry,t.matches.filter(m=>m.void).length);
   const byId={};S.players.forEach(p=>byId[p.id]=p);
   const mById={};t.matches.forEach(m=>mById[m.id]=m);
   const standings=S.players.slice().sort((a,b)=>(rec[b.id].w-rec[a.id].w)||(rec[a.id].l-rec[b.id].l)||String(a.name).localeCompare(String(b.name),undefined,{sensitivity:'base'}));
   const rank={};
   standings.forEach(p=>{rank[p.id]=1+standings.filter(q=>rec[q.id].w>rec[p.id].w||(rec[q.id].w===rec[p.id].w&&rec[q.id].l<rec[p.id].l)).length;});
-  const integrity=!(status==='Complete')||S.players.every(p=>rec[p.id].w+rec[p.id].l===R);
+  const integrity=!(status==='Complete')||t.matches.some(m=>m.void)||S.players.every(p=>rec[p.id].w+rec[p.id].l===R);
   return {check,t,rec,status,pay,byId,mById,standings,rank,anyResult,integrity,n:S.players.length,R};
 }
 function nameOf(D,pid){return D.byId[pid]?D.byId[pid].name:'?';}
@@ -514,16 +564,22 @@ async function dl(name,text,type,cb){
   if(window.showSaveFilePicker&&window.top===window.self){
     try{
       const h=await window.showSaveFilePicker({id:'ds-tournaments',suggestedName:name,types:[{description:ext==='.csv'?'CSV file':'Tournament file',accept:{[type]:[ext]}}]});
-      const w=await h.createWritable();await w.write(text);await w.close();cb(true,'picked');return;
+      const w=await h.createWritable();await w.write(text);await w.close();cb(true,'picked',h);return;
     }catch(e){if(e&&e.name==='AbortError'){cb(false,'cancel');return;}}
   }
   cb(dlFallback(name,text,type),'download');
 }
 const slug=()=>(S.name||'tournament').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'tournament';
-function tData(T){return {app:'determined-swiss-manager',kind:'tournament',version:1,appVersion:APP_VERSION,savedAt:nowIso(),id:T.id,name:T.name,created:T.created,updated:T.updated,entry:T.entry,sp20Entry:T.sp20Entry,sp2Entry:T.sp2Entry,clubFee:T.clubFee||0,feesSubmitted:!!T.feesSubmitted,feesSubmittedAt:T.feesSubmittedAt||null,feesSubmittedAmt:T.feesSubmittedAmt||0,players:T.players,winners:T.winners,paid:T.paid,nextId:T.nextId,seedsRandomized:!!T.seedsRandomized,numRounds:T.numRounds===5?5:3};}
-function markSaved(list){const t=nowIso();list.forEach(x=>{x.dirty=false;x.savedAt=t;});}
-function saveT(T){
-  dl(slugOf(T.name)+'-'+ymd(T.created)+'.json',JSON.stringify(tData(T),null,2),'application/json',(ok,how)=>{if(ok){markSaved([T]);flash('“'+T.name+'” was saved'+(how==='picked'?'':' to your downloads')+'. Keep the file somewhere safe — it is the only long-term copy.');render();}});
+function tData(T){return {app:'determined-swiss-manager',kind:'tournament',version:1,appVersion:APP_VERSION,savedAt:nowIso(),id:T.id,name:T.name,created:T.created,updated:T.updated,entry:T.entry,sp20Entry:T.sp20Entry,sp2Entry:T.sp2Entry,clubFee:T.clubFee||0,feesSubmitted:!!T.feesSubmitted,feesSubmittedAt:T.feesSubmittedAt||null,feesSubmittedAmt:T.feesSubmittedAmt||0,players:T.players,winners:T.winners,paid:T.paid,nextId:T.nextId,seedsRandomized:!!T.seedsRandomized,numRounds:T.numRounds===5?5:3,clubName:T.clubName||''};}
+function markSaved(list){const t=nowIso();list.forEach(x=>{x.dirty=false;x.savedAt=t;x.sinceSave=0;x.nextRemind=null;});}
+function saveT(T,forceNew){
+  const name=slugOf(T.name)+'-'+ymd(T.created)+'.json',text=()=>JSON.stringify(tData(T),null,2);
+  const done=(how)=>{markSaved([T]);flash('“'+T.name+'” was saved'+(how==='same'?' to the same file':how==='picked'?'':' to your downloads')+'. Keep the file somewhere safe — it is the only long-term copy.');render();};
+  if(T.fh&&!forceNew){
+    (async()=>{try{const w=await T.fh.createWritable();await w.write(text());await w.close();done('same');}
+    catch(e){T.fh=null;saveT(T,true);}})();return;
+  }
+  dl(name,text(),'application/json',(ok,how,h)=>{if(ok){if(h)T.fh=h;done(how);}});
 }
 function saveAll(){
   const data={app:'determined-swiss-manager',kind:'library',version:1,appVersion:APP_VERSION,savedAt:nowIso(),tournaments:LIB.map(tData)};
@@ -531,12 +587,13 @@ function saveAll(){
 }
 function loadData(d,S){
   if(!d||typeof d!=='object'||!Array.isArray(d.players))throw new Error('Not a tournament file.');
-  const ps=d.players.map((p,i)=>({id:Number.isFinite(+p.id)?+p.id:i+1,name:String(p.name==null?'':p.name),sp20:!!p.sp20,sp2:!!p.sp2,director:!!p.director,seed:Number.isFinite(+p.seed)?+p.seed:Math.random()}));
+  const ps=d.players.map((p,i)=>({id:Number.isFinite(+p.id)?+p.id:i+1,name:String(p.name==null?'':p.name),sp20:!!p.sp20,sp2:!!p.sp2,director:!!p.director,withdrawn:!!p.withdrawn,seed:Number.isFinite(+p.seed)?+p.seed:Math.random()}));
   S.players=ps;S.name=String(d.name||'Determined Swiss');
   S.entry=Number.isFinite(+d.entry)&&+d.entry>=0?+d.entry:40;
   S.sp20Entry=Number.isFinite(+d.sp20Entry)&&+d.sp20Entry>=0?+d.sp20Entry:20;
   S.sp2Entry=Number.isFinite(+d.sp2Entry)&&+d.sp2Entry>=0?+d.sp2Entry:10;
   S.clubFee=Number.isFinite(+d.clubFee)&&+d.clubFee>=0?+d.clubFee:0;
+  S.clubName=typeof d.clubName==='string'?d.clubName.slice(0,60):'';
   S.feesSubmitted=!!d.feesSubmitted;S.feesSubmittedAt=typeof d.feesSubmittedAt==='string'?d.feesSubmittedAt:null;S.feesSubmittedAmt=Number.isFinite(+d.feesSubmittedAmt)?+d.feesSubmittedAmt:0;
   S.winners={};if(d.winners&&typeof d.winners==='object')Object.keys(d.winners).forEach(k=>{if(/^[1-5]-\d+$/.test(k)&&Number.isFinite(+d.winners[k]))S.winners[k]=+d.winners[k];});
   S.paid=(d.paid&&typeof d.paid==='object')?d.paid:{};
@@ -550,7 +607,7 @@ function csvStandings(D){
   return rows.map(r=>r.map(q).join(',')).join('\r\n');
 }
 /* ---------- Views ---------- */
-function chip(st){const c={'Ready':'ready','Waiting':'waiting','Complete':'done','BYE – Advanced':'byeadv','Check entry':'check'}[st]||'waiting';return '<span class="chip '+c+'">'+esc(st)+'</span>';}
+function chip(st){const c={'Ready':'ready','Waiting':'waiting','Complete':'done','BYE – Advanced':'byeadv','Forfeit – Advanced':'byeadv','Voided':'waiting','Check entry':'check'}[st]||'waiting';return '<span class="chip '+c+'" title="'+esc(STATUS_HELP[st]||'')+'">'+esc(st)+'</span>';}
 function stBadge(st){return '<span class="badge st-'+st.toLowerCase().replace(/[^a-z]/g,'')+'">'+esc(st)+'</span>';}
 const moneyS=x=>x<-0.004?'−'+money(-x):money(x);
 const feeDirs=()=>S.players.filter(p=>p.director).length;
@@ -581,10 +638,69 @@ function chartSvg(D){
   });
   return s+'</svg>';
 }
+
+const STATUS_HELP={'Ready':'Both players are known, so this match can be played now. Click the winner when it finishes.','Waiting':'One or both players are still waiting for an earlier match to finish.','Complete':'A winner has been entered for this match.','BYE – Advanced':'No opponent this round because there is an odd number of players. The player gets an automatic win.','Forfeit – Advanced':'The opponent withdrew from the tournament, so this player wins automatically and moves on.','Voided':'Both players withdrew (or a withdrawn player had a BYE), so nobody gets a win or a loss.','Check entry':'A saved winner no longer fits this match because an earlier result was changed. Clear it and choose the winner again.'};
+function glossaryHtml(){return '<ul class="gloss">'+
+ '<li><b>Ready</b> — both players are known; the match can be played now.</li>'+
+ '<li><b>Waiting</b> — still waiting for an earlier match to finish. “Winner of R1 M4” means whoever wins Round 1 match 4.</li>'+
+ '<li><b>Complete</b> — a winner has been entered.</li>'+
+ '<li><b>BYE</b> — no opponent this round (odd number of players). It counts as an automatic win, never a loss.</li>'+
+ '<li><b>Forfeit</b> — the opponent withdrew, so this player wins automatically (and gets the usual win payout). Shown as “Win by forfeit”.</li>'+
+ '<li><b>Withdrew</b> — a player who has left the event. Their remaining matches become forfeits for their opponents.</li>'+
+ '<li><b>Voided</b> — both players withdrew, so the match is skipped and nobody gets a win or loss.</li>'+
+ '<li><b>Check entry</b> — a saved winner no longer fits, because an earlier result was changed. Press Clear and choose again.</li>'+
+ '<li><b>Rematch</b> — these two players already met earlier in this tournament. It can’t always be avoided, and it is fine to play.</li>'+
+ '<li><b>Record</b> — shown as wins–losses going into that round (for example 2–1).</li>'+
+ '<li><b>W2.3 / L2.3</b> — “winner (or loser) of Round 2 match 3”. These let the next pairing appear as soon as that match finishes.</li>'+
+ '<li><b>Current + Next</b> — the round being played and the one after it, so you can see who you play next and who you are waiting on.</li>'+
+ '<li><b>Paths</b> — a map of where the winner and loser of every match go next.</li>'+
+ '<li><b>Seed</b> — the starting order. Rolling seeds shuffles it randomly.</li>'+
+ '<li><b>Side Pool A / B</b> — optional extra pools with their own entry fee, won by the best record among their own players.</li></ul>';}
+function payWhy(D,x){
+  const p=D.pay,y=p.per[x.id],r=D.rec[x.id],b=[];
+  const sh=n=>n>1?'shared '+n+' ways':'the whole amount';
+  b.push(r.w+' win'+(r.w===1?'':'s')+' × '+money(p.win)+' = '+money(y.win));
+  if(y.bonus>0){
+    if(p.lead.includes(x.id)){
+      if(p.lead.length===1&&p.lead2.length)b.push('Main bonus: the only player with the best record ('+r.w+'–'+r.l+'), so 60% of the '+money(p.bonusPool)+' bonus pool');
+      else b.push('Main bonus: best record ('+r.w+'–'+r.l+'), '+(p.lead.length>1?'tied with '+(p.lead.length-1)+' other'+(p.lead.length>2?'s':'')+', so the '+money(p.bonusPool)+' pool is shared '+p.lead.length+' ways':'so the whole '+money(p.bonusPool)+' pool')+' (rounded down)');
+    }else if(p.lead2.includes(x.id))b.push('Main bonus: next-best record ('+r.w+'–'+r.l+'); the other 40% ('+money(Math.trunc(p.bonusPool*0.4))+') is shared '+p.lead2.length+' way'+(p.lead2.length>1?'s':'')+' (rounded down)');
+  }
+  if(y.sp>0)b.push('Side Pool A: best record among Side Pool A players ('+sh(p.spLead.length)+' of '+money(p.spPoolA)+')');
+  if(y.spB>0)b.push('Side Pool B: best record among Side Pool B players ('+sh(p.spLeadB.length)+' of '+money(p.spPoolB)+')');
+  return b.join(' · ');
+}
+function nextSteps(D){
+  if(ui.hideGuide)return '';
+  const ok=D.check.ok,begun=playBegun(),complete=D.status==='Complete';
+  const owed=D.standings.filter(x=>D.pay.per[x.id].total>0);
+  const allPaid=complete&&owed.every(x=>S.paid[x.id]);
+  const saved=!S.dirty&&!!S.savedAt,feeDone=S.feesSubmitted||!(feeTotal()>0);
+  const st=[{t:'Add players',d:ok&&S.players.length>=4},{t:'Roll seeds (optional)',d:begun||!!S.seedsRandomized},{t:'Enter results',d:complete},{t:'Pay winners',d:allPaid},{t:'Submit Club Fees',d:feeDone&&complete},{t:'Save the file',d:saved&&feeDone&&complete}];
+  let now=st.findIndex(x=>!x.d);
+  let line='',btns='';
+  const go=(tab,label)=>'<button class="btn sm gold" data-act="tab" data-v="'+tab+'">'+label+'</button>';
+  if(now===0){line='Add at least 4 players with different names on the Players tab.'+(S.players.length&&!ok?' Right now: '+esc(D.check.issues[0]||''):'');btns=go('players','Go to Players');}
+  else if(now===1){line='Optional: press 🎲 Roll seeds to shuffle the starting order, then enter the Round 1 winners.';btns='<button class="btn sm gold" data-act="randseeds">🎲 Roll seeds</button> '+go('matches','Go to Matches');}
+  else if(now===2){const r=+curRound(D),ms=D.t.rounds[r-1],d=ms.filter(m=>m.winner!=null).length;line='Round '+r+': '+d+' of '+ms.length+' results entered. On the Matches page, click the winner of each Ready match.';btns=go('matches','Go to Matches');}
+  else if(now===3){line='Every result is in. Record each payment on the Payouts tab by ticking Paid ✓.';btns=go('payouts','Go to Payouts');}
+  else if(now===4){line='Mark the Club Fees as submitted to the Treasurer using the Club Fees card at the top of the Payouts tab. Then save, so the file remembers it was submitted.';btns=go('payouts','Go to Payouts');}
+  else if(now===5){line='Last step: save the tournament file so everything, including the fee status, is kept.';btns='<button class="btn sm gold" data-act="save">💾 Save</button>';}
+  else line='✓ All done. Everything is paid, saved and submitted.';
+  if(complete){line+=' 📣 Optional: make a results card to post on social media or send to your group.';btns+=' <button class="btn sm" data-act="share">📣 Share results</button>';}
+  return '<div class="card no-print" style="margin-bottom:16px"><div class="row" style="justify-content:space-between"><h3>Your next step</h3><button class="btn sm" data-act="hideguide" aria-label="Hide the guide">Hide</button></div><ol class="steps">'+st.map((x,i)=>'<li class="'+(x.d?'done':i===now?'now':'')+'"><span class="sn">'+(x.d?'✓':(i+1))+'</span>'+x.t+'</li>').join('')+'</ol><p class="nowline"><b>'+(now>=0&&now<6?'Next: ':'')+'</b>'+line+'</p><div class="row" style="margin-top:8px">'+btns+'</div></div>';
+}
+function makeDemo(){
+  const names=randomNames(12),ps=names.map((x,i)=>({id:i+1,name:x,sp20:i%3===0,sp2:i%4===1,director:i===0,seed:Math.random()}));
+  let nm='Demo Tournament (practice)',k=2;while(LIB.some(t=>t.name===nm))nm='Demo Tournament (practice) '+(k++);
+  const T=mkT({name:nm,entry:40,sp20Entry:20,sp2Entry:10,clubFee:5,players:ps,nextId:13,numRounds:3,dirty:false});
+  dropPlaceholder();LIB.push(T);ui.tab='dashboard';ui.hideGuide=false;switchTo(T.id);
+  flash('This is a practice tournament with pretend players. Try rolling seeds and entering winners. When you are ready for a real event, press ➕ New tournament; you can remove this one on the Tournaments tab.');render();window.scrollTo(0,0);
+}
 function viewDashboard(D){
   const p=D.pay,t=D.t;
-  let h='<div class="grid kpis">'+
-   kpi('Players',D.n,'4 or more players')+
+  let h=nextSteps(D)+'<div class="grid kpis">'+
+   kpi('Players',D.n,S.players.some(p=>p.withdrawn)?S.players.filter(p=>p.withdrawn).length+' withdrawn':'4 or more players')+
    kpi('Prize Pool',money(p.pool),D.n+' × '+money(S.entry))+
    kpiC('Side Pool A',money(p.spPoolA),S.players.filter(x=>x.sp20).length+' × '+money(S.sp20Entry),'spAk')+
    kpiC('Side Pool B',money(p.spPoolB),S.players.filter(x=>x.sp2).length+' × '+money(S.sp2Entry),'spBk')+
@@ -613,24 +729,15 @@ function viewDashboard(D){
   (t.warnings||[]).forEach(w=>h+='<p class="warn">⚠ '+esc(w)+'</p>');
   if(!D.integrity)h+='<p class="warn">⚠ Integrity check: some players do not have exactly '+D.R+' results.</p>';
   h+='</div>';
-  const ready=t.matches.filter(m=>m.status==='Ready');
-  h+='<div class="card"><h3>Next up — Ready matches</h3>';
-  if(!ready.length)h+='<p class="note">'+(D.status==='Complete'?'All matches are decided. 🏆':'🎲 No matches are ready right now. Enter winners to unlock more.')+'</p>';
-  ready.slice(0,8).forEach(m=>{h+='<div class="leader"><span><b class="mid">'+m.id+'</b> &nbsp;'+esc(sideName(D,m.a))+' <span class="note">v</span> '+esc(sideName(D,m.b))+'</span><button class="btn sm" data-act="gomatch" data-r="'+m.r+'">Enter ›</button></div>';});
-  if(ready.length>8)h+='<p class="note">+ '+(ready.length-8)+' more…</p>';
-  h+='</div>';
-  h+='<div class="card"><h3>Top 5 leaderboard</h3>';
-  D.standings.slice(0,5).forEach(x=>{const r=D.rec[x.id];h+='<div class="leader"><span><b class="num ck">'+D.rank[x.id]+'</b> '+esc(x.name)+spTags(x)+'</span><span class="num">'+r.w+'–'+r.l+' · '+money(p.per[x.id].total)+'</span></div>';});
-  h+='</div>';
-  h+='<div class="card"><h3>Wins &amp; payouts</h3>'+(D.n?chartSvg(D):'<p class="note">No players.</p>')+'</div>';
   h+='<div class="card"><h3>Settings</h3><div class="grid" style="gap:10px"><div><label class="f" for="set-name-4q1x">Tournament name</label><input type="text" id="set-name-4q1x" data-ch="set" data-k="name" value="'+esc(S.name)+'"></div>'+
+   '<div><label class="f" for="set-club-name-3k8d">Club name (shown on the shared results card)</label><input type="text" id="set-club-name-3k8d" maxlength="60" data-ch="set" data-k="clubName" value="'+esc(S.clubName||'')+'" placeholder="e.g. Your club or group name"></div>'+
    '<div class="row"><div><label class="f" for="set-entry-8w3z">Prize Pool entry ($)</label><input type="number" min="0" step="1" id="set-entry-8w3z" data-ch="set" data-k="entry" value="'+S.entry+'" style="width:130px"></div>'+
    '<div><label class="f" for="set-sp20-2m9c"><span class="sp20">A</span> Side Pool A entry ($)</label><input type="number" min="0" step="1" id="set-sp20-2m9c" data-ch="set" data-k="sp20Entry" value="'+S.sp20Entry+'" style="width:130px"></div>'+
    '<div><label class="f" for="set-sp2-5e2t"><span class="sp2">B</span> Side Pool B entry ($)</label><input type="number" min="0" step="1" id="set-sp2-5e2t" data-ch="set" data-k="sp2Entry" value="'+S.sp2Entry+'" style="width:130px"></div>'+
    '<div><label class="f" for="set-club-6c1f">Club Fee per player ($)</label><input type="number" min="0" step="0.01" id="set-club-6c1f" data-ch="set" data-k="clubFee" value="'+(S.clubFee||0)+'" style="width:130px"></div>'+
    '<div><label class="f" for="set-rounds-9r5t">Rounds</label><select id="set-rounds-9r5t" data-ch="set" data-k="numRounds"'+(playBegun()?' disabled':'')+'><option value="3"'+(S.numRounds!==5?' selected':'')+'>3 rounds</option><option value="5"'+(S.numRounds===5?' selected':'')+'>5 rounds</option></select></div></div>'+(playBegun()?'<p class="note">The number of rounds is locked once winners have been entered. Clear all winners to change it.</p>':'')+
    '<p class="note">Win payout per match win = '+money(S.entry/2)+' (entry ÷ 2). A BYE counts as a win and is paid.</p></div></div>';
-  h+='<div class="card"><h3>Quick actions</h3><div class="row" style="margin-top:10px"><button class="btn gold" data-act="save">💾 Save this tournament</button><button class="btn" data-act="open">📂 Open file</button><button class="btn" data-act="randseeds"'+(playBegun()?' disabled':'')+'>🎲 Roll seeds</button><button class="btn" data-act="gopay">🖨 Payout sheet</button><button class="btn" data-act="csv">⬇ Export CSV</button></div><p class="note" style="margin-top:10px">This page remembers nothing between reloads. Save the file to keep your work.</p>'+(playBegun()?'<p class="note">Clear all winners first to re-randomize</p>':'')+'</div>';
+  h+='<div class="card"><h3>Quick actions</h3><div class="row" style="margin-top:10px"><button class="btn gold" data-act="save">💾 Save this tournament</button><button class="btn" data-act="open">📂 Open file</button><button class="btn" data-act="randseeds"'+(playBegun()?' disabled':'')+'>🎲 Roll seeds</button><button class="btn" data-act="gopay">🖨 Payout sheet</button><button class="btn" data-act="csv">⬇ Export CSV</button>'+(ui.hideGuide?'<button class="btn" data-act="showguide">🧭 Show next-step guide</button>':'')+'<button class="btn" data-act="saveas" title="Save to a new file instead of overwriting the last one">💾 Save as new file…</button></div><div class="row" style="margin-top:10px"><label class="f" for="remind-7x3k" style="margin:0">⏰ Save reminder</label><select id="remind-7x3k" style="max-width:220px">'+[[3,'every 3 results'],[5,'every 5 results'],[10,'every 10 results'],[0,'off']].map(o=>'<option value="'+o[0]+'"'+(ui.remindEvery===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></div><div class="row" style="margin-top:10px"><button class="btn danger" data-act="clrwin">Clear all winners</button><button class="btn danger" data-act="clrall">Clear players &amp; winners</button></div><p class="note" style="margin-top:10px">This page remembers nothing between reloads. Save the file to keep your work.</p>'+(playBegun()?'<p class="note">Clear all winners first to re-randomize</p>':'')+'</div>';
   return h+'</div>';
 }
 function viewPlayers(D){
@@ -644,20 +751,27 @@ function viewPlayers(D){
   S.players.forEach(p=>{
     const f=(k)=>'<td><input type="checkbox" aria-label="'+k+' '+esc(p.name)+'" data-ch="pflag" class="cb-'+k+'" data-p="'+p.id+'" data-f="'+k+'"'+(p[k]?' checked':'')+'></td>';
     h+='<tr><td class="num">'+p.id+'</td><td><input type="text" style="min-width:150px" aria-label="Name for player '+p.id+'" data-ch="pname" data-p="'+p.id+'" value="'+esc(p.name)+'"></td>'+f('sp20')+f('sp2')+f('director')+
-     '<td><input type="number" step="any" style="width:150px" aria-label="Seed for '+esc(p.name)+'" data-ch="pseed" data-p="'+p.id+'" value="'+p.seed+'"'+(lock?' disabled':'')+'></td><td><button class="btn sm danger" data-act="del" data-p="'+p.id+'"'+(lock?' disabled':'')+' aria-label="Delete '+esc(p.name)+'">✕</button></td></tr>';
+     '<td><input type="number" step="any" style="width:150px" aria-label="Seed for '+esc(p.name)+'" data-ch="pseed" data-p="'+p.id+'" value="'+p.seed+'"'+(lock?' disabled':'')+'></td><td><div class="row" style="flex-wrap:nowrap;gap:6px">'+(lock?(p.withdrawn?'<button class="btn sm" data-act="unwithdraw" data-p="'+p.id+'">↩ Undo withdraw</button>':'<button class="btn sm" data-act="withdraw" data-p="'+p.id+'" title="Remove this player from play: their remaining matches become forfeits">⏏ Withdraw</button>'):'')+'<button class="btn sm danger" data-act="del" data-p="'+p.id+'"'+(lock?' disabled':'')+' aria-label="Delete '+esc(p.name)+'">✕</button></div></td></tr>';
   });
-  h+='</tbody></table></div><p class="note">Players marked Director have their entry paid by the club: the Net Club Fees are reduced by one entry fee per Director (Net Club Fees = Club Fee × players − Entry fee × directors); the tag has no other effect (no payout effect). Pairing order = seed ascending, ties by ID.</p></div>';
+  h+='</tbody></table></div><p class="note"><b>Withdraw</b> (available once winners have been entered) is for a player who leaves the event. Their remaining matches become forfeits, so each opponent gets an automatic win. Nothing is refunded and the Club Fee is still charged. If a player simply misses one match, click their opponent as the winner instead.</p><p class="note">Players marked Director have their entry paid by the club: the Net Club Fees are reduced by one entry fee per Director (Net Club Fees = Club Fee × players − Entry fee × directors); the tag has no other effect (no payout effect). Pairing order = seed ascending, ties by ID.</p></div>';
   h+='<div class="grid cols2" style="margin-top:16px"><div class="card"><h3>Add a player</h3><div class="row" style="margin-top:8px"><input type="text" id="add-name-5h8e" placeholder="Player name" value="'+esc(ui.newName)+'" style="flex:1;min-width:160px"'+(lock?' disabled':'')+'><button class="btn gold" data-act="add"'+(lock?' disabled':'')+'>＋ Add</button></div></div>';
   h+='<div class="card"><h3>Paste names</h3><label class="f" for="paste-box-1r6t">One name per line (4 or more players needed)</label><textarea id="paste-box-1r6t" placeholder="Alice&#10;Bob&#10;Carol"'+(lock?' disabled':'')+'>'+esc(ui.paste)+'</textarea><div style="margin-top:8px"><button class="btn gold" data-act="paste"'+(lock?' disabled':'')+'>＋ Add all names</button></div></div></div>';
   return h;
+}
+function preRec(D,r){
+  D._pre=D._pre||{};
+  if(!D._pre[r]){const rec={};D.t.matches.forEach(x=>{[x.a,x.b].forEach(sd=>{if(sd.pid!=null&&!rec[sd.pid])rec[sd.pid]={w:0,l:0};});});
+    D.t.matches.forEach(x=>{if(x.r>=r||x.winner==null||x.void)return;if(rec[x.winner])rec[x.winner].w++;const lo=x.winner===x.a.pid?x.b:x.a;if(lo.pid!=null&&rec[lo.pid])rec[lo.pid].l++;});
+    D._pre[r]=rec;}
+  return D._pre[r];
 }
 function sideHtml(D,m,side){
   const s=m[side];
   if(s.bye)return '<div class="prow bye"><span><i class="ck av by">B</i><b>BYE</b> <span class="note">– advances to the next point</span></span><span class="tag blue">auto-win</span></div>';
   if(s.pid!=null){
-    const p=D.byId[s.pid],r=D.rec[s.pid],isW=m.winner===s.pid;
+    const p=D.byId[s.pid],r=preRec(D,m.r)[s.pid]||{w:0,l:0},isW=m.winner===s.pid;
     const click=!m.auto&&m.a.pid!=null&&m.b.pid!=null;
-    const inner='<span><i class="ck av">'+esc(String(p.name).trim().charAt(0).toUpperCase())+'</i>'+(isW?'🏆 ':'')+esc(p.name)+spTags(p)+'</span><span class="rec num">'+r.w+'–'+r.l+'</span>';
+    const inner='<span><i class="ck av">'+esc(String(p.name).trim().charAt(0).toUpperCase())+'</i>'+(isW?'🏆 ':'')+esc(p.name)+spTags(p)+'</span><span class="rec num" title="Record going into round '+m.r+'">'+r.w+'–'+r.l+'</span>';
     if(click)return '<button class="prow'+(isW?' win':'')+'" data-act="win" data-m="'+m.id+'" data-p="'+s.pid+'" title="'+(isW?'Click to clear winner':'Set as winner')+'">'+inner+'</button>';
     return '<div class="prow'+(isW?' win':'')+'">'+inner+'</div>';
   }
@@ -667,9 +781,15 @@ function matchCard(D,m){
   const isBye=m.auto||m.a.bye||m.b.bye;
   let waits=[];
   ['a','b'].forEach(k=>{const s=m[k];if(s.wait){const src=s.from&&D.mById[s.from];waits.push(src?'<b>'+src.id.replace('-',' M').replace(/^/,'R')+'</b> ('+esc(sideName(D,src.a))+' v '+esc(sideName(D,src.b))+')':esc(s.label));}});
-  let h='<div class="mcard'+(isBye?' bye':'')+(ui.hl!=null&&(m.a.pid===ui.hl||m.b.pid===ui.hl)?' hl':'')+'"><div class="hd"><span class="mid">Match '+m.id+'</span>'+'<span>'+(m.rematch?'<span class="chip check">rematch</span> ':'')+chip(m.status)+'</span></div>'+sideHtml(D,m,'a')+'<div class="vs">v</div>'+sideHtml(D,m,'b');
+  let h='<div class="mcard'+(isBye?' bye':'')+(ui.hl!=null&&(m.a.pid===ui.hl||m.b.pid===ui.hl)?' hl':'')+'"><div class="hd"><span class="mid">Match '+m.id+'</span>'+'<span>'+(m.rematch?'<span class="chip check" title="These two players already met earlier in this tournament.">rematch</span> ':'')+chip(m.status)+'</span></div>'+sideHtml(D,m,'a')+'<div class="vs">v</div>'+sideHtml(D,m,'b');
+  {const wn=k=>m[k].pid!=null&&D.byId[m[k].pid]&&D.byId[m[k].pid].withdrawn?D.byId[m[k].pid].name:null;
+   if(m.forfeit!=null){const w=D.byId[m.forfeit];h+='<div class="explain">⏩ <b>Win by forfeit:</b> '+esc(w?w.name:'The opponent')+' withdrew, so '+esc(nameOf(D,m.winner))+' advances automatically with a win.</div>';}
+   else if(m.void&&!(m.a.bye||m.b.bye))h+='<div class="explain">⛔ <b>Voided:</b> both players withdrew, so nobody gets a win or a loss and this match is skipped.</div>';
+   else if(m.void)h+='<div class="explain">⛔ <b>Voided:</b> '+esc(nameOf(D,m.winner))+' withdrew, so this BYE does not count as a win.</div>';
+   else if(m.status==='Waiting'&&(wn('a')||wn('b'))&&(m.a.wait||m.b.wait))h+='<div class="explain">⏩ <b>'+esc(wn('a')||wn('b'))+'</b> withdrew, so whoever takes the other spot wins by forfeit.</div>';}
+  if(m.rematch)h+='<div class="explain">🔁 <b>Rematch:</b> these two already played each other earlier. With this many players that can’t always be avoided in the later rounds. Nothing is wrong; just play it as scheduled.</div>';
   if(m.status==='Waiting'&&waits.length)h+='<div class="note">Waiting on: '+waits.join(' · ')+'</div>';
-  if(m.status==='Check entry')h+='<div class="warn" style="font-size:.85rem">A winner entry no longer matches this match. <button class="btn sm" data-act="clearw" data-m="'+m.id+'">Clear</button></div>';
+  if(m.status==='Check entry')h+='<div class="warn" style="font-size:.85rem">A winner entry no longer matches this match. This happens when an earlier result was changed, so the player you chose is no longer in this match. Press Clear, then choose the winner again. <button class="btn sm" data-act="clearw" data-m="'+m.id+'">Clear</button></div>';
   if(m.status==='Complete')h+='<div style="text-align:right"><button class="btn sm" data-act="clearw" data-m="'+m.id+'">Clear</button></div>';
   return h+'</div>';
 }
@@ -679,10 +799,10 @@ function viewMatches(D){
   if(!D.check.ok)return '<div class="card"><h2>Matches</h2><p class="warn">Fix the roster first: '+D.check.issues.map(esc).join(' ')+'</p></div>';
   const sel=ui.mRound||'auto',cur=+curRound(D),showR=r=>sel==='all'||(sel==='auto'?(r===cur||r===cur+1):sel===String(r));
   let h='<div class="mlayout"><div class="mmain"><div class="card'+(sel==='paths'?' no-print':'')+'"><h2>Matches</h2><div class="sub" role="tablist">';
-  ['auto'].concat(Array.from({length:D.R},(_,i)=>String(i+1)),['all','paths']).forEach(r=>h+='<button class="'+(sel===r?'on':'')+'" data-act="mr" data-v="'+r+'">'+(r==='auto'?'Current + Next':r==='all'?'All':r==='paths'?'Paths':'Round '+r)+'</button>');
+  ['auto'].concat(Array.from({length:D.R},(_,i)=>String(i+1)),['all','paths']).forEach(r=>h+='<button class="'+(sel===r?'on':'')+'" data-act="mr" data-v="'+r+'" title="'+(r==='auto'?'The round being played plus the next one':r==='all'?'Every round at once':r==='paths'?'Where the winner and loser of each match go next':'Only the matches in round '+r)+'">'+(r==='auto'?'Current + Next':r==='all'?'All':r==='paths'?'Paths':'Round '+r)+'</button>');
   h+='</div><div class="sub">';
   ['all','Ready','Waiting','Complete'].forEach(f=>h+='<button class="'+(ui.mFilter===f?'on':'')+'" data-act="mf" data-v="'+f+'">'+(f==='all'?'All statuses':f)+'</button>');
-  h+='</div><div class="row" style="margin:6px 0"><label class="f" for="msearch-3k9p" style="margin:0">Search player</label><input type="text" id="msearch-3k9p" placeholder="Filter by player name" value="'+esc(ui.mSearch||'')+'" style="max-width:280px"></div><p class="note">Click a player to set the winner; click again (or Clear) to undo. “Complete” includes BYE auto-advances.</p>';
+  h+='</div><div class="row" style="margin:6px 0"><label class="f" for="msearch-3k9p" style="margin:0">Search player</label><input type="text" id="msearch-3k9p" placeholder="Filter by player name" value="'+esc(ui.mSearch||'')+'" style="max-width:280px"></div><details class="gloss"><summary>❓ What do these labels mean?</summary>'+glossaryHtml()+'</details><p class="note">Click a player to set the winner; click again (or Clear) to undo. “Complete” includes BYE auto-advances. The record beside each name is that player’s record <b>going into that round</b>, so you can see like records meeting like records.</p>';
   D.t.notes.forEach(n=>h+='<p class="note">ℹ '+esc(n)+'</p>');
   (D.t.warnings||[]).forEach(w=>h+='<p class="warn">⚠ '+esc(w)+'</p>');
   h+='</div>';
@@ -697,7 +817,7 @@ function viewMatches(D){
 }
 function viewStandings(D){
   const p=D.pay;
-  let h='<div class="card"><div class="row" style="justify-content:space-between"><h2>Standings</h2><button class="btn gold" data-act="csv">⬇ Export CSV</button></div>';
+  let h='<div class="card"><div class="row" style="justify-content:space-between"><h2>Standings</h2><div class="row">'+(D.status==='Complete'?'<button class="btn" data-act="share">📣 Share results</button>':'')+'<button class="btn gold" data-act="csv">⬇ Export CSV</button></div></div>';
   h+='<p class="note">Sorted by wins (desc), losses (asc), then name. '+(p.complete?'Final.':'Bonus and Side Pool amounts are paid only when the tournament is Complete; projected values are shown in gold.')+'</p><div class="tablewrap"><table><thead><tr><th>Rank</th><th>Name</th><th class="r">W</th><th class="r">L</th><th>Record</th><th class="r">Match Wins</th><th class="r">Main Bonus</th><th class="r spAh">Side Pool A</th><th class="r spBh">Side Pool B</th><th class="r">Total</th></tr></thead><tbody>';
   D.standings.forEach(x=>{
     const r=D.rec[x.id],y=p.per[x.id],top=D.anyResult&&p.lead.includes(x.id);
@@ -716,7 +836,7 @@ function viewPayouts(D){
   if(!p.complete)h+='<p class="warn">⚠ Not complete: Main Prize Bonus and the Side Pools are $0 until every match has a winner (they appear as projected on Standings). Amounts below are match-win payouts so far.</p>';
   h+='<div class="tablewrap"><table><thead><tr><th>Player</th><th class="r">Match Wins</th><th class="r">Main Bonus</th><th class="r spAh">Side Pool A</th><th class="r spBh">Side Pool B</th><th class="r">Owed</th><th>Paid ✓</th></tr></thead><tbody>';
   if(!rows.length)h+='<tr><td colspan="7" class="note">⚪ Nobody is owed money yet.</td></tr>';
-  rows.forEach(x=>{const y=p.per[x.id];h+='<tr><td>'+esc(x.name)+spTags(x)+'</td><td class="r">'+money(y.win)+'</td><td class="r">'+money(y.bonus)+'</td><td class="r">'+money(y.sp)+'</td><td class="r">'+money(y.spB)+'</td><td class="r"><b>'+money(y.total)+'</b></td><td><input type="checkbox" aria-label="Paid '+esc(x.name)+'" data-ch="paid" data-p="'+x.id+'"'+(S.paid[x.id]?' checked':'')+'></td></tr>';});
+  rows.forEach(x=>{const y=p.per[x.id];h+='<tr><td>'+esc(x.name)+spTags(x)+'<span class="howtag no-print" tabindex="0" role="button" data-tip="'+esc(payWhy(D,x))+'" aria-label="How this was calculated: '+esc(payWhy(D,x))+'">ⓘ How?</span></td><td class="r">'+money(y.win)+'</td><td class="r">'+money(y.bonus)+'</td><td class="r">'+money(y.sp)+'</td><td class="r">'+money(y.spB)+'</td><td class="r"><b>'+money(y.total)+'</b></td><td><input type="checkbox" aria-label="Paid '+esc(x.name)+'" data-ch="paid" data-p="'+x.id+'"'+(S.paid[x.id]?' checked':'')+'></td></tr>';});
   h+='</tbody></table></div></div>';
   h+='<div class="grid kpis" style="margin-top:16px">'+kpi('Total owed',money(p.total),'')+kpi('Marked paid',money(paidSum),'')+kpi('Still to pay',money(p.total-paidSum),'')+kpi('Pool + Side Pools',money(p.pool+p.spPool),money(p.pool)+' + '+money(p.spPoolA)+' + '+money(p.spPoolB))+'</div>';
   h+='<div class="card" style="margin-top:16px"><h3>Cash check</h3><p class="num">Total payout '+money(p.total)+' + rounding remainder '+money(p.remainder)+' = '+money(p.total+p.remainder)+' vs pools '+money(p.pool+p.spPool)+'</p>';
@@ -751,21 +871,51 @@ function viewRules(D){
   '<li>The Club Fee is a separate per-player amount that goes to the club, not into the prizes. Set it in Settings or in the New tournament dialog.</li>'+
   '<li><b>Net Club Fees</b> = Club Fee × number of players − (Entry fee × number of players marked as Director). In other words, the club pays the Director’s entry out of the Club Fees. Mark the Director on the Players tab; the Dashboard warns if nobody is marked.</li>'+
   '<li>Tick “submitted to the Treasurer” on the Dashboard or the Payouts tab once the fee has been handed over. The card is green when submitted, amber while the tournament is still running, and red if the tournament is complete and it has not been submitted.</li></ul>'+
-  '<h3 style="margin-top:14px">Winner entry</h3><p>Click a player on a Ready match. Click again or press Clear to undo. If a change would invalidate later results, you are warned and those later winners are cleared.</p>'+
+  '<h3 style="margin-top:14px">What the labels mean</h3>'+glossaryHtml()+
+  '<h3 style="margin-top:14px">Winner entry</h3><p>Click a player on a Ready match. Click again or press Clear to undo. If a player does not show up for a match, simply click their opponent as the winner. If a change would invalidate later results, you are warned and those later winners are cleared.</p>'+
+  '<h3 style="margin-top:14px">Withdrawing a player</h3><ul><li>Once winners have been entered, the Players tab has a <b>⏏ Withdraw</b> button for a player who leaves the event. It can be undone.</li><li>All of that player’s remaining matches become <b>forfeits</b>: each opponent wins automatically, advances at once, and sees “Win by forfeit” on the match card, so they know before they sit down.</li><li>A forfeit win counts as a normal win and pays the usual match win amount. The withdrawn player takes a loss for each forfeit. Their entry fee is not refunded and the Club Fee is still charged. Results already entered stay as they are.</li><li>If two withdrawn players would meet, or a withdrawn player would get a BYE, that match is <b>voided</b>: nobody gets a win or a loss, and the win money that would have been paid goes into the Bonus Pool instead.</li><li>If a player only misses one match, just click their opponent as the winner. They are paired normally in the next round.</li></ul>'+
   '<h3 style="margin-top:14px">Managing tournaments</h3><ul><li>You can keep several tournaments open at once. Use the dropdown at the top of the page, or the <b>Tournaments</b> tab, to jump between them. Each one keeps its own players, seeds, results and fees while the page stays open.</li>'+
   '<li><b>Nothing is stored in your browser.</b> Tournaments live in this page’s memory only. If you close or reload the page, anything you have not saved to a file is gone.</li>'+
-  '<li><b>💾 Save this tournament</b> downloads one file for the open tournament. <b>💾 Save all tournaments</b> downloads one library file with everything.</li>'+
+  '<li><b>💾 Save this tournament</b> downloads one file for the open tournament. In Chrome and Edge, after the first save, pressing Save again overwrites that same file in one tap; use <b>Save as new file…</b> on the Dashboard to start a new file.</li><li><b>Save reminder:</b> after every few results (you choose 3, 5 or 10, or off, on the Dashboard) a banner reminds you to save. Nothing is saved automatically.</li><li><b>💾 Save all tournaments</b> downloads one library file with everything.</li>'+
   '<li><b>📂 Open file</b> accepts either kind of file. A single tournament is added and opened; if the same tournament is already here you choose Replace or Keep both. A library file adds all of its tournaments.</li>'+
   '<li>An orange dot means a tournament has changes since it was last saved. The red-gold bar at the top reminds you while anything is unsaved.</li>'+
   '<li><b>Make a copy</b> duplicates the roster, with or without results. <b>Remove</b> only takes a tournament off this page after you confirm; files you saved earlier are not touched.</li>'+
   '<li>Randomize seeds, matches, standings, payouts, print and CSV always work on the tournament that is open.</li></ul></div>'+
-  '<div class="card" style="margin-top:16px"><h3>Start a new tournament</h3><p class="note">There is no auto-archive and nothing is auto-saved — <b>save the tournament file first</b>.</p><div class="row" style="margin-top:10px"><button class="btn gold" data-act="save">💾 Save this tournament</button><button class="btn danger" data-act="clrwin">Clear all winners</button><button class="btn danger" data-act="clrall">Clear players &amp; winners</button></div></div>'+
   prizeCharts()+offlineCard()+changelogCard()+'<div class="card" style="margin-top:16px"><h3>About &amp; Credits</h3><p><b>Determined Swiss Format Tournament Generator</b> — '+D.R+' rounds where winners play winners and losers play losers, with floats connecting the pools, so everyone plays every round.</p><p>Digital Implementation by <b>Michael Mesich</b> - Based on a format idea from <b>Steve Reichelt</b></p><p class="note">If you’re a Tournament Director and this tool helped your event, feel free to kick a little something back to Venmo @mmesich — thank you!</p><p><a class="btn gold sm" href="https://venmo.com/u/mmesich" target="_blank" rel="noopener noreferrer">Venmo @mmesich</a></p></div>';
 }
 /* ---------- Render ---------- */
 /* ---------- Version & changelog (update APP_VERSION and add an entry at the TOP of CHANGELOG for every release) ---------- */
-const APP_VERSION='1.3.1';
+const APP_VERSION='1.6.0';
 const CHANGELOG=[
+ {v:'1.6.0',date:'2026-11-18',notes:[
+  'The save reminder now starts at every 10 results (you can still choose 3, 5 or off on the Dashboard).',
+  'New: Share results. When a tournament is Complete, a 📣 Share results button (on Standings and under the Dashboard guide) opens a results card made for social media: champion banner, final standings, Side Pool winners and your club name. Pick a Square, Tall (Stories) or Wide shape, full names or first name + last initial, and how many players to list. Winnings are hidden by default.',
+  'Save the card as a picture (PNG), use Share… on phones and tablets, or copy a ready-to-paste text version.',
+  'The club name is saved with the tournament file. You can enter it when creating a tournament (the form starts with the current tournament’s club name) or any time in Settings on the Dashboard.',
+  'The next-step guide now has six steps: Submit Club Fees comes before Save the file, so the fee status is kept in the saved file. Once results are complete, a Share results button appears under the guide.',
+  'Removed the Next up, Top 5 leaderboard and Wins & payouts cards from the Dashboard.']},
+ {v:'1.5.0',date:'2026-11-18',notes:[
+  'New: Withdraw a player. Once winners have been entered, the Players tab has a ⏏ Withdraw button (with Undo). The player’s remaining matches become forfeits: each waiting opponent wins automatically, advances at once, and sees “Win by forfeit” on the match card.',
+  'Forfeit wins count as normal wins and pay the usual match win amount. Withdrawn players are not refunded and still owe the Club Fee. A “Withdrew” tag shows next to their name everywhere.',
+  'If two withdrawn players would meet, or a withdrawn player would get a BYE, the match is voided: no win or loss, and the unpaid win money goes into the Bonus Pool.',
+  'Help text now explains that a player who misses a single match is handled by clicking their opponent as the winner.'
+ ]},
+ {v:'1.4.0',date:'2026-11-18',notes:[
+  'Save reminder: after every few results (3, 5 or 10, or off — set on the Dashboard) a banner reminds you to save, with a Save now button and a Remind me later button. Nothing is saved automatically.',
+  'One-tap save: in Chrome and Edge, after the first save, Save overwrites the same file without asking again. A new “Save as new file…” button on the Dashboard starts a fresh file.'
+,
+  'Next-step guide on the Dashboard: a six-step tracker (Add players, Roll seeds, Enter results, Pay winners, Submit Club Fees, Save the file) with a plain “Next:” line and a button to the right tab. It can be hidden and shown again.',
+  'The Welcome screen now shows a 3-step description and a “Try a demo tournament” button that loads 12 pretend players to practice on.',
+  'Plain-language help: hover text on the status chips and Matches tabs, a “What do these labels mean?” panel on Matches, and a glossary on the Rules tab.',
+  'Warnings explain themselves: Rematch, Check entry and the second-BYE warning now say why they happen and what you can do.',
+  'Payouts now have a small “ⓘ How?” tag beside each player’s name. Hover over it, tap it, or tab to it to see how that payout was calculated, including the 60/40 bonus rule and side pool wins.'
+ ]},
+ {v:'1.3.2',date:'2026-11-17',notes:[
+  'The Prize charts now include the 60/40 sole-leader rule (sole leader 60%, next-best group shares 40%, and the two-way tie split).',
+  'The “Start a new tournament” card was removed from the Rules tab, since New tournament is always at the top of the screen. Its Clear all winners and Clear players & winners buttons moved to the Dashboard quick actions.',
+  'On the Matches page, the record beside each player now shows their record going into that match’s round (not their latest record), so you can check that like records meet like records.',
+  'Colour-blind-friendly refinements: the Ready, Complete and Check-entry/rematch chips now differ in lightness and shape (rematch and Check entry carry a ⚠ icon), the Club Fee card uses a solid, dashed or double edge for its three states, gold outlines are brighter, and a winner’s row is bolder with a thick gold edge.'
+ ]},
  {v:'1.3.1',date:'2026-11-17',notes:[
   'The Rules & Help tab was rewritten for clarity. It now explains both the 3-round and the 5-round format side by side instead of only the format of the open tournament, and covers the Club Fee, the Treasurer status and the 60/40 bonus rule.'
  ]},
@@ -816,13 +966,14 @@ function changelogCard(){
 }
 function prizeCharts(){
   const N=16,ents=[40,60,100],m=v=>'$'+(Math.round(v*100)/100).toLocaleString('en-US',{minimumFractionDigits:Number.isInteger(Math.round(v*100)/100)?0:2,maximumFractionDigits:2});
+  const pool=(n,e,R)=>n*e-R*ceil2(n)*e*winFrac(R),tie=(n,R)=>R===3?n>=15:n>=63,dash='<span class="note">—</span>';
   const one=R=>{
-    let h='<h4 style="margin:14px 0 6px">'+R+'-round format <span class="note">— each win pays '+(R===5?'Entry ÷ 4':'Entry ÷ 2')+'</span></h4><div class="tablewrap"><table><thead><tr><th>Entry</th><th class="r">Pay per win</th><th class="r">Perfect record ('+R+'-0) match wins</th><th class="r">Average player match wins</th><th class="r">Match wins, share of entry</th><th class="r">Bonus pool ('+N+' players)</th></tr></thead><tbody>';
-    ents.forEach(e=>{const w=e*winFrac(R),pool=N*e,bonus=pool-R*(N/2)*w;
-      h+='<tr><td><b>'+m(e)+'</b></td><td class="r">'+m(w)+'</td><td class="r">'+m(w*R)+'</td><td class="r">'+m(w*R/2)+'</td><td class="r">'+Math.round(winFrac(R)*R/2*100*10)/10+'%</td><td class="r">'+m(bonus)+'</td></tr>';});
+    let h='<h4 style="margin:14px 0 6px">'+R+'-round format <span class="note">— each win pays '+(R===5?'Entry ÷ 4':'Entry ÷ 2')+'</span></h4><div class="tablewrap"><table><thead><tr><th>Entry</th><th class="r">Pay per win</th><th class="r">Perfect record ('+R+'-0) match wins</th><th class="r">Bonus pool ('+N+' players)</th><th class="r">Sole leader (60%)</th><th class="r">Next-best group (40%)</th><th class="r">Leaders tied, 2-way split (each)</th></tr></thead><tbody>';
+    ents.forEach(e=>{const w=e*winFrac(R),bp=pool(N,e,R);
+      h+='<tr><td><b>'+m(e)+'</b></td><td class="r">'+m(w)+'</td><td class="r">'+m(w*R)+'</td><td class="r">'+m(bp)+'</td><td class="r">'+(tie(N,R)?dash:m(Math.trunc(bp*0.6)))+'</td><td class="r">'+(tie(N,R)?dash:m(Math.trunc(bp*0.4))+' <span class="note">shared</span>')+'</td><td class="r">'+m(Math.trunc(bp/2))+'</td></tr>';});
     return h+'</tbody></table></div>';
   };
-  return '<div class="card" style="margin-top:16px"><h3>Prize charts</h3><p class="note">Examples for '+N+' players. The average player wins about half of their matches. The bonus pool is what is left of the entry money after every match win is paid, and it goes to the players with the best record (ties split it equally, rounded down to the whole dollar). The Side Pools are separate.</p>'+one(3)+one(5)+'<p class="note" style="margin-top:10px">Everything scales with the entry fee, so the split between match wins and the bonus pool stays the same at any entry: 75% / 25% for 3 rounds and 62.5% / 37.5% for 5 rounds. Entries that divide evenly by 4 (such as $40, $60 and $100) give whole-dollar amounts per win.</p></div>';
+  return '<div class="card" style="margin-top:16px"><h3>Prize charts</h3><p class="note">The bonus pool is what is left of the entry money after every match win is paid. If two or more players tie for the best record they split it equally. If only one player has the best record, they get 60% and the other 40% is shared equally among the players with the next-best record (all amounts rounded down to the whole dollar). The Side Pools are separate. Players also keep what they earned from their own match wins.</p><p class="note">Examples for '+N+' players. “Next-best group” is the whole 40% — each player in that group gets an equal share of it, so the more players tie for second, the smaller each share. In larger fields that group is usually several players. A dash (—) means a sole leader is impossible at that size: with 3 rounds from 15 players up (and 5 rounds from 63 up) at least two players always finish undefeated, so the leaders split the bonus pool equally.</p>'+one(3)+one(5)+'<p class="note" style="margin-top:10px">Everything scales with the entry fee, so the split between match wins and the bonus pool stays the same at any entry: 75% / 25% for 3 rounds and 62.5% / 37.5% for 5 rounds. Entries that divide evenly by 4 (such as $40, $60 and $100) give whole-dollar amounts per win.</p></div>';
 }
 function footerHtml(){
   return '<footer class="credits no-print"><div class="fgrid">'+
@@ -864,7 +1015,7 @@ function renderWelcome(){
   $('hdr').innerHTML='<div class="titlerow"><div class="brand"><span class="logo">🎲⚪⚫</span><div><h1>Backgammon Determined Swiss</h1><small>Determined Swiss Format Tournament Generator · <button class="linkbtn" data-act="changelog" title="See what’s new">'+vtag()+'</button></small></div></div></div>';
   let h=modalHtml();
   if(ui.msg)h+='<div class="flash no-print">'+esc(ui.msg)+' <button class="btn sm" data-act="dismissmsg">OK</button></div>';
-  h+='<main><div class="card" style="max-width:640px;margin:40px auto;text-align:center;padding:32px 22px"><div style="font-size:2.4rem">🎲</div><h2 style="margin:8px 0">Welcome</h2><p class="note" style="margin-bottom:22px">Start a new tournament, or pick up where you left off by opening a tournament file you saved earlier.</p><div class="row" style="justify-content:center;gap:14px"><button class="btn gold" style="font-size:1.1rem;padding:14px 22px" data-act="tnew">➕ New tournament</button><button class="btn" style="font-size:1.1rem;padding:14px 22px" data-act="open">📂 Open saved tournament</button></div><p class="note" style="margin-top:20px">Nothing is saved automatically, so remember to save your tournament file.</p></div>'+(ui.showLog?'<div style="max-width:640px;margin:0 auto 24px">'+changelogCard()+'<div style="text-align:center;margin-top:10px"><button class="btn sm" data-act="changelog">Hide changelog</button></div></div>':'')+'</main>';
+  h+='<main><div class="card" style="max-width:640px;margin:40px auto;text-align:center;padding:32px 22px"><div style="font-size:2.4rem">🎲</div><h2 style="margin:8px 0">Welcome</h2><ol class="welcomesteps"><li><b>1. Add players</b><br><span class="note">Type or paste names, 4 or more.</span></li><li><b>2. Enter winners</b><br><span class="note">Pairings build themselves each round.</span></li><li><b>3. Pay out &amp; save</b><br><span class="note">See who is owed what, then save the file.</span></li></ol><p class="note" style="margin-bottom:22px">Start a new tournament, or pick up where you left off by opening a tournament file you saved earlier.</p><div class="row" style="justify-content:center;gap:14px"><button class="btn gold" style="font-size:1.1rem;padding:14px 22px" data-act="tnew">➕ New tournament</button><button class="btn" style="font-size:1.1rem;padding:14px 22px" data-act="open">📂 Open saved tournament</button></div><p style="margin-top:16px"><button class="btn" data-act="demo">🎓 Try a demo tournament</button><br><span class="note">12 pretend players to practice on. Nothing real is affected.</span></p><p class="note" style="margin-top:20px">Nothing is saved automatically, so remember to save your tournament file.</p></div>'+(ui.showLog?'<div style="max-width:640px;margin:0 auto 24px">'+changelogCard()+'<div style="text-align:center;margin-top:10px"><button class="btn sm" data-act="changelog">Hide changelog</button></div></div>':'')+'</main>';
   h+=footerHtml();
   $('app').innerHTML=h;window.scrollTo(0,0);
 }
@@ -878,10 +1029,11 @@ function render(){
    '<div class="hbtns">'+switcher(D)+'<button class="btn" data-act="tnew">➕ New tournament</button><button class="btn gold" data-act="save">💾 Save this tournament'+(S.dirty?' <span class="dot" title="Unsaved changes"></span>':'')+'</button><button class="btn" data-act="saveall">💾 Save all tournaments</button><button class="btn" data-act="open">📂 Open file</button></div></div>'+hdrNote()+
    '<nav class="tabs" aria-label="Sections">'+TABS.map(t=>'<button data-act="tab" data-v="'+t[0]+'" class="'+(ui.tab===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</nav>';
   let h='';
-  h+=modalHtml();if(ui.confirm)h+='<div class="confirm no-print" role="alertdialog"><b>Please confirm</b><p style="margin:6px 0">'+esc(ui.confirm.msg)+'</p><div class="row"><button class="btn danger" data-act="doconfirm">'+esc(ui.confirm.okLabel)+'</button><button class="btn" data-act="cancelconfirm">Cancel</button></div></div>';
+  h+=shareHtml(D);h+=modalHtml();if(ui.confirm)h+='<div class="confirm no-print" role="alertdialog"><b>Please confirm</b><p style="margin:6px 0">'+esc(ui.confirm.msg)+'</p><div class="row"><button class="btn danger" data-act="doconfirm">'+esc(ui.confirm.okLabel)+'</button><button class="btn" data-act="cancelconfirm">Cancel</button></div></div>';
   if(ui.msg)h+='<div class="flash no-print">'+esc(ui.msg)+' <button class="btn sm" data-act="dismissmsg">OK</button></div>';
   if(ui.seedToast&&!playBegun()&&S.players.length){const pr=pairUp(orderedPlayers(S.players)).map(x=>esc(x[0].name)+' v '+(x[1].t==='bye'?'BYE':esc(x[1].name)));h+='<div class="flash no-print" role="status"><b>🎲 Seeds rolled.</b> New Round 1 pairings:<div class="note" style="margin:6px 0">'+pr.slice(0,12).join(' · ')+(pr.length>12?' · … +'+(pr.length-12)+' more':'')+'</div><div class="row"><button class="btn sm" data-act="seedundo">Undo</button><button class="btn sm gold" data-act="seedagain">Roll again</button><button class="btn sm" data-act="seedclose" aria-label="Dismiss">✕</button></div></div>';}
   if(ui.banner)h+='<div class="banner no-print"><span>💡 <b>Heads up:</b> nothing is saved automatically. '+(S.dirty?'This tournament has unsaved changes — ':'')+'Please save your tournaments before closing this page.</span><span class="row"><button class="btn sm gold" data-act="save">Save now</button><button class="btn sm" data-act="dismissbanner" aria-label="Dismiss reminder">✕</button></span></div>';
+  h+=remindHtml();
   h+='<main>';
   const v={dashboard:viewDashboard,players:viewPlayers,matches:viewMatches,standings:viewStandings,payouts:viewPayouts,rules:viewRules,tournaments:viewTournaments}[ui.tab];
   h+=v(D)+'</main><p class="note no-print" style="margin-top:24px;text-align:center">Everything is computed live from the roster and winner entries. Not saved between reloads.</p>';
@@ -908,6 +1060,12 @@ function summarize(T){
 }
 function switchTo(id){const T=LIB.find(x=>x.id===id);if(!T)return;S=T;ui.seedToast=null;ui.confirm=null;ui.modal=null;ui.msg='';ui.newName='';ui.paste='';ui.mRound='auto';ui.mFilter='all';ui.mSearch='';ui.hl=null;render();}
 function switcher(D){return '<select id="tsw-5n2j" aria-label="Switch tournament" style="max-width:280px">'+LIB.map(T=>'<option value="'+esc(T.id)+'"'+(T===S?' selected':'')+'>'+(T.dirty?'● ':'')+esc(T.name)+' — '+esc(summarize(T).status)+'</option>').join('')+'</select>'+stBadge(D.status);}
+function remindHtml(){
+  const n=ui.remindEvery;if(!n||ui.welcome)return '';
+  const c=S.sinceSave||0,next=S.nextRemind||n;
+  if(c<next)return '';
+  return '<div class="banner no-print" role="status"><span>⏰ <b>'+c+' result'+(c===1?'':'s')+' entered since your last save.</b> Save now so nothing is lost if this page closes.</span><span class="row"><button class="btn sm gold" data-act="save">💾 Save now</button><button class="btn sm" data-act="remindlater">Remind me later</button></span></div>';
+}
 function hdrNote(){
   const un=LIB.filter(x=>x.dirty);let h='';
   if(un.length)h+='<div class="banner" role="status"><span>⚠ <b>You have unsaved tournaments — save before closing</b> ('+un.map(x=>esc(x.name)).join(', ')+')</span><span class="row"><button class="btn sm gold" data-act="saveall">Save all</button></span></div>';
@@ -916,7 +1074,7 @@ function hdrNote(){
 function fromData(x){
   let o;try{o=loadData(x,{});}catch(e){throw new Error(e.message==='Not a tournament file.'?'it is not a tournament file':'the player list or results look damaged');}
   const ok=v=>typeof v==='string'&&!isNaN(new Date(v));
-  return mkT({id:typeof x.id==='string'&&x.id?x.id:undefined,name:o.name,created:ok(x.created)?x.created:undefined,updated:ok(x.updated)?x.updated:undefined,entry:o.entry,sp20Entry:o.sp20Entry,sp2Entry:o.sp2Entry,clubFee:o.clubFee,feesSubmitted:o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt,feesSubmittedAmt:o.feesSubmittedAmt,players:o.players,winners:o.winners,paid:o.paid,nextId:o.nextId,seedsRandomized:o.seedsRandomized,numRounds:o.numRounds,dirty:false,savedAt:null});
+  return mkT({id:typeof x.id==='string'&&x.id?x.id:undefined,name:o.name,created:ok(x.created)?x.created:undefined,updated:ok(x.updated)?x.updated:undefined,entry:o.entry,sp20Entry:o.sp20Entry,sp2Entry:o.sp2Entry,clubFee:o.clubFee,feesSubmitted:o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt,feesSubmittedAmt:o.feesSubmittedAmt,players:o.players,winners:o.winners,paid:o.paid,nextId:o.nextId,seedsRandomized:o.seedsRandomized,numRounds:o.numRounds,clubName:o.clubName,dirty:false,savedAt:null});
 }
 function importData(d,fn){
   if(!d||typeof d!=='object'||Array.isArray(d))throw new Error('this does not look like a tournament file.');
@@ -935,12 +1093,144 @@ function importData(d,fn){
   if(LIB.some(x=>x.id===T.id)){ui.modal={type:'replace',T,fn};return;}
   dropPlaceholder();LIB.push(T);switchTo(T.id);flash('Opened “'+T.name+'” from “'+fn+'”.');
 }
+/* ---------- Share results (v1.6.0) ---------- */
+function shortName(n){const p=String(n).trim().split(/\s+/);return p.length<2?String(n).trim():p[0]+' '+p[p.length-1][0].toUpperCase()+'.';}
+function shareOpts(){if(!ui.share)ui.share={fmt:'square',amt:false,nm:'full',top:5};return ui.share;}
+function shareSize(o){return ({square:[1080,1080],tall:[1080,1920],wide:[1200,630]})[o.fmt]||[1080,1080];}
+function shareData(D,o){
+  const p=D.pay,nm=x=>o.nm==='short'?shortName(x.name):x.name,byId={};D.standings.forEach(x=>byId[x.id]=x);
+  const cap=o.fmt==='tall'?14:o.fmt==='wide'?5:7,want=o.top==='all'?999:+o.top||5,n=Math.min(want,cap,D.standings.length);
+  const champs=(p.lead||[]).map(id=>byId[id]).filter(Boolean);
+  const rows=D.standings.slice(0,n).map(x=>({rank:D.rank[x.id],name:nm(x),rec:D.rec[x.id].w+'–'+D.rec[x.id].l,amt:p.per[x.id].total,a:(p.spLead||[]).includes(x.id),b:(p.spLeadB||[]).includes(x.id)}));
+  const side=(ids,pool,share)=>ids&&ids.length?{names:ids.map(id=>byId[id]).filter(Boolean).map(nm),each:share,n:ids.length}:null;
+  const c0=champs[0];
+  return {club:(S.clubName||'').trim(),title:S.name,
+    sub:dateLabel(new Date())+' · '+S.players.length+' players · '+S.numRounds+' rounds',
+    champs:champs.map(nm),champRec:c0?D.rec[c0.id].w+'–'+D.rec[c0.id].l:'',champAmt:c0?p.per[c0.id].total:0,
+    rows:rows,more:D.standings.length-n,
+    sideA:D.standings.some(x=>x.sp20)?side(p.spLead,p.spPoolA,p.spShare):null,
+    sideB:D.standings.some(x=>x.sp2)?side(p.spLeadB,p.spPoolB,p.spShareB):null};
+}
+function shareText(D,o){
+  const d=shareData(D,o),L=[];
+  L.push('🏆 '+d.title+(d.club?' — '+d.club:''));L.push(d.sub);L.push('');
+  if(d.champs.length)L.push((d.champs.length>1?'Co-champions: ':'Champion: ')+d.champs.join(' & ')+' ('+d.champRec+')'+(o.amt&&d.champAmt?' – '+money(d.champAmt):''));
+  L.push('');d.rows.forEach(r=>L.push(r.rank+'. '+r.name+' '+r.rec+(r.a?' [A]':'')+(r.b?' [B]':'')+(o.amt?' '+money(r.amt):'')));
+  if(d.more>0)L.push('…and '+d.more+' more');
+  const sd=(k,s)=>{if(s)L.push('Side Pool '+k+': '+s.names.join(', ')+(o.amt?' ('+money(s.each)+(s.n>1?' each':'')+')':''));};
+  if(d.sideA||d.sideB){L.push('');sd('A',d.sideA);sd('B',d.sideB);}
+  L.push('');L.push('Determined Swiss format · Backgammon Tournament Manager');
+  return L.join('\n');
+}
+function shareSvg(D,o){
+  const d=shareData(D,o),sz=shareSize(o),W=sz[0],H=sz[1],tall=o.fmt==='tall',wide=o.fmt==='wide';
+  const G='#d9b44a',GL='#f0d98a',B='#6bb3ee',C='#f6f1de',M='#d3c1a3',DK='#24150c';
+  const fit=(t,base,maxW,k)=>{const w=String(t).length*base*(k||.56);return w>maxW?Math.max(14,Math.floor(base*maxW/w)):base;};
+  const clip=(t,fs,maxW,k)=>{t=String(t);const mx=Math.floor(maxW/(fs*(k||.56)));return t.length>mx?t.slice(0,Math.max(1,mx-1))+'…':t;};
+  const T=(x,y,t,fs,fill,anc,wt)=>'<text x="'+x+'" y="'+y+'" font-size="'+fs+'" fill="'+fill+'" text-anchor="'+(anc||'start')+'" font-weight="'+(wt||400)+'">'+esc(t)+'</text>';
+  const die=(x,y,s,f)=>{const pp={1:[[.5,.5]],2:[[.28,.28],[.72,.72]],3:[[.28,.28],[.5,.5],[.72,.72]],4:[[.28,.28],[.72,.28],[.28,.72],[.72,.72]],5:[[.28,.28],[.72,.28],[.5,.5],[.28,.72],[.72,.72]],6:[[.28,.25],[.72,.25],[.28,.5],[.72,.5],[.28,.75],[.72,.75]]}[f];
+    return '<rect x="'+x+'" y="'+y+'" width="'+s+'" height="'+s+'" rx="'+(s*.2)+'" fill="'+C+'" stroke="'+G+'" stroke-width="2"/>'+pp.map(q=>'<circle cx="'+(x+q[0]*s)+'" cy="'+(y+q[1]*s)+'" r="'+(s*.075)+'" fill="'+DK+'"/>').join('');};
+  let s='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" font-family="\'Segoe UI\',Helvetica,Arial,sans-serif">';
+  s+='<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a3a22"/><stop offset="0.45" stop-color="#3b2416"/><stop offset="1" stop-color="#24150c"/></linearGradient></defs>';
+  s+='<rect width="'+W+'" height="'+H+'" fill="url(#bg)"/><rect x="16" y="16" width="'+(W-32)+'" height="'+(H-32)+'" rx="26" fill="none" stroke="'+G+'" stroke-width="4"/><rect x="30" y="30" width="'+(W-60)+'" height="'+(H-60)+'" rx="18" fill="none" stroke="'+G+'" stroke-opacity=".35" stroke-width="1.5"/>';
+  const mx=wide?60:60,cx=W/2;
+  const table=(x0,x1,y0,rowH,fs,mkA,mkB,amtW)=>{
+    let t='';const xr=x1-24-(o.amt?amtW:0),nameX=x0+(wide?66:80),maxW=xr-mkA-20-nameX;
+    d.rows.forEach((r,i)=>{const y=y0+i*rowH,h=rowH-8,my=y+h/2+fs*.35;
+      t+='<rect x="'+x0+'" y="'+y+'" width="'+(x1-x0)+'" height="'+h+'" rx="12" fill="#fff" fill-opacity="'+(r.rank===1?.14:i%2?.04:.08)+'"'+(r.rank===1?' stroke="'+G+'" stroke-width="2"':'')+'/>';
+      t+='<circle cx="'+(x0+(wide?30:38))+'" cy="'+(y+h/2)+'" r="'+(h*.36)+'" fill="'+(r.rank===1?G:'#6b4428')+'"/>'+T(x0+(wide?30:38),my,r.rank,fs*.85,r.rank===1?DK:C,'middle',700);
+      const fn=fit(r.name,fs,maxW,r.rank===1?.62:.57);t+=T(nameX,my,clip(r.name,fn,maxW,r.rank===1?.62:.57),fn,C,'start',r.rank===1?700:500);
+      if(r.a)t+='<circle cx="'+(xr-mkA)+'" cy="'+(y+h/2)+'" r="'+(fs*.52)+'" fill="'+G+'"/>'+T(xr-mkA,my,'A',fs*.7,DK,'middle',800);
+      if(r.b)t+='<circle cx="'+(xr-mkB)+'" cy="'+(y+h/2)+'" r="'+(fs*.52)+'" fill="'+B+'"/>'+T(xr-mkB,my,'B',fs*.7,DK,'middle',800);
+      t+=T(xr,my,r.rec,fs,M,'end',600);
+      if(o.amt)t+=T(x1-24,my,money(r.amt),fs,GL,'end',700);
+    });return t;};
+  const sides=(x,y,maxW,fs,gap)=>{let t='',yy=y;
+    [['A',d.sideA,G],['B',d.sideB,B]].forEach(a=>{const sd=a[1];if(!sd)return;
+      const txt='Side Pool '+a[0]+': '+sd.names.join(', ')+(o.amt?' · '+money(sd.each)+(sd.n>1?(wide?' ea.':' each'):''):'');
+      t+='<circle cx="'+(x+fs*.55)+'" cy="'+(yy-fs*.3)+'" r="'+(fs*.58)+'" fill="'+a[2]+'"/>'+T(x+fs*.55,yy-fs*.3+fs*.27,a[0],fs*.78,DK,'middle',800)+
+         T(x+fs*1.5,yy,clip(txt,fs,maxW-fs*1.5),fs,C,'start',500);yy+=gap;});return t;};
+  const box=(x,y,w,h,cxx)=>{
+    const co=d.champs.length>1,names=d.champs.length>3?d.champs.slice(0,3).join(' · ')+' +'+(d.champs.length-3):d.champs.join(co?' · ':'');
+    let t='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="20" fill="'+G+'" fill-opacity=".16" stroke="'+G+'" stroke-width="3"/>';
+    if(!d.champs.length)return t+T(cxx,y+h/2,'Final results',44,GL,'middle',700);
+    const k=h/170;
+    t+=T(cxx,y+44*k,'★  '+(co?'CO-CHAMPIONS':'CHAMPION')+'  ★',26*Math.max(k,.9),G,'middle',700);
+    const fnm=fit(names,(co?54:68)*Math.max(k,.85),w-60,.64);t+=T(cxx,y+105*k,clip(names,fnm,w-60,.64),fnm,C,'middle',700);
+    t+=T(cxx,y+150*k,d.champRec+(o.amt&&d.champAmt?'  ·  '+money(d.champAmt):''),32*Math.max(k,.9),GL,'middle',600);
+    return t;};
+  const foot=(y,fs)=>T(cx,y,'Determined Swiss format · Backgammon Tournament Manager',fs,M,'middle',400);
+  const head=(yc,yt,ys,fc,ft,fsub,anc,x)=>{let t='';
+    const cl=d.club.toUpperCase(),fcc=fit(cl,fc,W-2*mx-160,.66),ftt=fit(d.title,ft,W-2*mx-20-(wide?120:0),.63);
+    if(d.club)t+=T(x,yc,clip(cl,fcc,W-2*mx-160,.66),fcc,G,anc,700);
+    t+=T(x,yt,clip(d.title,ftt,W-2*mx-20-(wide?120:0),.63),ftt,C,anc,700);t+=T(x,ys,d.sub,fsub,M,anc,400);return t;};
+  if(wide){
+    s+=die(mx,40,40,5)+die(mx+52,40,40,2);
+    s+=head(70,128,162,26,50,22,'start',mx+120);
+    s+=box(60,190,480,200,300);
+    s+=sides(60,450,480,20,42);
+    s+=table(570,W-60,190,70,26,124,88,120);
+    if(d.more>0)s+=T(570,555,'…and '+d.more+' more player'+(d.more>1?'s':''),18,M,'start',400);
+    s+=foot(H-34,18);
+  }else{
+    const rowH=(tall?80:54),y0=tall?640:446,ds=tall?56:42,dy=tall?70:42;
+    s+=die(cx-ds-8,dy,ds,5)+die(cx+8,dy,ds,2);
+    const yc=tall?190:134,yt=tall?290:204,ys=tall?340:244;
+    s+=head(yc,yt,ys,tall?34:30,tall?66:60,tall?30:26,'middle',cx);
+    s+=box(60,tall?390:268,W-120,tall?214:160,cx);
+    s+=table(60,W-60,y0,rowH,tall?32:28,150,112,tall?190:170);
+    let ye=y0+d.rows.length*rowH;
+    if(d.more>0){s+=T(cx,ye+22,'…and '+d.more+' more player'+(d.more>1?'s':''),tall?24:20,M,'middle',400);ye+=34;}
+    s+=sides(60,ye+(tall?50:44),W-120,tall?28:24,tall?48:40);
+    s+=foot(H-(tall?46:44),tall?24:20);
+  }
+  return s+'</svg>';
+}
+function shareHtml(D){
+  if(!ui.shareOpen||!D||D.status!=='Complete')return '';
+  const o=shareOpts(),sz=shareSize(o),svg=shareSvg(D,o),club=S.clubName||'';
+  const rd=(k,v,lab)=>'<label class="f"><input type="radio" name="sh-'+k+'" data-sh="'+k+'" value="'+v+'"'+(String(o[k])===String(v)?' checked':'')+'> '+lab+'</label>';
+  const maxH=o.fmt==='tall'?'70vh':'60vh';
+  return '<div class="shareov no-print" role="dialog" aria-label="Share results"><div class="sharebox"><div class="row" style="justify-content:space-between;align-items:center;margin:0"><h2>📣 Share results</h2><button class="btn" data-act="shareclose">Close ✕</button></div>'+
+   '<p class="note" style="margin:6px 0 12px">Make a results card for Facebook, Instagram, X or a club group chat. Check it over, then save the picture or copy the text.</p>'+
+   '<div class="sharegrid"><div class="sharepv"><div class="sharepic" style="max-height:'+maxH+';aspect-ratio:'+sz[0]+'/'+sz[1]+'">'+svg+'</div></div>'+
+   '<div class="shareopts"><label class="f" for="sh-club-5k2m">Club name (shown on the card)</label><input type="text" id="sh-club-5k2m" data-sh="club" maxlength="60" value="'+esc(club)+'" placeholder="e.g. Your club or group name"><p class="note" style="margin:2px 0 10px">Saved with this tournament.</p>'+
+   '<b>Shape</b><div>'+rd('fmt','square','Square (most feeds)')+rd('fmt','tall','Tall (Stories)')+rd('fmt','wide','Wide (Facebook, X)')+'</div>'+
+   '<b style="display:block;margin-top:10px">Names</b><div>'+rd('nm','full','Full names')+rd('nm','short','First name + last initial')+'</div>'+
+   '<label class="f" for="sh-top-7w3q" style="margin-top:10px"><b>Players listed</b></label><select id="sh-top-7w3q" data-sh="top">'+['3','5','10','all'].map(v=>'<option value="'+v+'"'+(String(o.top)===v?' selected':'')+'>'+(v==='all'?'Everyone (as many as fit)':'Top '+v)+'</option>').join('')+'</select>'+
+   '<label class="f" style="margin-top:10px"><input type="checkbox" data-sh="amt"'+(o.amt?' checked':'')+'> Show winnings (dollar amounts)</label><p class="note" style="margin:2px 0 10px">Off by default, so money stays private.</p>'+
+   '<div class="row"><button class="btn gold" data-act="sharepng">⬇ Save picture</button>'+(navigator.share?'<button class="btn" data-act="sharenative">📤 Share…</button>':'')+'<button class="btn" data-act="sharecopy">📋 Copy text</button></div>'+
+   (ui.shareMsg?'<p class="flash" style="margin:8px 0">'+esc(ui.shareMsg)+'</p>':'')+
+   '<label class="f" for="sh-txt-9c4v" style="margin-top:10px">Text version</label><textarea id="sh-txt-9c4v" readonly rows="8">'+esc(shareText(D,o))+'</textarea></div></div></div></div>';
+}
+function shareToPng(D,cb){
+  const o=shareOpts(),sz=shareSize(o),svg=shareSvg(D,o),img=new Image();
+  img.onload=()=>{try{const c=document.createElement('canvas');c.width=sz[0];c.height=sz[1];c.getContext('2d').drawImage(img,0,0,sz[0],sz[1]);c.toBlob(b=>cb(b),'image/png');}catch(e){cb(null);}};
+  img.onerror=()=>cb(null);img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+function sharePng(D,native){
+  shareToPng(D,blob=>{
+    if(!blob){ui.shareMsg='Sorry, the picture could not be made in this browser. Use Copy text instead.';render();return;}
+    const name=slug()+'-results.png';
+    if(native&&navigator.canShare){try{const f=new File([blob],name,{type:'image/png'});if(navigator.canShare({files:[f]})){ui.shared=true;navigator.share({files:[f],title:S.name,text:shareText(D,shareOpts())}).catch(()=>{});return;}}catch(e){}}
+    try{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);ui.shareMsg='Picture saved as '+name+' (check your Downloads folder).';ui.shared=true;}
+    catch(e){ui.shareMsg='Could not save the picture here. Try opening the app in your regular browser, or use Copy text.';}
+    render();
+  });
+}
+function shareCopy(D){
+  const txt=shareText(D,shareOpts());
+  const done=ok=>{if(ok)ui.shared=true;ui.shareMsg=ok?'Text copied. Paste it into your post.':'Could not copy automatically. Select the text below and copy it.';render();};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(()=>done(true),()=>done(false));
+  else{try{const t=$('sh-txt-9c4v');t.select();done(document.execCommand('copy'));}catch(e){done(false);}}
+}
 function modalHtml(){
   const m=ui.modal;if(!m)return '';
   const wrap=(t,b)=>'<div class="confirm gold no-print" role="dialog"><b>'+t+'</b>'+b+'</div>';
   const btns=(act,lab)=>'<div class="row"><button class="btn gold" data-act="'+act+'">'+lab+'</button><button class="btn" data-act="mclose">Cancel</button></div>';
   if(m.type==='new'){
     return wrap('➕ New tournament','<label class="f" for="nt-name-3c7v" style="margin-top:8px">Name</label><input type="text" id="nt-name-3c7v" value="'+esc(defaultName())+'">'+
+    '<label class="f" for="nt-clubname-6h2j" style="margin-top:8px">Club name <span class="note">(optional, shown on the shared results card)</span></label><input type="text" id="nt-clubname-6h2j" maxlength="60" value="'+esc(S.clubName||'')+'" placeholder="e.g. Your club or group name">'+
     '<fieldset class="ntset"><legend>Tournament settings</legend>'+
     '<div style="margin:4px 0"><b>Format</b><label class="f"><input type="radio" name="nt-rounds" value="3" checked> 3 rounds</label><label class="f"><input type="radio" name="nt-rounds" value="5"> 5 rounds</label></div>'+
     '<div class="row"><div><label class="f" for="nt-entry-1a7p">Prize Pool entry ($)</label><input type="number" min="0" step="1" id="nt-entry-1a7p" class="ntfee" value="40" style="width:110px"></div>'+
@@ -990,7 +1280,7 @@ function setWinner(mid,pid){
   const nw=Object.assign({},S.winners);
   if(pid==null)delete nw[mid];else nw[mid]=pid;
   const c=cleanWinners(S.players,nw,S.numRounds);
-  const apply=()=>commit(()=>{S.winners=c.winners;});
+  const apply=()=>commit(()=>{S.winners=c.winners;if(pid!=null)S.sinceSave=(S.sinceSave||0)+1;});
   if(c.removed.length){
     askConfirm('This change invalidates '+c.removed.length+' later winner entr'+(c.removed.length>1?'ies':'y')+' (match '+c.removed.join(', ')+'). They will be cleared. Continue?','Change & clear later winners',apply);
   }else apply();
@@ -1013,6 +1303,11 @@ document.addEventListener('click',function(e){
     case 'win':{const m=el.dataset.m,pid=+el.dataset.p;setWinner(m,S.winners[m]===pid?null:pid);break;}
     case 'clearw':setWinner(el.dataset.m,null);break;
     case 'save':saveT(S);break;
+    case 'demo':makeDemo();break;
+    case 'hideguide':ui.hideGuide=true;render();break;
+    case 'showguide':ui.hideGuide=false;render();break;
+    case 'saveas':saveT(S,true);break;
+    case 'remindlater':S.nextRemind=(S.sinceSave||0)+(ui.remindEvery||10);render();break;
     case 'saveall':saveAll();break;
     case 'tnew':ui.modal={type:'new'};render();window.scrollTo(0,0);break;
     case 'topen':ui.tab='dashboard';switchTo(el.dataset.id);window.scrollTo(0,0);break;
@@ -1029,7 +1324,7 @@ document.addEventListener('click',function(e){
       else if(mode==='paste'){const names=$('nt-paste-6p4w').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);ps=names.map((x,i)=>({id:i+1,name:x,sp20:false,director:false,seed:Math.random()}));nid=names.length+1;}
       const nr=+((document.querySelector('input[name="nt-rounds"]:checked')||{}).value)===5?5:3;
       const fv=(id,d)=>{const v=parseFloat(($(id)||{}).value);return Number.isFinite(v)&&v>=0?v:d;};
-      const T=mkT({name:nm,entry:fv('nt-entry-1a7p',nr===5?60:40),sp20Entry:fv('nt-sp-2b8q',nr===5?30:20),sp2Entry:fv('nt-sp2-4d1s',nr===5?15:10),clubFee:fv('nt-club-3c9r',nr===5?10:5),players:ps,nextId:nid,numRounds:nr,dirty:true});
+      const T=mkT({name:nm,entry:fv('nt-entry-1a7p',nr===5?60:40),sp20Entry:fv('nt-sp-2b8q',nr===5?30:20),sp2Entry:fv('nt-sp2-4d1s',nr===5?15:10),clubFee:fv('nt-club-3c9r',nr===5?10:5),players:ps,nextId:nid,numRounds:nr,clubName:(($('nt-clubname-6h2j')||{}).value||'').trim().slice(0,60),dirty:true});
       dropPlaceholder();LIB.push(T);ui.tab='players';switchTo(T.id);flash('Created “'+T.name+'” with '+ps.length+' player'+(ps.length===1?'':'s')+'. Remember to save it to a file.');render();window.scrollTo(0,0);break;
     }
     case 'trename':{const T=LIB.find(x=>x.id===ui.modal.id),nm=($('rn-name-8b1q').value||'').trim();if(!nm){flash('Enter a name first.');render();break;}if(T){T.name=nm;T.dirty=true;T.updated=nowIso();}ui.modal=null;render();break;}
@@ -1038,13 +1333,18 @@ document.addEventListener('click',function(e){
       const nm=($('cp-name-2x8r').value||'').trim()||(src.name+' (copy)');
       const res=(document.querySelector('input[name="cp-mode"]:checked')||{}).value==='results';
       const c=JSON.parse(JSON.stringify(src));
-      const T=mkT({name:nm,entry:c.entry,sp20Entry:c.sp20Entry,sp2Entry:c.sp2Entry,clubFee:c.clubFee,players:c.players,winners:res?c.winners:{},paid:res?c.paid:{},nextId:c.nextId,seedsRandomized:c.seedsRandomized,numRounds:c.numRounds,dirty:true});
+      const T=mkT({name:nm,entry:c.entry,sp20Entry:c.sp20Entry,sp2Entry:c.sp2Entry,clubFee:c.clubFee,players:(res?c.players:c.players.map(p=>Object.assign({},p,{withdrawn:false}))),winners:res?c.winners:{},paid:res?c.paid:{},nextId:c.nextId,seedsRandomized:c.seedsRandomized,numRounds:c.numRounds,clubName:c.clubName,dirty:true});
       LIB.push(T);ui.modal=null;flash('Added “'+T.name+'” ('+(res?'roster with results':'roster only')+'). Remember to save it to a file.');render();break;
     }
     case 'mreplace':{const m=ui.modal,i=LIB.findIndex(x=>x.id===m.T.id);if(i>=0)LIB[i]=m.T;else LIB.push(m.T);switchTo(m.T.id);flash('Replaced the tournament with the version from “'+m.fn+'”.');render();break;}
     case 'mkeep':{const m=ui.modal;m.T.id=newId();m.T.name+=' (imported)';LIB.push(m.T);switchTo(m.T.id);flash('Kept both: the file’s version was added as “'+m.T.name+'”.');render();break;}
     case 'ntsample':{const n=Math.max(1,Math.min(5000,parseInt($('nt-n-4h8z').value,10)||0));$('nt-paste-6p4w').value=randomNames(n).join('\n');const rb=document.querySelector('input[name="nt-mode"][value="paste"]');if(rb)rb.checked=true;break;}
     case 'open':openPicker();break;
+    case 'share':ui.shareOpen=true;ui.shareMsg='';render();break;
+    case 'shareclose':ui.shareOpen=false;ui.shareMsg='';render();break;
+    case 'sharepng':sharePng(D,false);break;
+    case 'sharenative':sharePng(D,true);break;
+    case 'sharecopy':shareCopy(D);break;
     case 'csv':dl(slug()+'-standings-payouts.csv',csvStandings(D),'text/csv');break;
     case 'print':document.title=S.name+' – Cash-out sheet';try{window.print();document.title=S.name+' – Backgammon Determined Swiss Tournament Manager';}catch(err){flash('Printing is blocked in this viewer. Use Export CSV instead.');render();}break;
     case 'printpaths':try{window.print();}catch(err){flash('Printing is blocked in this viewer.');render();}break;
@@ -1060,13 +1360,21 @@ document.addEventListener('click',function(e){
     case 'sortseed':commit(()=>{S.players.sort((a,b)=>a.seed-b.seed||a.id-b.id);});break;
     case 'add':{const inp=$('add-name-5h8e');const nm=(inp.value||'').trim();if(!nm){flash('Enter a name first.');render();break;}commit(()=>{S.players.push({id:S.nextId++,name:nm,sp20:false,director:false,seed:Math.random()});ui.newName='';});break;}
     case 'paste':{const names=$('paste-box-1r6t').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);if(!names.length)break;commit(()=>{names.forEach(nm=>S.players.push({id:S.nextId++,name:nm,sp20:false,director:false,seed:Math.random()}));ui.paste='';});break;}
+    case 'withdraw':{const id=+el.dataset.p,pl=S.players.find(p=>p.id===id);if(!pl)break;askConfirm('Withdraw '+pl.name+'? All of their remaining matches become forfeits, and each waiting opponent gets an automatic win. Their entry fee and the Club Fee are not refunded. You can undo this later.','Withdraw '+pl.name,()=>commit(()=>{pl.withdrawn=true;}));break;}
+    case 'unwithdraw':{const id=+el.dataset.p,pl=S.players.find(p=>p.id===id);if(!pl)break;
+      const test=S.players.map(p=>p.id===id?Object.assign({},p,{withdrawn:false}):p),c=cleanWinners(test,S.winners,S.numRounds);
+      const go=()=>commit(()=>{pl.withdrawn=false;S.winners=c.winners;});
+      if(c.removed.length)askConfirm('Undoing this withdrawal changes later matches, so '+c.removed.length+' winner entr'+(c.removed.length>1?'ies':'y')+' (match '+c.removed.join(', ')+') will be cleared. Continue?','Undo withdrawal',go);else go();break;}
     case 'del':{const id=+el.dataset.p;if(!playBegun())commit(()=>{S.players=S.players.filter(p=>p.id!==id);delete S.paid[id];});break;}
     case 'clrwin':askConfirm('Clear ALL winner entries? Players stay. Save the file first if you need this tournament.','Clear all winners',()=>commit(()=>{S.winners={};S.paid={};}));break;
     case 'clrall':askConfirm('Remove ALL players and winners? Save the tournament file first — nothing is archived automatically.','Clear players & winners',()=>commit(()=>{S.players=[];S.winners={};S.paid={};S.nextId=1;}));break;
   }
 });
 document.addEventListener('change',function(e){
+  const shk=e.target.dataset&&e.target.dataset.sh;
+  if(shk){const o=shareOpts();if(shk==='club'){commit(()=>{S.clubName=e.target.value.trim().slice(0,60);});}else if(shk==='amt'){o.amt=e.target.checked;render();}else{o[shk]=shk==='top'&&e.target.value!=='all'?+e.target.value:e.target.value;render();}return;}
   if(e.target.name==='nt-rounds'){const five=e.target.value==='5',d=[['nt-entry-1a7p',five?60:40],['nt-sp-2b8q',five?30:20],['nt-sp2-4d1s',five?15:10],['nt-club-3c9r',five?10:5]];d.forEach(x=>{const f=$(x[0]);if(f&&f.dataset.edited!=='1')f.value=x[1];});return;}
+  if(e.target.id==='remind-7x3k'){ui.remindEvery=+e.target.value;LIB.forEach(T=>{T.nextRemind=(T.sinceSave||0)+ui.remindEvery;});render();return;}
   if(e.target.id==='tsw-5n2j'){switchTo(e.target.value);return;}if(e.target.id==='path-pl-7q2m'){ui.pathPid=+e.target.value;render();return;}const el=e.target.closest('[data-ch]');if(!el)return;
   const k=el.dataset.ch,pid=+el.dataset.p,pl=S.players.find(p=>p.id===pid);
   if(k==='pname'&&pl)commit(()=>{pl.name=el.value.trim();});
@@ -1077,6 +1385,7 @@ document.addEventListener('change',function(e){
   else if(k==='set'){
     const f=el.dataset.k;
     if(f==='name')commit(()=>{S.name=el.value.trim()||'Determined Swiss';});
+    else if(f==='clubName')commit(()=>{S.clubName=el.value.trim().slice(0,60);});
     else if(f==='numRounds'){if(!playBegun())commit(()=>{S.numRounds=+el.value===5?5:3;});else render();}
     else{const v=parseFloat(el.value);if(Number.isFinite(v)&&v>=0)commit(()=>{S[f]=v;});else render();}
   }
@@ -1111,6 +1420,29 @@ async function openPicker(){
   }
   $('openfile-7k2d').click();
 }
+
+/* Tooltip for “ⓘ How?” tags: hover, keyboard focus, or tap */
+(function(){
+  let box=null,cur=null;
+  const hide=()=>{if(box){box.remove();box=null;}cur=null;};
+  const show=el=>{
+    if(cur===el)return;hide();cur=el;
+    box=document.createElement('div');box.id='tipbox-4v8n';box.setAttribute('role','tooltip');box.textContent=el.getAttribute('data-tip')||'';
+    document.body.appendChild(box);
+    const r=el.getBoundingClientRect(),b=box.getBoundingClientRect();
+    let x=Math.min(Math.max(8,r.left),window.innerWidth-b.width-8),y=r.bottom+6;
+    if(y+b.height>window.innerHeight-8)y=Math.max(8,r.top-b.height-6);
+    box.style.left=x+'px';box.style.top=y+'px';
+  };
+  const tagOf=e=>e.target&&e.target.closest?e.target.closest('.howtag'):null;
+  document.addEventListener('mouseover',e=>{const t=tagOf(e);if(t)show(t);});
+  document.addEventListener('mouseout',e=>{if(tagOf(e))hide();});
+  document.addEventListener('focusin',e=>{const t=tagOf(e);if(t)show(t);});
+  document.addEventListener('focusout',e=>{if(tagOf(e))hide();});
+  document.addEventListener('click',e=>{const t=tagOf(e);if(t){if(cur===t&&box&&e.detail===0)hide();else show(t);}else hide();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+  window.addEventListener('scroll',hide,true);
+})();
 $('openfile-7k2d').addEventListener('change',function(e){
   const f=e.target.files&&e.target.files[0];if(!f)return;
   const rd=new FileReader();
