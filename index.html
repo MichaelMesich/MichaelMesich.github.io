@@ -581,10 +581,6 @@ function saveT(T,forceNew){
   }
   dl(name,text(),'application/json',(ok,how,h)=>{if(ok){if(h)T.fh=h;done(how);}});
 }
-function saveAll(){
-  const data={app:'determined-swiss-manager',kind:'library',version:1,appVersion:APP_VERSION,savedAt:nowIso(),tournaments:LIB.map(tData)};
-  dl('determined-swiss-library-'+ymd(nowIso())+'.json',JSON.stringify(data,null,2),'application/json',(ok)=>{if(ok){markSaved(LIB);flash('All '+LIB.length+' tournament'+(LIB.length===1?'':'s')+' saved in one library file.');render();}});
-}
 function loadData(d,S){
   if(!d||typeof d!=='object'||!Array.isArray(d.players))throw new Error('Not a tournament file.');
   const ps=d.players.map((p,i)=>({id:Number.isFinite(+p.id)?+p.id:i+1,name:String(p.name==null?'':p.name),sp20:!!p.sp20,sp2:!!p.sp2,director:!!p.director,withdrawn:!!p.withdrawn,seed:Number.isFinite(+p.seed)?+p.seed:Math.random()}));
@@ -876,8 +872,8 @@ function viewRules(D){
   '<h3 style="margin-top:14px">Withdrawing a player</h3><ul><li>Once winners have been entered, the Players tab has a <b>⏏ Withdraw</b> button for a player who leaves the event. It can be undone.</li><li>All of that player’s remaining matches become <b>forfeits</b>: each opponent wins automatically, advances at once, and sees “Win by forfeit” on the match card, so they know before they sit down.</li><li>A forfeit win counts as a normal win and pays the usual match win amount. The withdrawn player takes a loss for each forfeit. Their entry fee is not refunded and the Club Fee is still charged. Results already entered stay as they are.</li><li>If two withdrawn players would meet, or a withdrawn player would get a BYE, that match is <b>voided</b>: nobody gets a win or a loss, and the win money that would have been paid goes into the Bonus Pool instead.</li><li>If a player only misses one match, just click their opponent as the winner. They are paired normally in the next round.</li></ul>'+
   '<h3 style="margin-top:14px">Managing tournaments</h3><ul><li>You can keep several tournaments open at once. Use the dropdown at the top of the page, or the <b>Tournaments</b> tab, to jump between them. Each one keeps its own players, seeds, results and fees while the page stays open.</li>'+
   '<li><b>Nothing is stored in your browser.</b> Tournaments live in this page’s memory only. If you close or reload the page, anything you have not saved to a file is gone.</li>'+
-  '<li><b>💾 Save this tournament</b> downloads one file for the open tournament. In Chrome and Edge, after the first save, pressing Save again overwrites that same file in one tap; use <b>Save as new file…</b> on the Dashboard to start a new file.</li><li><b>Save reminder:</b> after every few results (you choose 3, 5 or 10, or off, on the Dashboard) a banner reminds you to save. Nothing is saved automatically.</li><li><b>💾 Save all tournaments</b> downloads one library file with everything.</li>'+
-  '<li><b>📂 Open file</b> accepts either kind of file. A single tournament is added and opened; if the same tournament is already here you choose Replace or Keep both. A library file adds all of its tournaments.</li>'+
+  '<li><b>💾 Save this tournament</b> downloads one file for the open tournament. In Chrome and Edge, after the first save, pressing Save again overwrites that same file in one tap; use <b>Save as new file…</b> on the Dashboard to start a new file.</li><li><b>Save reminder:</b> after every few results (you choose 3, 5 or 10, or off, on the Dashboard) a banner reminds you to save. Nothing is saved automatically.</li>'+
+  '<li><b>📂 Open file</b> accepts either kind of file. A single tournament is added and opened; if the same tournament is already here you choose Replace or Keep both. (Older files that hold several tournaments still open: all of them are added.)</li>'+
   '<li>An orange dot means a tournament has changes since it was last saved. The red-gold bar at the top reminds you while anything is unsaved.</li>'+
   '<li><b>Make a copy</b> duplicates the roster, with or without results. <b>Remove</b> only takes a tournament off this page after you confirm; files you saved earlier are not touched.</li>'+
   '<li>Randomize seeds, matches, standings, payouts, print and CSV always work on the tournament that is open.</li></ul></div>'+
@@ -885,8 +881,10 @@ function viewRules(D){
 }
 /* ---------- Render ---------- */
 /* ---------- Version & changelog (update APP_VERSION and add an entry at the TOP of CHANGELOG for every release) ---------- */
-const APP_VERSION='1.6.0';
+const APP_VERSION='1.6.1';
 const CHANGELOG=[
+ {v:'1.6.1',date:'2026-11-18',notes:[
+  'Removed “Save all tournaments”. Every tournament now saves to its own file, so a saved file can’t end up inside a combined library file. If several tournaments are unsaved, the reminder bar has a separate Save button for each. Older combined files still open.']},
  {v:'1.6.0',date:'2026-11-18',notes:[
   'The save reminder now starts at every 10 results (you can still choose 3, 5 or off on the Dashboard).',
   'New: Share results. When a tournament is Complete, a 📣 Share results button (on Standings and under the Dashboard guide) opens a results card made for social media: champion banner, final standings, Side Pool winners and your club name. Pick a Square, Tall (Stories) or Wide shape, full names or first name + last initial, and how many players to list. Winnings are hidden by default.',
@@ -1026,7 +1024,7 @@ function render(){
   try{D=derive();}catch(e){D=null;$('app').innerHTML='<div class="card warn">Internal error: '+esc(e.message)+'</div>';return;}
   ui.D=D;document.title=S.name+' – Backgammon Determined Swiss Tournament Manager';
   $('hdr').innerHTML='<div class="titlerow"><div class="brand"><span class="logo">🎲⚪⚫</span><div><h1>'+esc(S.name)+'</h1><small>Determined Swiss Format Tournament Generator · <button class="linkbtn" data-act="changelog" title="See what’s new">'+vtag()+'</button></small></div></div>'+
-   '<div class="hbtns">'+switcher(D)+'<button class="btn" data-act="tnew">➕ New tournament</button><button class="btn gold" data-act="save">💾 Save this tournament'+(S.dirty?' <span class="dot" title="Unsaved changes"></span>':'')+'</button><button class="btn" data-act="saveall">💾 Save all tournaments</button><button class="btn" data-act="open">📂 Open file</button></div></div>'+hdrNote()+
+   '<div class="hbtns">'+switcher(D)+'<button class="btn" data-act="tnew">➕ New tournament</button><button class="btn gold" data-act="save">💾 Save this tournament'+(S.dirty?' <span class="dot" title="Unsaved changes"></span>':'')+'</button><button class="btn" data-act="open">📂 Open file</button></div></div>'+hdrNote()+
    '<nav class="tabs" aria-label="Sections">'+TABS.map(t=>'<button data-act="tab" data-v="'+t[0]+'" class="'+(ui.tab===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</nav>';
   let h='';
   h+=shareHtml(D);h+=modalHtml();if(ui.confirm)h+='<div class="confirm no-print" role="alertdialog"><b>Please confirm</b><p style="margin:6px 0">'+esc(ui.confirm.msg)+'</p><div class="row"><button class="btn danger" data-act="doconfirm">'+esc(ui.confirm.okLabel)+'</button><button class="btn" data-act="cancelconfirm">Cancel</button></div></div>';
@@ -1068,7 +1066,7 @@ function remindHtml(){
 }
 function hdrNote(){
   const un=LIB.filter(x=>x.dirty);let h='';
-  if(un.length)h+='<div class="banner" role="status"><span>⚠ <b>You have unsaved tournaments — save before closing</b> ('+un.map(x=>esc(x.name)).join(', ')+')</span><span class="row"><button class="btn sm gold" data-act="saveall">Save all</button></span></div>';
+  if(un.length)h+='<div class="banner" role="status"><span>⚠ <b>You have unsaved tournaments — save before closing</b></span><span class="row">'+un.map(x=>'<button class="btn sm gold" data-act="tsave" data-id="'+esc(x.id)+'">💾 Save “'+esc(x.name)+'”</button>').join('')+'</span></div>';
   return h+'<div class="note" style="margin-top:6px">'+(S.savedAt?'Last saved '+hhmm(S.savedAt)+' · ':'')+'Tournaments are kept in this page’s memory only — save files to keep them.</div>';
 }
 function fromData(x){
@@ -1250,7 +1248,7 @@ function modalHtml(){
   return '';
 }
 function viewTournaments(){
-  let h='<div class="card"><div class="row" style="justify-content:space-between"><h2>Tournaments</h2><div class="row"><button class="btn gold" data-act="tnew">➕ New tournament</button><button class="btn" data-act="open">📂 Open file</button><button class="btn" data-act="saveall">💾 Save all tournaments</button></div></div><p class="note"><b>Important:</b> this app does not use browser storage. Your tournaments live in this page’s memory only while it stays open, and are kept long-term only by saving files. Closing or reloading the page loses anything you have not saved.</p></div>';
+  let h='<div class="card"><div class="row" style="justify-content:space-between"><h2>Tournaments</h2><div class="row"><button class="btn gold" data-act="tnew">➕ New tournament</button><button class="btn" data-act="open">📂 Open file</button></div></div><p class="note"><b>Important:</b> this app does not use browser storage. Your tournaments live in this page’s memory only while it stays open, and are kept long-term only by saving files. Closing or reloading the page loses anything you have not saved.</p></div>';
   h+='<div class="mgrid" style="margin-top:16px">';
   LIB.forEach(T=>{
     const s=summarize(T),act=T===S,pct=s.total?Math.round(s.done/s.total*100):0,id=esc(T.id);
@@ -1273,7 +1271,7 @@ document.addEventListener('keydown',function(e){
   if(!(k==='f5'||((e.ctrlKey||e.metaKey)&&k==='r')))return;
   const n=LIB.filter(t=>t.dirty).length;if(!n||ui.welcome)return;
   e.preventDefault();
-  askConfirm('Reloading will wipe out unsaved changes in '+n+' tournament'+(n===1?'':'s')+'. Choose Cancel, then use Save this tournament (or Save all tournaments) first.','Reload anyway',function(){allowUnload=true;location.reload();});
+  askConfirm('Reloading will wipe out unsaved changes in '+n+' tournament'+(n===1?'':'s')+'. Choose Cancel, then use Save this tournament for each one first.','Reload anyway',function(){allowUnload=true;location.reload();});
 });
 /* ---------- Actions ---------- */
 function setWinner(mid,pid){
@@ -1308,7 +1306,6 @@ document.addEventListener('click',function(e){
     case 'showguide':ui.hideGuide=false;render();break;
     case 'saveas':saveT(S,true);break;
     case 'remindlater':S.nextRemind=(S.sinceSave||0)+(ui.remindEvery||10);render();break;
-    case 'saveall':saveAll();break;
     case 'tnew':ui.modal={type:'new'};render();window.scrollTo(0,0);break;
     case 'topen':ui.tab='dashboard';switchTo(el.dataset.id);window.scrollTo(0,0);break;
     case 'tsave':{const T=LIB.find(x=>x.id===el.dataset.id);if(T)saveT(T);break;}
