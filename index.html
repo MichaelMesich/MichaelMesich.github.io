@@ -111,6 +111,12 @@ input.cb-sp20{accent-color:#d9b44a}input.cb-sp2{accent-color:#3b9be0}th.spAh{col
 h2::after{content:'';display:block;height:10px;margin-top:6px;background:var(--pts) repeat-x}
 .mcard{box-shadow:inset 0 0 0 3px var(--card2),inset 0 0 0 4px var(--line)}
 .mgrid>.mcard{border-top:3px solid var(--gold-d,#a8821f)}
+.rnd{--rc:#2e7d5a;--rcb:rgba(46,125,90,.10);--rt:#f6f1de;--rl:#7fd1a8;margin:22px 0 8px;padding:0 10px 12px;border-radius:14px;border:1.5px solid var(--rc);background:var(--rcb)}
+.rnd.r1{--rc:#2e7d5a;--rcb:rgba(46,125,90,.10);--rt:#f6f1de;--rl:#7fd1a8}.rnd.r2{--rc:#34718f;--rcb:rgba(52,113,143,.12);--rt:#f6f1de;--rl:#8cc4e0}.rnd.r3{--rc:#d9b44a;--rcb:rgba(217,180,74,.10);--rt:#2a2005;--rl:#f0d98a}.rnd.r4{--rc:#b4492f;--rcb:rgba(180,73,47,.12);--rt:#f6f1de;--rl:#f0a48f}.rnd.r5{--rc:#7a4a74;--rcb:rgba(122,74,116,.16);--rt:#f6f1de;--rl:#d6a7cf}
+.rnd .rhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 -10px 12px;padding:9px 14px;background:var(--rc);color:var(--rt);border-radius:12px 12px 0 0;font-weight:800;font-size:1.05rem;letter-spacing:.01em}
+.rnd .rhead .rn{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;border-radius:50%;background:var(--felt-d);color:var(--gold-l);border:2px solid var(--gold-d);font-weight:800}
+.rnd .rhead .rs{margin-left:auto;font-weight:700;font-size:.85rem;opacity:.95}
+.rnd .mgrid>.mcard{border-top:3px solid var(--rc);border-left:4px solid var(--rc)}
 .prow:has(+.vs){border-left:6px solid #efe4c4;border-radius:10px 4px 4px 10px}
 .vs+.prow{border-right:6px solid #8a6a3c;border-radius:4px 10px 10px 4px}
 .leader{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid rgba(217,180,74,.15)}
@@ -512,7 +518,7 @@ const LIB=[mkT({name:'New tournament',entry:40,sp20Entry:20,players:[],winners:{
 LIB[0].placeholder=true;
 function dropPlaceholder(){const i=LIB.findIndex(x=>x.placeholder);if(i>=0)LIB.splice(i,1);ui.welcome=false;}
 let S=LIB[0];
-const ui={welcome:true,tab:'dashboard',mRound:'auto',mFilter:'all',confirm:null,paste:'',newName:'',banner:true,dirty:false,msg:'',D:null,modal:null,hl:null,sbPay:true,sbOpen:false,remindEvery:10};
+const ui={welcome:true,tab:'dashboard',mRound:'all',mFilter:'all',confirm:null,paste:'',newName:'',banner:true,dirty:false,msg:'',D:null,modal:null,hl:null,sbPay:true,sbOpen:false,remindEvery:10};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=x=>{const v=Math.round(x*100)/100;return '$'+(Number.isInteger(v)?v.toLocaleString('en-US'):v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}));};
@@ -796,7 +802,7 @@ function curRound(D){for(let i=0;i<D.R;i++){if(D.t.rounds[i].some(m=>m.winner==n
 function sidebar(D){const p=D.pay,ms=D.t.matches,done=ms.filter(m=>m.winner!=null).length,tot=ms.length,top=D.anyResult?p.lead:[],bye={};ms.forEach(m=>{if(m.winner!=null&&(m.a.bye||m.b.bye))bye[m.winner]=true;});const nm=id=>`<button class='pn' data-act='hl' data-p='${id}'>${esc(nameOf(D,id))}</button>`;const names=ids=>ids.length?ids.map(nm).join(', '):`<span class='note'>—</span>`;const spN=S.players.filter(x=>x.sp20).length,spNB=S.players.filter(x=>x.sp2).length;const rows=D.standings.map(x=>{const r=D.rec[x.id];return `<tr class='${top.includes(x.id)?'top':''}${r.w+r.l===0?' dim':''}${ui.hl===x.id?' me':''}'><td class='num'><span class='ck'>${D.rank[x.id]}</span></td><td>${nm(x.id)}${spTags(x)}${bye[x.id]?`<span class='tag blue'>BYE</span>`:''}</td><td class='num'>${r.w}-${r.l}</td><td class='r pc num'>${money(p.per[x.id].total)}</td></tr>`;}).join('');return `<aside class='sb card no-print${ui.sbOpen?'':' closed'}${ui.sbPay?'':' nopay'}' aria-label='Live standings'><div class='row' style='justify-content:space-between'><h3>Live Standings</h3><button class='btn sm sbtoggle' data-act='sbopen' aria-expanded='${ui.sbOpen?'true':'false'}'>${ui.sbOpen?'Hide':'Show'}</button></div><div class='row' style='margin:6px 0'><span class='note'><i class='dot' style='background:var(--ok)'></i> Updated just now</span>${stBadge(D.status)}<span class='num note'>${done} of ${tot}</span></div><div class='sbbody'><div class='row' style='justify-content:space-between;margin-bottom:6px'><span class='note'>Tap a name to highlight their matches.</span><button class='btn sm sbpaytog' data-act='sbpay'>${ui.sbPay?'Hide':'Show'} payout</button></div><div class='tablewrap'><table><thead><tr><th>Rank</th><th>Name</th><th>W-L</th><th class='r pc'>Payout</th></tr></thead><tbody>${rows}</tbody></table></div><div class='sbcard spAc'><b>Side Pool A</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Entries: ${spN} · Pool: ${money(p.spPoolA)}</div><div>Leader(s): ${names(p.spLead)}</div><div class='note num'>Projected share each: ${money(p.spShare)}</div></div>${spNB?`<div class='sbcard spBc'><b>Side Pool B</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Entries: ${spNB} · Pool: ${money(p.spPoolB)}</div><div>Leader(s): ${names(p.spLeadB)}</div><div class='note num'>Projected share each: ${money(p.spShareB)}</div></div>`:''}<div class='sbcard'><b>Main Prize</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Bonus pool: ${money(p.bonusPool)}</div><div>Top record: ${names(p.lead)}</div><div class='note num'>Predicted bonus/person: ${money(p.bonusShare)}</div></div><div class='sbcard'><div><b>Remaining matches:</b> <span class='num'>${tot-done}</span></div><div class='note num'>Total payout ${money(p.total)} vs pool ${money(p.pool+p.spPool)}${p.verified?` <span class='okc'><b>✓ Verified</b></span>`:''}</div></div></div></aside>`;}
 function viewMatches(D){
   if(!D.check.ok)return '<div class="card"><h2>Matches</h2><p class="warn">Fix the roster first: '+D.check.issues.map(esc).join(' ')+'</p></div>';
-  const sel=ui.mRound||'auto',cur=+curRound(D),showR=r=>sel==='all'||(sel==='auto'?(r===cur||r===cur+1):sel===String(r));
+  const sel=ui.mRound||'all',cur=+curRound(D),showR=r=>sel==='all'||(sel==='auto'?(r===cur||r===cur+1):sel===String(r));
   let h='<div class="mlayout"><div class="mmain"><div class="card'+(sel==='paths'?' no-print':'')+'"><h2>Matches</h2><div class="sub" role="tablist">';
   ['auto'].concat(Array.from({length:D.R},(_,i)=>String(i+1)),['all','paths']).forEach(r=>h+='<button class="'+(sel===r?'on':'')+'" data-act="mr" data-v="'+r+'" title="'+(r==='auto'?'The round being played plus the next one':r==='all'?'Every round at once':r==='paths'?'Where the winner and loser of each match go next':'Only the matches in round '+r)+'">'+(r==='auto'?'Current + Next':r==='all'?'All':r==='paths'?'Paths':'Round '+r)+'</button>');
   h+='</div><div class="sub">';
@@ -808,8 +814,10 @@ function viewMatches(D){
   Array.from({length:D.R},(_,i)=>i+1).forEach(r=>{
     if(!showR(r))return;
     const q=(ui.mSearch||'').trim().toLowerCase();let ms=D.t.rounds[r-1].filter(m=>ui.mFilter==='all'||(ui.mFilter==='Complete'?m.winner!=null:m.status===ui.mFilter)).filter(m=>!q||sideName(D,m.a).toLowerCase().includes(q)||sideName(D,m.b).toLowerCase().includes(q));
-    h+='<h3 style="margin:18px 0 8px">Round '+r+(sel==='auto'?(r===cur?' <span class="note">— in play</span>':' <span class="note">— up next</span>'):'')+'</h3>';
+    const all=D.t.rounds[r-1],done=all.filter(m=>m.winner!=null).length;
+    h+='<div class="rnd r'+r+'"><div class="rhead"><span class="rn">'+r+'</span><span>Round '+r+(r===cur&&D.status!=='Complete'?' — in play':(sel==='auto'&&r!==cur?' — up next':''))+'</span><span class="rs">'+(done===all.length?'✓ All '+all.length+' matches done':done+' of '+all.length+' matches done')+'</span></div>';
     h+=ms.length?'<div class="mgrid">'+ms.map(m=>matchCard(D,m)).join('')+'</div>':'<p class="note">No matches match this filter.</p>';
+    h+='</div>';
   });
   if(sel==='paths')h+=pathsHtml(D);
   return h+'</div>'+sidebar(D)+'</div>';
@@ -888,8 +896,10 @@ function viewRules(D){
 }
 /* ---------- Render ---------- */
 /* ---------- Version & changelog (update APP_VERSION and add an entry at the TOP of CHANGELOG for every release) ---------- */
-const APP_VERSION='1.7.1';
+const APP_VERSION='1.7.2';
 const CHANGELOG=[
+ {v:'1.7.2',date:'2026-11-24',notes:[
+  'Matches tab: each round now sits in its own colour-coded block (in the board’s walnut, green, blue, gold, brick and plum tones) with a numbered header showing how many of its matches are done, so it is clear where one round ends and the next begins. The Matches tab now opens on All rounds instead of Current + Next.']},
  {v:'1.7.1',date:'2026-11-23',notes:[
   'With Round payouts set to Whole dollars, each match win is now rounded to the nearest dollar, so match wins no longer show cents (for example, $27.50 per win becomes $28). Bonus Pool and side pool shares were already rounded down to whole dollars.']},
  {v:'1.7.0',date:'2026-11-23',notes:[
@@ -1069,7 +1079,7 @@ function summarize(T){
   catch(e){return {status:'Not Started',n:T.players.length,done:0,total:0,rounds:0};}
   finally{S=keep;}
 }
-function switchTo(id){const T=LIB.find(x=>x.id===id);if(!T)return;S=T;ui.seedToast=null;ui.confirm=null;ui.modal=null;ui.msg='';ui.newName='';ui.paste='';ui.mRound='auto';ui.mFilter='all';ui.mSearch='';ui.hl=null;render();}
+function switchTo(id){const T=LIB.find(x=>x.id===id);if(!T)return;S=T;ui.seedToast=null;ui.confirm=null;ui.modal=null;ui.msg='';ui.newName='';ui.paste='';ui.mRound='all';ui.mFilter='all';ui.mSearch='';ui.hl=null;render();}
 function switcher(D){return '<select id="tsw-5n2j" aria-label="Switch tournament" style="max-width:280px">'+LIB.map(T=>'<option value="'+esc(T.id)+'"'+(T===S?' selected':'')+'>'+(T.dirty?'● ':'')+esc(T.name)+' — '+esc(summarize(T).status)+'</option>').join('')+'</select>'+stBadge(D.status);}
 function remindHtml(){
   const n=ui.remindEvery;if(!n||ui.welcome)return '';
