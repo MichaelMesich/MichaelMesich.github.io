@@ -115,6 +115,8 @@ h2::after{content:'';display:block;height:10px;margin-top:6px;background:var(--p
 .setgrp{border:1px solid var(--line);border-left-width:6px;border-radius:12px;padding:10px 14px 12px;margin:14px 0}
 .setgrp h4{margin:0 0 8px;font-size:1rem;color:var(--cream)}.setgrp h4 .note{font-weight:400;font-size:.8rem}
 .setgrp.event{border-left-color:#2e7d5a;background:rgba(46,125,90,.10)}
+.setgrp.display{border-left-color:#34718f;background:rgba(52,113,143,.12)}
+body.free .moneyonly,.confirm.ntfree .moneyonly,body.free .sp20,body.free .sp2{display:none!important}
 .feenote{background:rgba(217,180,74,.14);border:2px solid var(--gold);border-radius:12px;padding:10px 14px;margin:10px 0}.feenote .big{font-size:1.25rem;font-weight:800;color:var(--cream)}.feenote ul{margin:6px 0 0 18px;padding:0}
 .ntcols{display:grid;grid-template-columns:1fr;gap:0 14px;align-items:start}.ntcols .setgrp{margin:10px 0}
 @media (min-width:860px){.ntcols{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
@@ -452,10 +454,10 @@ function buildTournament(players,winners,R){
   return {rounds,matches,notes,fallback:false,warnings,plan,R};
 }
 function computeRecords(players,t){
-  const rec={};players.forEach(p=>rec[p.id]={w:0,l:0});
+  const rec={};players.forEach(p=>rec[p.id]={w:0,l:0,b:0});
   t.matches.forEach(m=>{
     if(m.winner==null||m.void)return;
-    if(rec[m.winner])rec[m.winner].w++;
+    if(rec[m.winner]){rec[m.winner].w++;if(m.a.bye||m.b.bye)rec[m.winner].b++;}
     const lo=m.winner===m.a.pid?m.b:m.a;
     if(lo.pid!=null&&rec[lo.pid])rec[lo.pid].l++;
   });
@@ -532,7 +534,7 @@ function cleanWinners(players,winners,R){
 const nowIso=()=>new Date().toISOString();
 const newId=()=>'t'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 function dateLabel(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-function mkT(o){const now=nowIso();return {id:o.id||newId(),name:o.name||'Tournament',created:o.created||now,updated:o.updated||o.created||now,entry:o.entry,sp20Entry:o.sp20Entry,sp2Entry:(Number.isFinite(+o.sp2Entry)&&+o.sp2Entry>=0)?+o.sp2Entry:10,clubFee:(Number.isFinite(+o.clubFee)&&+o.clubFee>=0)?+o.clubFee:0,directorStipend:(Number.isFinite(+o.directorStipend)&&+o.directorStipend>=0)?+o.directorStipend:15,feesSubmitted:!!o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt||null,feesSubmittedAmt:Number.isFinite(+o.feesSubmittedAmt)?+o.feesSubmittedAmt:0,players:o.players||[],winners:o.winners||{},paid:o.paid||{},nextId:o.nextId||1,seedsRandomized:!!o.seedsRandomized,numRounds:normR(o.numRounds),roundTo:o.roundTo===5?5:1,winAmt:(o.winAmt!=null&&Number.isFinite(+o.winAmt)&&+o.winAmt>0)?+o.winAmt:null,clubName:String(o.clubName||''),dirty:!!o.dirty,savedAt:o.savedAt||null};}
+function mkT(o){const now=nowIso();return {id:o.id||newId(),name:o.name||'Tournament',created:o.created||now,updated:o.updated||o.created||now,entry:o.entry,sp20Entry:o.sp20Entry,sp2Entry:(Number.isFinite(+o.sp2Entry)&&+o.sp2Entry>=0)?+o.sp2Entry:10,clubFee:(Number.isFinite(+o.clubFee)&&+o.clubFee>=0)?+o.clubFee:0,directorStipend:(Number.isFinite(+o.directorStipend)&&+o.directorStipend>=0)?+o.directorStipend:15,feesSubmitted:!!o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt||null,feesSubmittedAmt:Number.isFinite(+o.feesSubmittedAmt)?+o.feesSubmittedAmt:0,players:o.players||[],winners:o.winners||{},paid:o.paid||{},nextId:o.nextId||1,seedsRandomized:!!o.seedsRandomized,numRounds:normR(o.numRounds),roundTo:o.roundTo===5?5:1,winAmt:(o.winAmt!=null&&Number.isFinite(+o.winAmt)&&+o.winAmt>0)?+o.winAmt:null,clubName:String(o.clubName||''),free:!!o.free,showByes:!!o.showByes,dirty:!!o.dirty,savedAt:o.savedAt||null};}
 const LIB=[mkT({name:'New tournament',entry:40,sp20Entry:20,players:[],winners:{},paid:{},nextId:1})];
 LIB[0].placeholder=true;
 function dropPlaceholder(){const i=LIB.findIndex(x=>x.placeholder);if(i>=0)LIB.splice(i,1);ui.welcome=false;}
@@ -569,9 +571,9 @@ function derive(){
   const pay=computePayouts(S.players,rec,status,S.entry,S.sp20Entry,anyResult,R,S.sp2Entry,t.matches.filter(m=>m.void).length,S.roundTo,S.winAmt);
   const byId={};S.players.forEach(p=>byId[p.id]=p);
   const mById={};t.matches.forEach(m=>mById[m.id]=m);
-  const standings=S.players.slice().sort((a,b)=>(rec[b.id].w-rec[a.id].w)||(rec[a.id].l-rec[b.id].l)||String(a.name).localeCompare(String(b.name),undefined,{sensitivity:'base'}));
+  const standings=S.players.slice().sort((a,b)=>(rec[b.id].w-rec[a.id].w)||(S.showByes?((rec[a.id].b||0)-(rec[b.id].b||0)):0)||(rec[a.id].l-rec[b.id].l)||String(a.name).localeCompare(String(b.name),undefined,{sensitivity:'base'}));
   const rank={};
-  standings.forEach(p=>{rank[p.id]=1+standings.filter(q=>rec[q.id].w>rec[p.id].w||(rec[q.id].w===rec[p.id].w&&rec[q.id].l<rec[p.id].l)).length;});
+  standings.forEach(p=>{rank[p.id]=1+standings.filter(q=>rec[q.id].w>rec[p.id].w||(rec[q.id].w===rec[p.id].w&&((S.showByes&&(rec[q.id].b||0)<(rec[p.id].b||0))||((!S.showByes||(rec[q.id].b||0)===(rec[p.id].b||0))&&rec[q.id].l<rec[p.id].l)))).length;});
   const integrity=!(status==='Complete')||t.matches.some(m=>m.void)||S.players.every(p=>rec[p.id].w+rec[p.id].l===R);
   return {check,t,rec,status,pay,byId,mById,standings,rank,anyResult,integrity,n:S.players.length,R};
 }
@@ -598,7 +600,7 @@ async function dl(name,text,type,cb){
   cb(dlFallback(name,text,type),'download');
 }
 const slug=()=>(S.name||'tournament').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'tournament';
-function tData(T){return {app:'determined-swiss-manager',kind:'tournament',version:1,appVersion:APP_VERSION,savedAt:nowIso(),id:T.id,name:T.name,created:T.created,updated:T.updated,entry:T.entry,sp20Entry:T.sp20Entry,sp2Entry:T.sp2Entry,clubFee:T.clubFee||0,directorStipend:Number.isFinite(+T.directorStipend)?+T.directorStipend:15,feesSubmitted:!!T.feesSubmitted,feesSubmittedAt:T.feesSubmittedAt||null,feesSubmittedAmt:T.feesSubmittedAmt||0,players:T.players,winners:T.winners,paid:T.paid,nextId:T.nextId,seedsRandomized:!!T.seedsRandomized,numRounds:normR(T.numRounds),roundTo:T.roundTo===5?5:1,winAmt:(T.winAmt!=null&&Number.isFinite(+T.winAmt))?+T.winAmt:null,clubName:T.clubName||''};}
+function tData(T){return {app:'determined-swiss-manager',kind:'tournament',version:1,appVersion:APP_VERSION,savedAt:nowIso(),id:T.id,name:T.name,created:T.created,updated:T.updated,entry:T.entry,sp20Entry:T.sp20Entry,sp2Entry:T.sp2Entry,clubFee:T.clubFee||0,directorStipend:Number.isFinite(+T.directorStipend)?+T.directorStipend:15,feesSubmitted:!!T.feesSubmitted,feesSubmittedAt:T.feesSubmittedAt||null,feesSubmittedAmt:T.feesSubmittedAmt||0,players:T.players,winners:T.winners,paid:T.paid,nextId:T.nextId,seedsRandomized:!!T.seedsRandomized,numRounds:normR(T.numRounds),roundTo:T.roundTo===5?5:1,winAmt:(T.winAmt!=null&&Number.isFinite(+T.winAmt))?+T.winAmt:null,clubName:T.clubName||'',free:!!T.free,showByes:!!T.showByes};}
 function markSaved(list){const t=nowIso();list.forEach(x=>{x.dirty=false;x.savedAt=t;x.sinceSave=0;x.nextRemind=null;});}
 function saveT(T,forceNew){
   const name=slugOf(T.name)+'-'+ymd(T.created)+'.json',text=()=>JSON.stringify(tData(T),null,2);
@@ -617,7 +619,7 @@ function loadData(d,S){
   S.sp20Entry=Number.isFinite(+d.sp20Entry)&&+d.sp20Entry>=0?+d.sp20Entry:20;
   S.sp2Entry=Number.isFinite(+d.sp2Entry)&&+d.sp2Entry>=0?+d.sp2Entry:10;
   S.clubFee=Number.isFinite(+d.clubFee)&&+d.clubFee>=0?+d.clubFee:0;S.directorStipend=Number.isFinite(+d.directorStipend)&&+d.directorStipend>=0?+d.directorStipend:15;
-  S.clubName=typeof d.clubName==='string'?d.clubName.slice(0,60):'';S.roundTo=d.roundTo===5?5:1;S.winAmt=(d.winAmt!=null&&Number.isFinite(+d.winAmt)&&+d.winAmt>0)?+d.winAmt:null;
+  S.clubName=typeof d.clubName==='string'?d.clubName.slice(0,60):'';S.free=!!d.free;S.showByes=!!d.showByes;S.roundTo=d.roundTo===5?5:1;S.winAmt=(d.winAmt!=null&&Number.isFinite(+d.winAmt)&&+d.winAmt>0)?+d.winAmt:null;
   S.feesSubmitted=!!d.feesSubmitted;S.feesSubmittedAt=typeof d.feesSubmittedAt==='string'?d.feesSubmittedAt:null;S.feesSubmittedAmt=Number.isFinite(+d.feesSubmittedAmt)?+d.feesSubmittedAmt:0;
   S.winners={};if(d.winners&&typeof d.winners==='object')Object.keys(d.winners).forEach(k=>{if(/^[1-5]-\d+$/.test(k)&&Number.isFinite(+d.winners[k]))S.winners[k]=+d.winners[k];});
   S.paid=(d.paid&&typeof d.paid==='object')?d.paid:{};
@@ -626,6 +628,7 @@ function loadData(d,S){
 }
 function csvStandings(D){
   const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
+  if(S.free){const rr=[[S.name+' – Standings'],['Rank','Name','Wins (excluding BYEs)','Losses','BYEs','Record W-L-B','Total wins (including BYEs)']];D.standings.forEach(p=>{const r=D.rec[p.id];rr.push([D.rank[p.id],p.name,r.w-(r.b||0),r.l,r.b||0,(r.w-(r.b||0))+'-'+r.l+'-'+(r.b||0),r.w]);});return rr.map(r=>r.map(q).join(',')).join('\r\n');}
   const rows=[[S.name+' – Standings & payouts'],['Rank','Name','Side Pool A','Side Pool B','Wins','Losses','Record','Match Wins Payout','Main Prize Bonus','Side Pool A payout','Side Pool B payout','Total']];
   D.standings.forEach(p=>{const r=D.rec[p.id],y=D.pay.per[p.id];rows.push([D.rank[p.id],p.name,p.sp20?'Yes':'',p.sp2?'Yes':'',r.w,r.l,r.w+'-'+r.l,y.win,y.bonus,y.sp,y.spB,y.total]);});
   return rows.map(r=>r.map(q).join(',')).join('\r\n');
@@ -699,17 +702,18 @@ function nextSteps(D){
   const owed=D.standings.filter(x=>D.pay.per[x.id].total>0);
   const allPaid=complete&&owed.every(x=>S.paid[x.id]);
   const saved=!S.dirty&&!!S.savedAt,feeDone=S.feesSubmitted||!(feeTotal()>0);
-  const st=[{t:'Add players',d:ok&&S.players.length>=4},{t:'Roll seeds (optional)',d:begun||!!S.seedsRandomized},{t:'Enter results',d:complete},{t:'Pay winners',d:allPaid},{t:'Submit Club Fees',d:feeDone&&complete},{t:'Save the file',d:saved&&feeDone&&complete}];
+  const F=!!S.free;const st=F?[{t:'Add players',d:ok&&S.players.length>=4},{t:'Roll seeds (optional)',d:begun||!!S.seedsRandomized},{t:'Enter results',d:complete},{t:'Save the file',d:saved&&complete}]:[{t:'Add players',d:ok&&S.players.length>=4},{t:'Roll seeds (optional)',d:begun||!!S.seedsRandomized},{t:'Enter results',d:complete},{t:'Pay winners',d:allPaid},{t:'Submit Club Fees',d:feeDone&&complete},{t:'Save the file',d:saved&&feeDone&&complete}];
   let now=st.findIndex(x=>!x.d);
   let line='',btns='';
   const go=(tab,label)=>'<button class="btn sm gold" data-act="tab" data-v="'+tab+'">'+label+'</button>';
-  if(now===0){line='Add at least 4 players with different names on the Players tab.'+(S.players.length&&!ok?' Right now: '+esc(D.check.issues[0]||''):'');btns=go('players','Go to Players');}
+  if(F&&now===3){line='Last step: save the tournament file so the results are kept.';btns='<button class="btn sm gold" data-act="save">💾 Save</button>';}
+  else if(now===0){line='Add at least 4 players with different names on the Players tab.'+(S.players.length&&!ok?' Right now: '+esc(D.check.issues[0]||''):'');btns=go('players','Go to Players');}
   else if(now===1){line='Optional: press 🎲 Roll seeds to shuffle the starting order, then enter the Round 1 winners.';btns='<button class="btn sm gold" data-act="randseeds">🎲 Roll seeds</button> '+go('matches','Go to Matches');}
   else if(now===2){const r=+curRound(D),ms=D.t.rounds[r-1],d=ms.filter(m=>m.winner!=null).length;line='Round '+r+': '+d+' of '+ms.length+' results entered. On the Matches page, click the winner of each Ready match.';btns=go('matches','Go to Matches');}
   else if(now===3){line='Every result is in. Record each payment on the Payouts tab by ticking Paid ✓.';btns=go('payouts','Go to Payouts');}
   else if(now===4){line='Mark the Club Fees as submitted to the Treasurer using the Club Fees card at the top of the Payouts tab. Then save, so the file remembers it was submitted.';btns=go('payouts','Go to Payouts');}
   else if(now===5){line='Last step: save the tournament file so everything, including the fee status, is kept.';btns='<button class="btn sm gold" data-act="save">💾 Save</button>';}
-  else line='✓ All done. Everything is paid, saved and submitted.';
+  else line=F?'✓ All done. Results are in and saved.':'✓ All done. Everything is paid, saved and submitted.';
   if(complete){line+=' 📣 Optional: make a results card to post on social media or send to your group.';btns+=' <button class="btn sm" data-act="share">📣 Share results</button>';}
   return '<div class="card no-print" style="margin-bottom:16px"><div class="row" style="justify-content:space-between"><h3>Your next step</h3><button class="btn sm" data-act="hideguide" aria-label="Hide the guide">Hide</button></div><ol class="steps">'+st.map((x,i)=>'<li class="'+(x.d?'done':i===now?'now':'')+'"><span class="sn">'+(x.d?'✓':(i+1))+'</span>'+x.t+'</li>').join('')+'</ol><p class="nowline"><b>'+(now>=0&&now<6?'Next: ':'')+'</b>'+line+'</p><div class="row" style="margin-top:8px">'+btns+'</div></div>';
 }
@@ -720,22 +724,23 @@ function makeDemo(){
   dropPlaceholder();LIB.push(T);ui.tab='dashboard';ui.hideGuide=false;switchTo(T.id);
   flash('This is a practice tournament with pretend players. Try rolling seeds and entering winners. When you are ready for a real event, press ➕ New tournament; you can remove this one on the Tournaments tab.');render();window.scrollTo(0,0);
 }
+const mo=h=>S.free?'':h;
 function viewDashboard(D){
   const p=D.pay,t=D.t;
   let h=nextSteps(D)+'<div class="grid kpis">'+
    kpi('Players',D.n,S.players.some(p=>p.withdrawn)?S.players.filter(p=>p.withdrawn).length+' withdrawn':'4 or more players')+
-   kpi('Prize Pool',money(p.pool),D.n+' × '+money(S.entry))+
-   kpiC('Side Pool A',money(p.spPoolA),S.players.filter(x=>x.sp20).length+' × '+money(S.sp20Entry),'spAk')+
-   kpiC('Side Pool B',money(p.spPoolB),S.players.filter(x=>x.sp2).length+' × '+money(S.sp2Entry),'spBk')+
-   kpi('Club Fees',moneyS(feeTotal()),D.n+' × '+money(S.clubFee||0)+((S.directorStipend||0)>0?' − '+money(S.directorStipend)+' Director Stipend':''))+
+   mo(kpi('Prize Pool',money(p.pool),D.n+' × '+money(S.entry)))+
+   mo(kpiC('Side Pool A',money(p.spPoolA),S.players.filter(x=>x.sp20).length+' × '+money(S.sp20Entry),'spAk'))+
+   mo(kpiC('Side Pool B',money(p.spPoolB),S.players.filter(x=>x.sp2).length+' × '+money(S.sp2Entry),'spBk'))+
+   mo(kpi('Club Fees',moneyS(feeTotal()),D.n+' × '+money(S.clubFee||0)+((S.directorStipend||0)>0?' − '+money(S.directorStipend)+' Director Stipend':'')))+
    kpi('Active bracket size',D.check.ok?D.n:'—',D.check.ok?D.R+' rounds · '+ceil2(D.n)+' matches/round':'fix roster first')+
    kpi('Roster check',D.check.ok?'<span class="okc">✓ OK</span>':'<span class="warn">⚠ Check</span>',D.check.ok?'unique names, valid size':esc(D.check.issues[0]))+
-   feeKpi(D)+
+   mo(feeKpi(D))+
    kpi('Status',stBadge(D.status),'')+
-   kpi('Total payout',money(p.total),p.complete?'final':'so far (match wins)')+'</div>';
+   mo(kpi('Total payout',money(p.total),p.complete?'final':'so far (match wins)'))+'</div>';
   const cf=feeTotal(),sp=S.players.filter(x=>x.sp20).length,spb=S.players.filter(x=>x.sp2).length;
   const fst=feeStatus(D),fs='<div class="feebox '+fst.cls+'">'+fst.html+'</div>';
-  h+='<div class="card" style="margin-top:16px"><h3>Club Fee report</h3><div class="tablewrap"><table><thead><tr><th>Item</th><th class="r">Per player</th><th class="r">Players</th><th class="r">Total</th></tr></thead><tbody>'+
+  if(!S.free)h+='<div class="card" style="margin-top:16px"><h3>Club Fee report</h3><div class="tablewrap"><table><thead><tr><th>Item</th><th class="r">Per player</th><th class="r">Players</th><th class="r">Total</th></tr></thead><tbody>'+
    '<tr><td>Prize Pool entries</td><td class="r">'+money(S.entry)+'</td><td class="r">'+D.n+'</td><td class="r">'+money(p.pool)+'</td></tr>'+
    '<tr><td><span class="sp20">A</span> Side Pool A entries</td><td class="r">'+money(S.sp20Entry)+'</td><td class="r">'+sp+'</td><td class="r">'+money(p.spPoolA)+'</td></tr>'+
    '<tr><td><span class="sp2">B</span> Side Pool B entries</td><td class="r">'+money(S.sp2Entry)+'</td><td class="r">'+spb+'</td><td class="r">'+money(p.spPoolB)+'</td></tr>'+
@@ -750,17 +755,17 @@ function viewDashboard(D){
   if(!D.check.ok)h+='<p class="warn">'+D.check.issues.map(esc).join('<br>')+'</p>';
   t.notes.forEach(n=>h+='<p class="note">ℹ '+esc(n)+'</p>');
   (t.warnings||[]).forEach(w=>h+='<p class="warn">⚠ '+esc(w)+'</p>');
-  if(winOver(S))h+='<p class="walert" role="alert">⚠ <b>Return per match win is set too high</b> ('+money(S.winAmt)+'). Only '+money(winAmtMax(S))+' can be covered per win, so '+money(D.pay.win)+' is being paid. Standard is '+money(winAmtDef(S))+'. Please fix it in Settings.</p>';
+  if(winOver(S)&&!S.free)h+='<p class="walert" role="alert">⚠ <b>Return per match win is set too high</b> ('+money(S.winAmt)+'). Only '+money(winAmtMax(S))+' can be covered per win, so '+money(D.pay.win)+' is being paid. Standard is '+money(winAmtDef(S))+'. Please fix it in Settings.</p>';
   if(!D.integrity)h+='<p class="warn">⚠ Integrity check: some players do not have exactly '+D.R+' results.</p>';
   h+='</div>';
   h+='<div class="card"><h3>Settings</h3>'+
-   '<div class="feenote">'+feeNoticeHtml(S.entry,S.clubFee,S.sp20Entry,S.sp2Entry)+'</div>'+
-   '<div class="setgrp event"><h4>🎲 Event settings <span class="note">— these change for each tournament and affect the prize money</span></h4><div class="grid" style="gap:10px"><div><label class="f" for="set-name-4q1x">Tournament name</label><input type="text" id="set-name-4q1x" data-ch="set" data-k="name" value="'+esc(S.name)+'"></div><div class="row"><div><label class="f" for="set-rounds-9r5t">Rounds</label><select id="set-rounds-9r5t" data-ch="set" data-k="numRounds"'+(playBegun()?' disabled':'')+'><option value="3"'+(S.numRounds===3?' selected':'')+'>3 rounds</option><option value="4"'+(S.numRounds===4?' selected':'')+'>4 rounds</option><option value="5"'+(S.numRounds===5?' selected':'')+'>5 rounds</option></select></div><div><label class="f" for="set-entry-8w3z">Prize Pool entry ($)</label><input type="number" min="0" step="1" id="set-entry-8w3z" data-ch="set" data-k="entry" value="'+S.entry+'" style="width:130px"></div><div><label class="f" for="set-sp20-2m9c"><span class="sp20">A</span> Side Pool A entry ($)</label><input type="number" min="0" step="1" id="set-sp20-2m9c" data-ch="set" data-k="sp20Entry" value="'+S.sp20Entry+'" style="width:130px"></div><div><label class="f" for="set-sp2-5e2t"><span class="sp2">B</span> Side Pool B entry ($)</label><input type="number" min="0" step="1" id="set-sp2-5e2t" data-ch="set" data-k="sp2Entry" value="'+S.sp2Entry+'" style="width:130px"></div><div><label class="f" for="set-round-5v8n">Round payouts</label><select id="set-round-5v8n" data-ch="set" data-k="roundTo"><option value="5"'+(S.roundTo===5?' selected':'')+'>To the nearest $5</option><option value="1"'+(S.roundTo!==5?' selected':'')+'>Whole dollars</option></select></div><div><label class="f" for="set-winamt-2k6d">Return per match win ($)</label><input type="number" min="1" min="1" step="1" id="set-winamt-2k6d" data-ch="set" data-k="winAmt" class="'+(winOver(S)?'wbad':'')+'" value="'+(Math.round((S.winAmt==null?winAmtNow(S):S.winAmt)*100)/100)+'" style="width:100px"'+(playBegun()?' disabled':'')+'></div></div>'+(winOver(S)?'<div class="walert" role="alert">⚠ <b>Return per match win is too high.</b> You entered '+money(S.winAmt)+', but the prize pool can only cover '+money(winAmtMax(S))+' per win, so <b>'+money(D.pay.win)+' is what will actually be paid</b> (rounded down to fit'+(D.pay.rt>1?', to a multiple of $5':'')+'). The standard for '+S.numRounds+' rounds is '+money(winAmtDef(S))+' ('+stdPct(S.numRounds)+'%). <b>Please change it</b> to '+money(winAmtMax(S))+' or less.</div>':'')+'<p class="note" id="set-winprev">Each match win pays <b>'+money(D.pay.win)+'</b>, which is '+(S.entry>0?Math.round(D.pay.win/S.entry*1000)/10:0)+'% of the '+money(S.entry)+' entry. Standard for '+S.numRounds+' rounds: '+money(winAmtDef(S))+' ('+stdPct(S.numRounds)+'%). Lowest: $1. Highest the prize pool can cover: '+money(winAmtMax(S))+' ('+(S.entry>0?Math.round(winAmtMax(S)/S.entry*1000)/10:0)+'%). The rest of the pool, '+money(D.pay.bonusPool)+', goes to the Bonus Pool.'+(S.winAmt==null?' The standard amount follows your payout rounding.':' A custom amount is paid exactly as entered.')+(!winOver(S)&&winAmtNow(S)>winSafe(S.entry,S.numRounds)+0.004?' <span style="color:#f0d98a;font-weight:700">⚠ Heads-up: '+money(winAmtNow(S))+' only works with an even number of players. With an odd number the pool covers a little less (for example, 13 players would cover '+money(Math.floor(S.entry*13/(S.numRounds*7)*100)/100)+'). To be safe for any field size, use '+money(winSafe(S.entry,S.numRounds))+' or less.</span>':'')+(playBegun()?' Locked once play has started.':'')+'</p></div>'+
+   '<div class="setgrp display"><h4>🧭 Tournament type &amp; display</h4><label class="f"><input type="checkbox" data-ch="set" data-k="free"'+(S.free?' checked':'')+'> Bracket only: no entry fees, Club Fees or prizes (rankings by record)</label><label class="f"><input type="checkbox" data-ch="set" data-k="showByes"'+(S.showByes?' checked':'')+'> Show record as Wins-Losses-BYEs (a BYE still counts as a win)</label></div><div class="feenote moneyonly">'+feeNoticeHtml(S.entry,S.clubFee,S.sp20Entry,S.sp2Entry)+'</div>'+
+   '<div class="setgrp event"><h4>🎲 Event settings <span class="note">— these change for each tournament and affect the prize money</span></h4><div class="grid" style="gap:10px"><div><label class="f" for="set-name-4q1x">Tournament name</label><input type="text" id="set-name-4q1x" data-ch="set" data-k="name" value="'+esc(S.name)+'"></div><div class="row"><div><label class="f" for="set-rounds-9r5t">Rounds</label><select id="set-rounds-9r5t" data-ch="set" data-k="numRounds"'+(playBegun()?' disabled':'')+'><option value="3"'+(S.numRounds===3?' selected':'')+'>3 rounds</option><option value="4"'+(S.numRounds===4?' selected':'')+'>4 rounds</option><option value="5"'+(S.numRounds===5?' selected':'')+'>5 rounds</option></select></div><div class="moneyonly"><label class="f" for="set-entry-8w3z">Prize Pool entry ($)</label><input type="number" min="0" step="1" id="set-entry-8w3z" data-ch="set" data-k="entry" value="'+S.entry+'" style="width:130px"></div><div class="moneyonly"><label class="f" for="set-sp20-2m9c"><span class="sp20">A</span> Side Pool A entry ($)</label><input type="number" min="0" step="1" id="set-sp20-2m9c" data-ch="set" data-k="sp20Entry" value="'+S.sp20Entry+'" style="width:130px"></div><div class="moneyonly"><label class="f" for="set-sp2-5e2t"><span class="sp2">B</span> Side Pool B entry ($)</label><input type="number" min="0" step="1" id="set-sp2-5e2t" data-ch="set" data-k="sp2Entry" value="'+S.sp2Entry+'" style="width:130px"></div><div class="moneyonly"><label class="f" for="set-round-5v8n">Round payouts</label><select id="set-round-5v8n" data-ch="set" data-k="roundTo"><option value="5"'+(S.roundTo===5?' selected':'')+'>To the nearest $5</option><option value="1"'+(S.roundTo!==5?' selected':'')+'>Whole dollars</option></select></div><div class="moneyonly"><label class="f" for="set-winamt-2k6d">Return per match win ($)</label><input type="number" min="1" min="1" step="1" id="set-winamt-2k6d" data-ch="set" data-k="winAmt" class="'+(winOver(S)?'wbad':'')+'" value="'+(Math.round((S.winAmt==null?winAmtNow(S):S.winAmt)*100)/100)+'" style="width:100px"'+(playBegun()?' disabled':'')+'></div></div>'+(winOver(S)?'<div class="walert moneyonly" role="alert">⚠ <b>Return per match win is too high.</b> You entered '+money(S.winAmt)+', but the prize pool can only cover '+money(winAmtMax(S))+' per win, so <b>'+money(D.pay.win)+' is what will actually be paid</b> (rounded down to fit'+(D.pay.rt>1?', to a multiple of $5':'')+'). The standard for '+S.numRounds+' rounds is '+money(winAmtDef(S))+' ('+stdPct(S.numRounds)+'%). <b>Please change it</b> to '+money(winAmtMax(S))+' or less.</div>':'')+'<p class="note moneyonly" id="set-winprev">Each match win pays <b>'+money(D.pay.win)+'</b>, which is '+(S.entry>0?Math.round(D.pay.win/S.entry*1000)/10:0)+'% of the '+money(S.entry)+' entry. Standard for '+S.numRounds+' rounds: '+money(winAmtDef(S))+' ('+stdPct(S.numRounds)+'%). Lowest: $1. Highest the prize pool can cover: '+money(winAmtMax(S))+' ('+(S.entry>0?Math.round(winAmtMax(S)/S.entry*1000)/10:0)+'%). The rest of the pool, '+money(D.pay.bonusPool)+', goes to the Bonus Pool.'+(S.winAmt==null?' The standard amount follows your payout rounding.':' A custom amount is paid exactly as entered.')+(!winOver(S)&&winAmtNow(S)>winSafe(S.entry,S.numRounds)+0.004?' <span style="color:#f0d98a;font-weight:700">⚠ Heads-up: '+money(winAmtNow(S))+' only works with an even number of players. With an odd number the pool covers a little less (for example, 13 players would cover '+money(Math.floor(S.entry*13/(S.numRounds*7)*100)/100)+'). To be safe for any field size, use '+money(winSafe(S.entry,S.numRounds))+' or less.</span>':'')+(playBegun()?' Locked once play has started.':'')+'</p></div>'+
    (playBegun()?'<p class="note">The number of rounds is locked once winners have been entered. Clear all winners to change it.</p>':'')+
    '<p class="note">Win payout per match win = '+money(D.pay.win)+(Math.abs(D.pay.win-D.pay.winExact)>0.004?' (standard '+stdPct(S.numRounds)+'% of entry = '+money(D.pay.winExact)+', rounded to the nearest '+(D.pay.rt>1?'$5':'dollar')+')':(S.winAmt!=null?' (custom amount)':' ('+stdPct(S.numRounds)+'% of entry)'))+'. A BYE counts as a win and is paid.'+(D.pay.rt>1?' Bonus Pool and side pool shares are rounded down to a multiple of $5; any small remainder is shown on the Payouts tab.':'')+'</p></div>'+
 
-   '<div class="setgrp club"><h4>🏛 Club settings <span class="note">— set by your club; they decide what goes to the club, not the prizes</span></h4><div class="row"><div><label class="f" for="set-club-name-3k8d">Club name (shown on the shared results card)</label><input type="text" id="set-club-name-3k8d" maxlength="60" data-ch="set" data-k="clubName" value="'+esc(S.clubName||'')+'" placeholder="e.g. Your club or group name"></div><div><label class="f" for="set-club-6c1f">Club Fee per player ($)</label><input type="number" min="0" step="0.01" id="set-club-6c1f" data-ch="set" data-k="clubFee" value="'+(S.clubFee||0)+'" style="width:130px"></div><div><label class="f" for="set-stipend-4t7y">Director Stipend ($)</label><input type="number" min="0" step="1" id="set-stipend-4t7y" data-ch="set" data-k="directorStipend" value="'+(S.directorStipend==null?15:S.directorStipend)+'" style="width:130px"></div></div><p class="note">Net Club Fees = Club Fee × players − Director Stipend. Neither changes any payout.</p></div></div>';
-  h+='<div class="card"><h3>Quick actions</h3><div class="row" style="margin-top:10px"><button class="btn gold" data-act="save">💾 Save this tournament</button><button class="btn" data-act="open">📂 Open file</button><button class="btn" data-act="randseeds"'+(playBegun()?' disabled':'')+'>🎲 Roll seeds</button><button class="btn" data-act="gopay">🖨 Payout sheet</button><button class="btn" data-act="csv">⬇ Export CSV</button>'+(ui.hideGuide?'<button class="btn" data-act="showguide">🧭 Show next-step guide</button>':'')+'<button class="btn" data-act="saveas" title="Save to a new file instead of overwriting the last one">💾 Save as new file…</button></div><div class="row" style="margin-top:10px"><label class="f" for="remind-7x3k" style="margin:0">⏰ Save reminder</label><select id="remind-7x3k" style="max-width:220px">'+[[3,'every 3 results'],[5,'every 5 results'],[10,'every 10 results'],[0,'off']].map(o=>'<option value="'+o[0]+'"'+(ui.remindEvery===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></div><div class="row" style="margin-top:10px"><button class="btn danger" data-act="clrwin">Clear all winners</button><button class="btn danger" data-act="clrall">Clear players &amp; winners</button></div><p class="note" style="margin-top:10px">This page remembers nothing between reloads. Save the file to keep your work.</p>'+(playBegun()?'<p class="note">Clear all winners first to re-randomize</p>':'')+'</div>';
+   '<div class="setgrp club moneyonly"><h4>🏛 Club settings <span class="note">— set by your club; they decide what goes to the club, not the prizes</span></h4><div class="row"><div><label class="f" for="set-club-name-3k8d">Club name (shown on the shared results card)</label><input type="text" id="set-club-name-3k8d" maxlength="60" data-ch="set" data-k="clubName" value="'+esc(S.clubName||'')+'" placeholder="e.g. Your club or group name"></div><div><label class="f" for="set-club-6c1f">Club Fee per player ($)</label><input type="number" min="0" step="0.01" id="set-club-6c1f" data-ch="set" data-k="clubFee" value="'+(S.clubFee||0)+'" style="width:130px"></div><div><label class="f" for="set-stipend-4t7y">Director Stipend ($)</label><input type="number" min="0" step="1" id="set-stipend-4t7y" data-ch="set" data-k="directorStipend" value="'+(S.directorStipend==null?15:S.directorStipend)+'" style="width:130px"></div></div><p class="note">Net Club Fees = Club Fee × players − Director Stipend. Neither changes any payout.</p></div></div>';
+  h+='<div class="card"><h3>Quick actions</h3><div class="row" style="margin-top:10px"><button class="btn gold" data-act="save">💾 Save this tournament</button><button class="btn" data-act="open">📂 Open file</button><button class="btn" data-act="randseeds"'+(playBegun()?' disabled':'')+'>🎲 Roll seeds</button><button class="btn moneyonly" data-act="gopay">🖨 Payout sheet</button><button class="btn" data-act="csv">⬇ Export CSV</button>'+(ui.hideGuide?'<button class="btn" data-act="showguide">🧭 Show next-step guide</button>':'')+'<button class="btn" data-act="saveas" title="Save to a new file instead of overwriting the last one">💾 Save as new file…</button></div><div class="row" style="margin-top:10px"><label class="f" for="remind-7x3k" style="margin:0">⏰ Save reminder</label><select id="remind-7x3k" style="max-width:220px">'+[[3,'every 3 results'],[5,'every 5 results'],[10,'every 10 results'],[0,'off']].map(o=>'<option value="'+o[0]+'"'+(ui.remindEvery===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></div><div class="row" style="margin-top:10px"><button class="btn danger" data-act="clrwin">Clear all winners</button><button class="btn danger" data-act="clrall">Clear players &amp; winners</button></div><p class="note" style="margin-top:10px">This page remembers nothing between reloads. Save the file to keep your work.</p>'+(playBegun()?'<p class="note">Clear all winners first to re-randomize</p>':'')+'</div>';
   return h+'</div>';
 }
 function viewPlayers(D){
@@ -770,9 +775,9 @@ function viewPlayers(D){
   if(lock)h+='<p class="note">🔒 Winners have been entered, so adding/removing players, seeds and shuffling are locked. Names and tags can still be edited. Use <i>Rules › Start a new tournament</i> to reset.</p>';
   h+='<div class="row" style="margin:10px 0"><button class="btn gold" data-act="randseeds"'+(lock?' disabled':'')+'>🎲 Roll seeds</button><button class="btn" data-act="sortseed">↕ Sort by seed</button></div>';
   if(lock)h+='<p class="warn">Clear all winners first to re-randomize</p>';
-  h+='<div class="tablewrap pl-scroll"><table><thead><tr><th>ID</th><th>Name</th><th class="spAh">Side Pool A</th><th class="spBh">Side Pool B</th><th>Seed</th><th></th></tr></thead><tbody>';
+  h+='<div class="tablewrap pl-scroll"><table><thead><tr><th>ID</th><th>Name</th><th class="spAh moneyonly">Side Pool A</th><th class="spBh moneyonly">Side Pool B</th><th>Seed</th><th></th></tr></thead><tbody>';
   S.players.forEach(p=>{
-    const f=(k)=>'<td><input type="checkbox" aria-label="'+k+' '+esc(p.name)+'" data-ch="pflag" class="cb-'+k+'" data-p="'+p.id+'" data-f="'+k+'"'+(p[k]?' checked':'')+'></td>';
+    const f=(k)=>'<td class="moneyonly"><input type="checkbox" aria-label="'+k+' '+esc(p.name)+'" data-ch="pflag" class="cb-'+k+'" data-p="'+p.id+'" data-f="'+k+'"'+(p[k]?' checked':'')+'></td>';
     h+='<tr><td class="num">'+p.id+'</td><td><input type="text" style="min-width:150px" aria-label="Name for player '+p.id+'" data-ch="pname" data-p="'+p.id+'" value="'+esc(p.name)+'"></td>'+f('sp20')+f('sp2')+
      '<td><input type="number" step="any" style="width:150px" aria-label="Seed for '+esc(p.name)+'" data-ch="pseed" data-p="'+p.id+'" value="'+p.seed+'"'+(lock?' disabled':'')+'></td><td><div class="row" style="flex-wrap:nowrap;gap:6px">'+(lock?(p.withdrawn?'<button class="btn sm" data-act="unwithdraw" data-p="'+p.id+'">↩ Undo withdraw</button>':'<button class="btn sm" data-act="withdraw" data-p="'+p.id+'" title="Remove this player from play: their remaining matches become forfeits">⏏ Withdraw</button>'):'')+'<button class="btn sm danger" data-act="del" data-p="'+p.id+'"'+(lock?' disabled':'')+' aria-label="Delete '+esc(p.name)+'">✕</button></div></td></tr>';
   });
@@ -817,7 +822,7 @@ function matchCard(D,m){
   return h+'</div>';
 }
 function curRound(D){for(let i=0;i<D.R;i++){if(D.t.rounds[i].some(m=>m.winner==null))return String(i+1);}return String(D.R);}
-function sidebar(D){const p=D.pay,ms=D.t.matches,done=ms.filter(m=>m.winner!=null).length,tot=ms.length,top=D.anyResult?p.lead:[],bye={};ms.forEach(m=>{if(m.winner!=null&&(m.a.bye||m.b.bye))bye[m.winner]=true;});const nm=id=>`<button class='pn' data-act='hl' data-p='${id}'>${esc(nameOf(D,id))}</button>`;const names=ids=>ids.length?ids.map(nm).join(', '):`<span class='note'>—</span>`;const spN=S.players.filter(x=>x.sp20).length,spNB=S.players.filter(x=>x.sp2).length;const rows=D.standings.map(x=>{const r=D.rec[x.id];return `<tr class='${top.includes(x.id)?'top':''}${r.w+r.l===0?' dim':''}${ui.hl===x.id?' me':''}'><td class='num'><span class='ck'>${D.rank[x.id]}</span></td><td>${nm(x.id)}${spTags(x)}${bye[x.id]?`<span class='tag blue'>BYE</span>`:''}</td><td class='num'>${r.w}-${r.l}</td><td class='r pc num'>${money(p.per[x.id].total)}</td></tr>`;}).join('');return `<aside class='sb card no-print${ui.sbOpen?'':' closed'}${ui.sbPay?'':' nopay'}' aria-label='Live standings'><div class='row' style='justify-content:space-between'><h3>Live Standings</h3><button class='btn sm sbtoggle' data-act='sbopen' aria-expanded='${ui.sbOpen?'true':'false'}'>${ui.sbOpen?'Hide':'Show'}</button></div><div class='row' style='margin:6px 0'><span class='note'><i class='dot' style='background:var(--ok)'></i> Updated just now</span>${stBadge(D.status)}<span class='num note'>${done} of ${tot}</span></div><div class='sbbody'><div class='row' style='justify-content:space-between;margin-bottom:6px'><span class='note'>Tap a name to highlight their matches.</span><button class='btn sm sbpaytog' data-act='sbpay'>${ui.sbPay?'Hide':'Show'} payout</button></div><div class='tablewrap'><table><thead><tr><th>Rank</th><th>Name</th><th>W-L</th><th class='r pc'>Payout</th></tr></thead><tbody>${rows}</tbody></table></div><div class='sbcard spAc'><b>Side Pool A</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Entries: ${spN} · Pool: ${money(p.spPoolA)}</div><div>Leader(s): ${names(p.spLead)}</div><div class='note num'>Projected share each: ${money(p.spShare)}</div></div>${spNB?`<div class='sbcard spBc'><b>Side Pool B</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Entries: ${spNB} · Pool: ${money(p.spPoolB)}</div><div>Leader(s): ${names(p.spLeadB)}</div><div class='note num'>Projected share each: ${money(p.spShareB)}</div></div>`:''}<div class='sbcard'><b>Main Prize</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Bonus pool: ${money(p.bonusPool)}</div><div>Top record: ${names(p.lead)}</div><div class='note num'>Predicted bonus/person: ${money(p.bonusShare)}</div></div><div class='sbcard'><div><b>Remaining matches:</b> <span class='num'>${tot-done}</span></div><div class='note num'>Total payout ${money(p.total)} vs pool ${money(p.pool+p.spPool)}${p.verified?` <span class='okc'><b>✓ Verified</b></span>`:''}</div></div></div></aside>`;}
+function sidebar(D){const p=D.pay,ms=D.t.matches,done=ms.filter(m=>m.winner!=null).length,tot=ms.length,top=D.anyResult?p.lead:[],bye={};ms.forEach(m=>{if(m.winner!=null&&(m.a.bye||m.b.bye))bye[m.winner]=true;});const nm=id=>`<button class='pn' data-act='hl' data-p='${id}'>${esc(nameOf(D,id))}</button>`;const names=ids=>ids.length?ids.map(nm).join(', '):`<span class='note'>—</span>`;const spN=S.players.filter(x=>x.sp20).length,spNB=S.players.filter(x=>x.sp2).length;const rows=D.standings.map(x=>{const r=D.rec[x.id];return `<tr class='${top.includes(x.id)?'top':''}${r.w+r.l===0?' dim':''}${ui.hl===x.id?' me':''}'><td class='num'><span class='ck'>${D.rank[x.id]}</span></td><td>${nm(x.id)}${spTags(x)}${bye[x.id]?`<span class='tag blue'>BYE</span>`:''}</td><td class='num'>${recTxt(r)}</td><td class='r pc num moneyonly'>${money(p.per[x.id].total)}</td></tr>`;}).join('');return `<aside class='sb card no-print${ui.sbOpen?'':' closed'}${ui.sbPay?'':' nopay'}' aria-label='Live standings'><div class='row' style='justify-content:space-between'><h3>Live Standings</h3><button class='btn sm sbtoggle' data-act='sbopen' aria-expanded='${ui.sbOpen?'true':'false'}'>${ui.sbOpen?'Hide':'Show'}</button></div><div class='row' style='margin:6px 0'><span class='note'><i class='dot' style='background:var(--ok)'></i> Updated just now</span>${stBadge(D.status)}<span class='num note'>${done} of ${tot}</span></div><div class='sbbody'><div class='row' style='justify-content:space-between;margin-bottom:6px'><span class='note'>Tap a name to highlight their matches.</span><button class='btn sm sbpaytog moneyonly' data-act='sbpay'>${ui.sbPay?'Hide':'Show'} payout</button></div><div class='tablewrap'><table><thead><tr><th>Rank</th><th>Name</th><th>W-L</th><th class='r pc moneyonly'>Payout</th></tr></thead><tbody>${rows}</tbody></table></div><div class='sbcard spAc moneyonly'><b>Side Pool A</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Entries: ${spN} · Pool: ${money(p.spPoolA)}</div><div>Leader(s): ${names(p.spLead)}</div><div class='note num'>Projected share each: ${money(p.spShare)}</div></div>${spNB?`<div class='sbcard spBc moneyonly'><b>Side Pool B</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Entries: ${spNB} · Pool: ${money(p.spPoolB)}</div><div>Leader(s): ${names(p.spLeadB)}</div><div class='note num'>Projected share each: ${money(p.spShareB)}</div></div>`:''}<div class='sbcard moneyonly'><b>Main Prize</b> <span class='chip ${p.complete?'done':'waiting'}'>${p.complete?'Paid out':'Pending'}</span><div class='note'>Bonus pool: ${money(p.bonusPool)}</div><div>Top record: ${names(p.lead)}</div><div class='note num'>Predicted bonus/person: ${money(p.bonusShare)}</div></div><div class='sbcard'><div><b>Remaining matches:</b> <span class='num'>${tot-done}</span></div><div class='note num moneyonly'>Total payout ${money(p.total)} vs pool ${money(p.pool+p.spPool)}${p.verified?` <span class='okc'><b>✓ Verified</b></span>`:''}</div></div></div></aside>`;}
 function viewMatches(D){
   if(!D.check.ok)return '<div class="card"><h2>Matches</h2><p class="warn">Fix the roster first: '+D.check.issues.map(esc).join(' ')+'</p></div>';
   const sel=ui.mRound||'all',cur=+curRound(D),showR=r=>sel==='all'||(sel==='auto'?(r===cur||r===cur+1):sel===String(r));
@@ -840,14 +845,15 @@ function viewMatches(D){
   if(sel==='paths')h+=pathsHtml(D);
   return h+'</div>'+sidebar(D)+'</div>';
 }
+const recTxt=r=>S.showByes?((r.w-(r.b||0))+'-'+r.l+'-'+(r.b||0)):(r.w+'-'+r.l);
 function viewStandings(D){
   const p=D.pay;
   let h='<div class="card"><div class="row" style="justify-content:space-between"><h2>Standings</h2><div class="row">'+(D.status==='Complete'?'<button class="btn" data-act="share">📣 Share results</button>':'')+'<button class="btn gold" data-act="csv">⬇ Export CSV</button></div></div>';
-  h+='<p class="note">Sorted by wins (desc), losses (asc), then name. '+(p.complete?'Final.':'Bonus and Side Pool amounts are paid only when the tournament is Complete; projected values are shown in gold.')+'</p><div class="tablewrap"><table><thead><tr><th>Rank</th><th>Name</th><th class="r">W</th><th class="r">L</th><th>Record</th><th class="r">Match Wins</th><th class="r">Main Bonus</th><th class="r spAh">Side Pool A</th><th class="r spBh">Side Pool B</th><th class="r">Total</th></tr></thead><tbody>';
+  h+='<p class="note">Sorted by total wins (BYEs count as wins), losses (asc), then name. '+(p.complete?'Final.':(S.free?'Standings update as results come in.':'Bonus and Side Pool amounts are paid only when the tournament is Complete; projected values are shown in gold.'))+'</p><label class="f no-print" style="margin:4px 0"><input type="checkbox" data-ch="set" data-k="showByes"'+(S.showByes?' checked':'')+'> Show record as Wins-Losses-BYEs (a BYE still counts as a win)</label><div class="tablewrap"><table><thead><tr><th>Rank</th><th>Name</th><th>Record'+(S.showByes?' (W-L-B)':'')+'</th><th class="r moneyonly">Match Wins</th><th class="r moneyonly">Main Bonus</th><th class="r spAh moneyonly">Side Pool A</th><th class="r spBh moneyonly">Side Pool B</th><th class="r moneyonly">Total</th></tr></thead><tbody>';
   D.standings.forEach(x=>{
     const r=D.rec[x.id],y=p.per[x.id],top=D.anyResult&&p.lead.includes(x.id);
     const proj=(v,real)=>real?money(real):(v?'<span class="note" style="color:var(--gold)">proj '+money(v)+'</span>':money(0));
-    h+='<tr'+(top?' class="top"':'')+'><td class="num"><span class="ck">'+D.rank[x.id]+'</span></td><td>'+esc(x.name)+spTags(x)+'</td><td class="r">'+r.w+'</td><td class="r">'+r.l+'</td><td>'+r.w+'-'+r.l+'</td><td class="r">'+money(y.win)+'</td><td class="r">'+proj(y.projBonus,y.bonus)+'</td><td class="r">'+(x.sp20?proj(y.projSp,y.sp):'—')+'</td><td class="r">'+(x.sp2?proj(y.projSpB,y.spB):'—')+'</td><td class="r"><b>'+money(y.total)+'</b></td></tr>';
+    h+='<tr'+(top?' class="top"':'')+'><td class="num"><span class="ck">'+D.rank[x.id]+'</span></td><td>'+esc(x.name)+spTags(x)+'</td><td>'+recTxt(r)+'</td><td class="r moneyonly">'+money(y.win)+'</td><td class="r moneyonly">'+proj(y.projBonus,y.bonus)+'</td><td class="r moneyonly">'+(x.sp20?proj(y.projSp,y.sp):'—')+'</td><td class="r moneyonly">'+(x.sp2?proj(y.projSpB,y.spB):'—')+'</td><td class="r moneyonly"><b>'+money(y.total)+'</b></td></tr>';
   });
   return h+'</tbody></table></div></div>';
 }
@@ -875,6 +881,8 @@ function viewRules(D){
   '<h3 style="margin-top:14px">Format</h3><ul>'+
   '<li><b>Rounds:</b> choose 3, 4 or 5 rounds when you create a tournament, or in Settings before play starts. Every pairing is one backgammon match. Everyone plays in every round.</li>'+
   '<li><b>Players:</b> 4 or more, each with a unique name (“BYE” is reserved). In each round half the players, rounded up, play matches. With an odd number of players, one player gets a BYE, which counts as a win and never as a loss.</li>'+
+  '<li><b>Bracket only:</b> choose “Bracket only” when you create a tournament (or tick it in Settings) to run the event with no entry fees, Club Fees, side pools or prizes. The Payouts tab and all money amounts are hidden, and the Standings rank everyone by record (wins, then fewest losses). Pairings work exactly the same.</li>'+
+  '<li><b>BYEs in the record:</b> a BYE counts as a win, both for ranking and for payouts. Tick “Show record as Wins-Losses-BYEs” (Settings or Standings) to see the record as W-L-B, where W is the wins actually played and B is the BYEs, for example “2-1-1”. Total wins are still W + B (3 in that example), so the ranking does not change.</li>'+
   '<li><b>Which format?</b> 3 rounds suits smaller fields. 4 rounds is a good middle choice and works best with 16 or more players. 5 rounds works best with 32 or more players; smaller fields may meet the same opponent again in the last rounds (flagged “rematch”).</li>'+
   '<li><b>Seeding:</b> players are ordered by Seed, then by ID. Use <b>🎲 Roll seeds</b> on the Players tab (also in the Dashboard quick actions) to randomize. Seeds can still be edited by hand and are saved in the tournament file. Rolling is only allowed before any winner is entered.</li></ul>'+
   '<h3 style="margin-top:14px">Pairings</h3><ul>'+
@@ -922,8 +930,11 @@ function ntFeeNote(){const o=$('nt-feenote');if(!o)return;const g=id=>parseFloat
 function ntWinPrev(){const o=$('nt-winprev');if(!o)return;const r=document.querySelector('input[name="nt-rounds"]:checked'),R=normR(r&&r.value),e=parseFloat(($('nt-entry-1a7p')||{}).value)||0,v=parseFloat(($('nt-winamt-5p1z')||{}).value),mx=Math.floor(e*200/R)/100;{const wf=$('nt-winamt-5p1z');if(wf&&wf.dataset.edited!=='1')wf.value=Math.round(e*winFrac(R)*100)/100;}const v2=parseFloat(($('nt-winamt-5p1z')||{}).value),a=Number.isFinite(v2)&&v2>0?Math.min(v2,mx):e*winFrac(R),pc=e>0?Math.round(a/e*1000)/10:0;const bad=Number.isFinite(v2)&&v2>mx+0.004,wf2=$('nt-winamt-5p1z');if(wf2)wf2.classList.toggle('wbad',bad);o.className=bad?'wbadtxt':'note';o.style.color='';o.textContent=bad?('⚠ Too high: the prize pool can only cover about '+money(mx)+' per win (a little less with an odd number of players), so it would be paid at or below that. The standard is '+money(e*winFrac(R))+'. Please lower it.'):'= '+pc+'% of the entry'+(Math.abs(a-e*winFrac(R))<0.004?' (standard)':'')+(Number.isFinite(v2)&&v2>mx?' — limited to the maximum':'')+'. The most the prize pool can cover is '+money(mx)+' ('+(e>0?Math.round(mx/e*1000)/10:0)+'%) with an even number of players.';if(!bad&&a>winSafe(e,R)+0.004){o.className='wbadtxt';o.style.color='#f0d98a';o.textContent+='  ⚠ Heads-up: '+money(a)+' will not work with an odd number of players (for example, 13 players would only cover '+money(Math.floor(e*13/(R*7)*100)/100)+'). To be safe for any field size, use '+money(winSafe(e,R))+' or less.';}else{o.style.color='';}}
 /* ---------- Render ---------- */
 /* ---------- Version & changelog (update APP_VERSION and add an entry at the TOP of CHANGELOG for every release) ---------- */
-const APP_VERSION='1.10.0';
+const APP_VERSION='1.11.0';
 const CHANGELOG=[
+ {v:'1.11.0',date:'2026-11-25',notes:[
+  'New: Bracket only tournaments. Pick “Bracket only” when creating a tournament (or tick it in Settings) to run the event with no entry fees, Club Fees, side pools or prizes. The Payouts tab and every dollar amount are hidden, and Standings rank by record.',
+  'Standings: with the BYE display on, players with the same total wins are ranked with no-BYE records above records that include BYEs. New: “Show record as Wins-Losses-BYEs” (Settings or Standings). The record reads W-L-B, for example 2-1-1, where W is the wins actually played. A BYE still counts as a win, so total wins (W + B) decide the ranking and the payouts. It also shows in Live Standings, the shared results card and the CSV export.']},
  {v:'1.10.0',date:'2026-11-25',notes:[
   'New notice in New tournament and Settings: the Prize Pool entry does not include the Club Fee, with the total per player (entry + Club Fee) to announce, and the all-in amount for players in the side pools.',
   'New: a 4-round format. Each win pays Entry ÷ 3 (a $60 entry pays $20 per win), leaving one third of the money for the Bonus Pool. It works best with 16 or more players. Choose it in New tournament or in Settings before play starts.',
@@ -1080,13 +1091,15 @@ function renderWelcome(){
 }
 function render(){
   if(ui.welcome){renderWelcome();return;}
+  if(S.free&&ui.tab==='payouts')ui.tab='dashboard';
+  document.body.classList.toggle('free',!!S.free);
   const y=window.scrollY;
   let D;
   try{D=derive();}catch(e){D=null;$('app').innerHTML='<div class="card warn">Internal error: '+esc(e.message)+'</div>';return;}
   ui.D=D;document.title=S.name+' – Backgammon Determined Swiss Tournament Manager';
   $('hdr').innerHTML='<div class="titlerow"><div class="brand"><span class="logo">🎲⚪⚫</span><div><h1>'+esc(S.name)+'</h1><small>Determined Swiss Format Tournament Generator · <button class="linkbtn" data-act="changelog" title="See what’s new">'+vtag()+'</button></small></div></div>'+
    '<div class="hbtns">'+switcher(D)+'<button class="btn" data-act="tnew">➕ New tournament</button><button class="btn gold" data-act="save">💾 Save this tournament'+(S.dirty?' <span class="dot" title="Unsaved changes"></span>':'')+'</button><button class="btn" data-act="open">📂 Open file</button></div></div>'+hdrNote()+
-   '<nav class="tabs" aria-label="Sections">'+TABS.map(t=>'<button data-act="tab" data-v="'+t[0]+'" class="'+(ui.tab===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</nav>';
+   '<nav class="tabs" aria-label="Sections">'+TABS.filter(t=>!(S.free&&t[0]==='payouts')).map(t=>'<button data-act="tab" data-v="'+t[0]+'" class="'+(ui.tab===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</nav>';
   let h='';
   h+=shareHtml(D);h+=modalHtml();if(ui.confirm)h+='<div class="confirm no-print" role="alertdialog"><b>Please confirm</b><p style="margin:6px 0">'+esc(ui.confirm.msg)+'</p><div class="row"><button class="btn danger" data-act="doconfirm">'+esc(ui.confirm.okLabel)+'</button><button class="btn" data-act="cancelconfirm">Cancel</button></div></div>';
   if(ui.msg)h+='<div class="flash no-print">'+esc(ui.msg)+' <button class="btn sm" data-act="dismissmsg">OK</button></div>';
@@ -1133,7 +1146,7 @@ function hdrNote(){
 function fromData(x){
   let o;try{o=loadData(x,{});}catch(e){throw new Error(e.message==='Not a tournament file.'?'it is not a tournament file':'the player list or results look damaged');}
   const ok=v=>typeof v==='string'&&!isNaN(new Date(v));
-  return mkT({id:typeof x.id==='string'&&x.id?x.id:undefined,name:o.name,created:ok(x.created)?x.created:undefined,updated:ok(x.updated)?x.updated:undefined,entry:o.entry,sp20Entry:o.sp20Entry,sp2Entry:o.sp2Entry,clubFee:o.clubFee,directorStipend:o.directorStipend,feesSubmitted:o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt,feesSubmittedAmt:o.feesSubmittedAmt,players:o.players,winners:o.winners,paid:o.paid,nextId:o.nextId,seedsRandomized:o.seedsRandomized,numRounds:o.numRounds,roundTo:o.roundTo,winAmt:o.winAmt,clubName:o.clubName,dirty:false,savedAt:null});
+  return mkT({id:typeof x.id==='string'&&x.id?x.id:undefined,name:o.name,created:ok(x.created)?x.created:undefined,updated:ok(x.updated)?x.updated:undefined,entry:o.entry,sp20Entry:o.sp20Entry,sp2Entry:o.sp2Entry,clubFee:o.clubFee,directorStipend:o.directorStipend,feesSubmitted:o.feesSubmitted,feesSubmittedAt:o.feesSubmittedAt,feesSubmittedAmt:o.feesSubmittedAmt,players:o.players,winners:o.winners,paid:o.paid,nextId:o.nextId,seedsRandomized:o.seedsRandomized,numRounds:o.numRounds,roundTo:o.roundTo,winAmt:o.winAmt,clubName:o.clubName,free:o.free,showByes:o.showByes,dirty:false,savedAt:null});
 }
 function importData(d,fn){
   if(!d||typeof d!=='object'||Array.isArray(d))throw new Error('this does not look like a tournament file.');
@@ -1154,21 +1167,21 @@ function importData(d,fn){
 }
 /* ---------- Share results (v1.6.0) ---------- */
 function shortName(n){const p=String(n).trim().split(/\s+/);return p.length<2?String(n).trim():p[0]+' '+p[p.length-1][0].toUpperCase()+'.';}
-function shareOpts(){if(!ui.share)ui.share={fmt:'square',amt:false,nm:'full',top:5};return ui.share;}
+function shareOpts(){if(!ui.share)ui.share={fmt:'square',amt:false,nm:'full',top:5};if(S.free)ui.share.amt=false;return ui.share;}
 function shareSize(o){return ({square:[1080,1080],tall:[1080,1920],wide:[1200,630]})[o.fmt]||[1080,1080];}
 function shareData(D,o){
   const p=D.pay,nm=x=>o.nm==='short'?shortName(x.name):x.name,byId={};D.standings.forEach(x=>byId[x.id]=x);
   const cap=o.fmt==='tall'?14:o.fmt==='wide'?5:7,want=o.top==='all'?999:+o.top||5,n=Math.min(want,cap,D.standings.length);
   const champs=(p.lead||[]).map(id=>byId[id]).filter(Boolean);
-  const rows=D.standings.slice(0,n).map(x=>({rank:D.rank[x.id],name:nm(x),rec:D.rec[x.id].w+'–'+D.rec[x.id].l,amt:p.per[x.id].total,a:(p.spLead||[]).includes(x.id),b:(p.spLeadB||[]).includes(x.id)}));
+  const rows=D.standings.slice(0,n).map(x=>({rank:D.rank[x.id],name:nm(x),rec:(S.showByes?recTxt(D.rec[x.id]).replace(/-/g,'–'):D.rec[x.id].w+'–'+D.rec[x.id].l),amt:p.per[x.id].total,a:(p.spLead||[]).includes(x.id),b:(p.spLeadB||[]).includes(x.id)}));
   const side=(ids,pool,share)=>ids&&ids.length?{names:ids.map(id=>byId[id]).filter(Boolean).map(nm),each:share,n:ids.length}:null;
   const c0=champs[0];
   return {club:(S.clubName||'').trim(),title:S.name,
     sub:dateLabel(new Date())+' · '+S.players.length+' players · '+S.numRounds+' rounds',
-    champs:champs.map(nm),champRec:c0?D.rec[c0.id].w+'–'+D.rec[c0.id].l:'',champAmt:c0?p.per[c0.id].total:0,
+    champs:champs.map(nm),champRec:c0?(S.showByes?recTxt(D.rec[c0.id]).replace(/-/g,'–'):D.rec[c0.id].w+'–'+D.rec[c0.id].l):'',champAmt:c0?p.per[c0.id].total:0,
     rows:rows,more:D.standings.length-n,
-    sideA:D.standings.some(x=>x.sp20)?side(p.spLead,p.spPoolA,p.spShare):null,
-    sideB:D.standings.some(x=>x.sp2)?side(p.spLeadB,p.spPoolB,p.spShareB):null};
+    sideA:(!S.free&&D.standings.some(x=>x.sp20))?side(p.spLead,p.spPoolA,p.spShare):null,
+    sideB:(!S.free&&D.standings.some(x=>x.sp2))?side(p.spLeadB,p.spPoolB,p.spShareB):null};
 }
 function shareText(D,o){
   const d=shareData(D,o),L=[];
@@ -1257,7 +1270,7 @@ function shareHtml(D){
    '<b>Shape</b><div>'+rd('fmt','square','Square (most feeds)')+rd('fmt','tall','Tall (Stories)')+rd('fmt','wide','Wide (Facebook, X)')+'</div>'+
    '<b style="display:block;margin-top:10px">Names</b><div>'+rd('nm','full','Full names')+rd('nm','short','First name + last initial')+'</div>'+
    '<label class="f" for="sh-top-7w3q" style="margin-top:10px"><b>Players listed</b></label><select id="sh-top-7w3q" data-sh="top">'+['3','5','10','all'].map(v=>'<option value="'+v+'"'+(String(o.top)===v?' selected':'')+'>'+(v==='all'?'Everyone (as many as fit)':'Top '+v)+'</option>').join('')+'</select>'+
-   '<label class="f" style="margin-top:10px"><input type="checkbox" data-sh="amt"'+(o.amt?' checked':'')+'> Show winnings (dollar amounts)</label><p class="note" style="margin:2px 0 10px">Off by default, so money stays private.</p>'+
+   '<label class="f moneyonly" style="margin-top:10px"><input type="checkbox" data-sh="amt"'+(o.amt?' checked':'')+'> Show winnings (dollar amounts)</label><p class="note" style="margin:2px 0 10px">Off by default, so money stays private.</p>'+
    '<div class="row"><button class="btn gold" data-act="sharepng">⬇ Save picture</button>'+(navigator.share?'<button class="btn" data-act="sharenative">📤 Share…</button>':'')+'<button class="btn" data-act="sharecopy">📋 Copy text</button></div>'+
    (ui.shareMsg?'<p class="flash" style="margin:8px 0">'+esc(ui.shareMsg)+'</p>':'')+
    '<label class="f" for="sh-txt-9c4v" style="margin-top:10px">Text version</label><textarea id="sh-txt-9c4v" readonly rows="8">'+esc(shareText(D,o))+'</textarea></div></div></div></div>';
@@ -1289,17 +1302,18 @@ function modalHtml(){
   const btns=(act,lab)=>'<div class="row"><button class="btn gold" data-act="'+act+'">'+lab+'</button><button class="btn" data-act="mclose">Cancel</button></div>';
   if(m.type==='new'){
     return wrap('➕ New tournament','<label class="f" for="nt-name-3c7v" style="margin-top:8px">Name</label><input type="text" id="nt-name-3c7v" value="'+esc(defaultName())+'">'+
-    '<div class="feenote" id="nt-feenote">'+feeNoticeHtml(40,5,20,10)+'</div>'+
+    '<div style="margin:8px 0"><b>Type</b><label class="f"><input type="radio" name="nt-type" value="money" checked> Money tournament (entry fees, side pools, prizes)</label><label class="f"><input type="radio" name="nt-type" value="free"> Bracket only (no entry fees, Club Fees or prizes; rankings by record)</label></div>'+
+    '<div class="feenote moneyonly" id="nt-feenote">'+feeNoticeHtml(40,5,20,10)+'</div>'+
     '<div class="ntcols">'+
     '<div class="setgrp event"><h4>🎲 Event settings <span class="note">— these change for each tournament and affect the prize money</span></h4>'+
     '<div style="margin:4px 0"><b>Format</b><label class="f"><input type="radio" name="nt-rounds" value="3" checked> 3 rounds</label><label class="f"><input type="radio" name="nt-rounds" value="4"> 4 rounds</label><label class="f"><input type="radio" name="nt-rounds" value="5"> 5 rounds</label></div>'+
-    '<div class="row"><div><label class="f" for="nt-entry-1a7p">Prize Pool entry ($)</label><input type="number" min="0" step="1" id="nt-entry-1a7p" class="ntfee" value="40" style="width:110px"></div>'+
+    '<div class="row moneyonly"><div><label class="f" for="nt-entry-1a7p">Prize Pool entry ($)</label><input type="number" min="0" step="1" id="nt-entry-1a7p" class="ntfee" value="40" style="width:110px"></div>'+
     '<div><label class="f" for="nt-sp-2b8q"><span class="sp20">A</span> Side Pool A entry ($)</label><input type="number" min="0" step="1" id="nt-sp-2b8q" class="ntfee" value="20" style="width:110px"></div>'+
     '<div><label class="f" for="nt-sp2-4d1s"><span class="sp2">B</span> Side Pool B entry ($)</label><input type="number" min="0" step="1" id="nt-sp2-4d1s" class="ntfee" value="10" style="width:110px"></div></div>'+
-    '<div style="margin:8px 0"><label class="f" for="nt-round-7k3p">Round payouts</label><select id="nt-round-7k3p"><option value="5" selected>To the nearest $5</option><option value="1">Whole dollars</option></select><span class="note"> Makes payments easier when the entry isn’t evenly divisible.</span></div>'+
-    '<div style="margin:8px 0"><label class="f" for="nt-winamt-5p1z">Return per match win ($)</label><input type="number" min="1" step="1" id="nt-winamt-5p1z" class="ntfee" value="20" style="width:90px"> <span class="note" id="nt-winprev">= 50% of the entry (standard). The most the prize pool can cover is $26.66.</span></div>'+
-    '<p class="note">Suggested amounts: 3 rounds = $40 entry and $20 / $10 side pools A / B; 4 or 5 rounds = $60 entry and $30 / $15 side pools. They fill in automatically when you pick the format (unless you have typed your own) and can be changed later in Settings. 4 rounds works best with 16 or more players and 5 rounds with 32 or more; smaller fields may have repeat opponents in the later rounds (flagged).</p></div>'+
-    '<div class="setgrp club"><h4>🏛 Club settings <span class="note">— set by your club; they decide what goes to the club, not the prizes</span></h4>'+
+    '<div class="moneyonly" style="margin:8px 0"><label class="f" for="nt-round-7k3p">Round payouts</label><select id="nt-round-7k3p"><option value="5" selected>To the nearest $5</option><option value="1">Whole dollars</option></select><span class="note"> Makes payments easier when the entry isn’t evenly divisible.</span></div>'+
+    '<div class="moneyonly" style="margin:8px 0"><label class="f" for="nt-winamt-5p1z">Return per match win ($)</label><input type="number" min="1" step="1" id="nt-winamt-5p1z" class="ntfee" value="20" style="width:90px"> <span class="note" id="nt-winprev">= 50% of the entry (standard). The most the prize pool can cover is $26.66.</span></div>'+
+    '<p class="note moneyonly">Suggested amounts: 3 rounds = $40 entry and $20 / $10 side pools A / B; 4 or 5 rounds = $60 entry and $30 / $15 side pools. They fill in automatically when you pick the format (unless you have typed your own) and can be changed later in Settings. 4 rounds works best with 16 or more players and 5 rounds with 32 or more; smaller fields may have repeat opponents in the later rounds (flagged).</p></div>'+
+    '<div class="setgrp club moneyonly"><h4>🏛 Club settings <span class="note">— set by your club; they decide what goes to the club, not the prizes</span></h4>'+
     '<label class="f" for="nt-clubname-6h2j">Club name <span class="note">(optional, shown on the shared results card)</span></label><input type="text" id="nt-clubname-6h2j" maxlength="60" value="'+esc(S.clubName||'')+'" placeholder="e.g. Your club or group name">'+
     '<div class="row" style="margin-top:8px"><div><label class="f" for="nt-club-3c9r">Club Fee per player ($)</label><input type="number" min="0" step="0.01" id="nt-club-3c9r" class="ntfee" value="5" style="width:110px"></div>'+
     '<div><label class="f" for="nt-stipend-8m2w">Director Stipend ($)</label><input type="number" min="0" step="1" id="nt-stipend-8m2w" value="15" style="width:110px"></div></div>'+
@@ -1366,7 +1380,7 @@ document.addEventListener('click',function(e){
     case 'sbpay':ui.sbPay=!ui.sbPay;render();break;
     case 'sbopen':ui.sbOpen=!ui.sbOpen;render();break;
     case 'gomatch':ui.tab='matches';ui.mRound=el.dataset.r;render();window.scrollTo(0,0);break;
-    case 'gopay':ui.tab='payouts';render();window.scrollTo(0,0);break;
+    case 'gopay':ui.tab=S.free?'dashboard':'payouts';render();window.scrollTo(0,0);break;
     case 'win':{const m=el.dataset.m,pid=+el.dataset.p;setWinner(m,S.winners[m]===pid?null:pid);break;}
     case 'clearw':setWinner(el.dataset.m,null);break;
     case 'save':saveT(S);break;
@@ -1390,7 +1404,8 @@ document.addEventListener('click',function(e){
       else if(mode==='paste'){const names=$('nt-paste-6p4w').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);ps=names.map((x,i)=>({id:i+1,name:x,sp20:false,seed:Math.random()}));nid=names.length+1;}
       const nr=normR((document.querySelector('input[name="nt-rounds"]:checked')||{}).value);
       const fv=(id,d)=>{const v=parseFloat(($(id)||{}).value);return Number.isFinite(v)&&v>=0?v:d;};
-      const T=mkT({name:nm,entry:fv('nt-entry-1a7p',nr>=4?60:40),sp20Entry:fv('nt-sp-2b8q',nr>=4?30:20),sp2Entry:fv('nt-sp2-4d1s',nr>=4?15:10),clubFee:fv('nt-club-3c9r',5),directorStipend:fv('nt-stipend-8m2w',15),players:ps,nextId:nid,numRounds:nr,roundTo:(($('nt-round-7k3p')||{}).value==='1'?1:5),winAmt:(function(){const v=parseFloat(($('nt-winamt-5p1z')||{}).value),e=fv('nt-entry-1a7p',nr>=4?60:40);return (Number.isFinite(v)&&v>0&&Math.abs(v-e*winFrac(nr))>0.004)?v:null;})(),clubName:(($('nt-clubname-6h2j')||{}).value||'').trim().slice(0,60),dirty:true});
+      const fr=((document.querySelector('input[name="nt-type"]:checked')||{}).value==='free');
+      const T=mkT({name:nm,free:fr,entry:fr?0:fv('nt-entry-1a7p',nr>=4?60:40),sp20Entry:fr?0:fv('nt-sp-2b8q',nr>=4?30:20),sp2Entry:fr?0:fv('nt-sp2-4d1s',nr>=4?15:10),clubFee:fr?0:fv('nt-club-3c9r',5),directorStipend:fr?0:fv('nt-stipend-8m2w',15),players:ps,nextId:nid,numRounds:nr,roundTo:(($('nt-round-7k3p')||{}).value==='1'?1:5),winAmt:fr?null:(function(){const v=parseFloat(($('nt-winamt-5p1z')||{}).value),e=fv('nt-entry-1a7p',nr>=4?60:40);return (Number.isFinite(v)&&v>0&&Math.abs(v-e*winFrac(nr))>0.004)?v:null;})(),clubName:(($('nt-clubname-6h2j')||{}).value||'').trim().slice(0,60),dirty:true});
       dropPlaceholder();LIB.push(T);ui.tab='players';switchTo(T.id);flash('Created “'+T.name+'” with '+ps.length+' player'+(ps.length===1?'':'s')+'. Remember to save it to a file.');render();window.scrollTo(0,0);break;
     }
     case 'trename':{const T=LIB.find(x=>x.id===ui.modal.id),nm=($('rn-name-8b1q').value||'').trim();if(!nm){flash('Enter a name first.');render();break;}if(T){T.name=nm;T.dirty=true;T.updated=nowIso();}ui.modal=null;render();break;}
@@ -1399,7 +1414,7 @@ document.addEventListener('click',function(e){
       const nm=($('cp-name-2x8r').value||'').trim()||(src.name+' (copy)');
       const res=(document.querySelector('input[name="cp-mode"]:checked')||{}).value==='results';
       const c=JSON.parse(JSON.stringify(src));
-      const T=mkT({name:nm,entry:c.entry,sp20Entry:c.sp20Entry,sp2Entry:c.sp2Entry,clubFee:c.clubFee,directorStipend:c.directorStipend,players:(res?c.players:c.players.map(p=>Object.assign({},p,{withdrawn:false}))),winners:res?c.winners:{},paid:res?c.paid:{},nextId:c.nextId,seedsRandomized:c.seedsRandomized,numRounds:c.numRounds,roundTo:c.roundTo,winAmt:c.winAmt,clubName:c.clubName,dirty:true});
+      const T=mkT({name:nm,entry:c.entry,sp20Entry:c.sp20Entry,sp2Entry:c.sp2Entry,clubFee:c.clubFee,directorStipend:c.directorStipend,players:(res?c.players:c.players.map(p=>Object.assign({},p,{withdrawn:false}))),winners:res?c.winners:{},paid:res?c.paid:{},nextId:c.nextId,seedsRandomized:c.seedsRandomized,numRounds:c.numRounds,roundTo:c.roundTo,winAmt:c.winAmt,clubName:c.clubName,free:c.free,showByes:c.showByes,dirty:true});
       LIB.push(T);ui.modal=null;flash('Added “'+T.name+'” ('+(res?'roster with results':'roster only')+'). Remember to save it to a file.');render();break;
     }
     case 'mreplace':{const m=ui.modal,i=LIB.findIndex(x=>x.id===m.T.id);if(i>=0)LIB[i]=m.T;else LIB.push(m.T);switchTo(m.T.id);flash('Replaced the tournament with the version from “'+m.fn+'”.');render();break;}
@@ -1439,6 +1454,7 @@ document.addEventListener('click',function(e){
 document.addEventListener('change',function(e){
   const shk=e.target.dataset&&e.target.dataset.sh;
   if(shk){const o=shareOpts();if(shk==='club'){commit(()=>{S.clubName=e.target.value.trim().slice(0,60);});}else if(shk==='amt'){o.amt=e.target.checked;render();}else{o[shk]=shk==='top'&&e.target.value!=='all'?+e.target.value:e.target.value;render();}return;}
+  if(e.target.name==='nt-type'){const c=document.querySelector('.confirm.gold');if(c)c.classList.toggle('ntfree',e.target.value==='free');return;}
   if(e.target.name==='nt-rounds'){const five=+e.target.value>=4,d=[['nt-entry-1a7p',five?60:40],['nt-sp-2b8q',five?30:20],['nt-sp2-4d1s',five?15:10],['nt-winamt-5p1z',five?15:20]];d.forEach(x=>{const f=$(x[0]);if(f&&f.dataset.edited!=='1')f.value=x[1];});ntWinPrev();ntFeeNote();return;}
   if(e.target.id==='remind-7x3k'){ui.remindEvery=+e.target.value;LIB.forEach(T=>{T.nextRemind=(T.sinceSave||0)+ui.remindEvery;});render();return;}
   if(e.target.id==='tsw-5n2j'){switchTo(e.target.value);return;}if(e.target.id==='path-pl-7q2m'){ui.pathPid=+e.target.value;render();return;}const el=e.target.closest('[data-ch]');if(!el)return;
@@ -1451,6 +1467,8 @@ document.addEventListener('change',function(e){
   else if(k==='set'){
     const f=el.dataset.k;
     if(f==='name')commit(()=>{S.name=el.value.trim()||'Determined Swiss';});
+    else if(f==='free'){commit(()=>{S.free=el.checked;});}
+    else if(f==='showByes'){commit(()=>{S.showByes=el.checked;});}
     else if(f==='clubName')commit(()=>{S.clubName=el.value.trim().slice(0,60);});
     else if(f==='winAmt'){const v=parseFloat(el.value);if(Number.isFinite(v)&&v>0&&!playBegun())commit(()=>{S.winAmt=(Math.abs(v-winAmtDef(S))<0.004)?null:v;});else render();}
     else if(f==='roundTo'){commit(()=>{S.roundTo=+el.value===5?5:1;});}
